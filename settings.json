@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [],
+    "deny": [
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)"
+    ],
+    "defaultMode": "bypassPermissions"
+  },
+  "model": "opus",
+  "enableAllProjectMcpServers": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "language": "japanese",
+  "alwaysThinkingEnabled": true,
+  "plansDirectory": "./.claude/plans",
+  "skipDangerousModePermissionPrompt": true,
+  "env": {
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
+  }
+}
