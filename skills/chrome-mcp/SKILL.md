@@ -8,6 +8,16 @@ user-invocable: false
 
 ## フォーム操作
 
+### 基本方針
+
+- `read_page(filter="interactive")` でフォーム構造と `ref_id` を最初に把握すること
+- `form_input` で入力できるフィールドは一括で同時セットすること
+- `form_input` が効かないフィールド（SPAのcombobox・ラジオボタン等）は `ref` 指定の `left_click` + `type` + `key(Enter/Tab)` で入力すること
+- 座標クリックは使わず、すべて `ref` 指定で操作すること
+- スクリーンショットは最小限（入力確認時と完了確認時のみ）にすること
+
+### その他
+
 - テキスト入力の上書きには `triple_click` で全選択してから `type` で入力すること
 - ボタンクリックが反応しない場合は `find` でボタン要素を特定し、`ref` 指定でクリックすること
 
