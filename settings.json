@@ -11,7 +11,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "sonnet",
+  "model": "opus",
   "enableAllProjectMcpServers": true,
   "statusLine": {
     "type": "command",
@@ -20,5 +20,6 @@
   "language": "japanese",
   "alwaysThinkingEnabled": true,
   "plansDirectory": "./.claude/plans",
+  "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true
 }

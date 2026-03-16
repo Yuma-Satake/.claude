@@ -21,3 +21,4 @@ chrome/chrome-native-host
 mcp-needs-auth-cache.json
 telemetry/
 session-env/
+sessions
