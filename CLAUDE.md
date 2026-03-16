@@ -1,5 +1,7 @@
 # user CLAUDE.md
 
+- issueやPRでは常に言い切りの簡潔な文章で書くこと
+
 ## Rules 適用ガイド
 
 - `code-editing.md`: コードの編集・新規作成・リファクタリング時に適用
