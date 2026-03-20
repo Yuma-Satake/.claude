@@ -20,4 +20,14 @@ else
 fi
 RESET='\033[0m'
 
-echo -e "${MODEL} ${COLOR}[${BAR}] ${PCT}%${RESET}"
+RATE_PCT=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // 0' | cut -d. -f1)
+RATE_FILLED=$((RATE_PCT * BAR_WIDTH / 100))
+RATE_EMPTY=$((BAR_WIDTH - RATE_FILLED))
+
+RATE_BAR=""
+[ "$RATE_FILLED" -gt 0 ] && RATE_BAR=$(printf "%${RATE_FILLED}s" | tr ' ' '█')
+[ "$RATE_EMPTY" -gt 0 ] && RATE_BAR="${RATE_BAR}$(printf "%${RATE_EMPTY}s" | tr ' ' '░')"
+
+RATE_COLOR='\033[34m'
+
+echo -e "${MODEL} ${COLOR}[${BAR}] ${PCT}%${RESET} limit:${RATE_COLOR}[${RATE_BAR}] ${RATE_PCT}%${RESET}"

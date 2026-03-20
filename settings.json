@@ -11,7 +11,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "enableAllProjectMcpServers": true,
   "statusLine": {
     "type": "command",
