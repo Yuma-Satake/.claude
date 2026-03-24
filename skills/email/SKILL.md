@@ -90,3 +90,61 @@ Mail：[該当するメールアドレス]
 ```
 
 gws CLI でドラフト作成が必要な場合は、その後の手順も案内する。
+
+## gws CLI でのドラフト作成手順
+
+メール本文を作成したあと、以下の手順で Gmail ドラフトを作成する。
+
+### エンコード方式
+
+- 本文は **quoted-printable** でエンコードする（base64 本文埋め込みは文字化けが発生するため使用しない）
+- メール全体は **base64url** でエンコードして `raw` に渡す
+
+### Python スクリプト例
+
+```python
+import base64, json, email.header, quopri
+
+body = "本文テキスト（UTF-8）"
+subject = email.header.Header("件名（日本語）", "utf-8").encode()
+body_qp = quopri.encodestring(body.encode("utf-8")).decode("ascii")
+
+raw = (
+    "From: 送信元@example.com\r\n"
+    "To: 宛先@example.com\r\n"
+    f"Subject: {subject}\r\n"
+    # 返信の場合は以下を追加
+    # "In-Reply-To: <元メッセージID>\r\n"
+    # "References: <元メッセージID>\r\n"
+    "Content-Type: text/plain; charset=utf-8\r\n"
+    "Content-Transfer-Encoding: quoted-printable\r\n"
+    "MIME-Version: 1.0\r\n"
+    "\r\n"
+    + body_qp
+)
+
+raw_encoded = base64.urlsafe_b64encode(raw.encode("utf-8")).decode()
+payload = {"message": {"raw": raw_encoded}}
+# 返信の場合: payload["message"]["threadId"] = "スレッドID"
+print(json.dumps(payload))
+```
+
+### ドラフト作成コマンド
+
+```bash
+# ペイロードをファイルに出力してから渡す（シェル引数の長さ制限回避のため）
+python3 script.py > /tmp/draft_payload.json
+gws-{account} gmail users drafts create --params '{"userId": "me"}' --json "$(cat /tmp/draft_payload.json)"
+```
+
+### 返信元メッセージIDの取得
+
+```bash
+gws-{account} gmail users messages get --params '{"userId": "me", "id": "メッセージID", "format": "full"}' 2>/dev/null | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+headers = {h['name']: h['value'] for h in data['payload']['headers']}
+print('Message-ID:', headers.get('Message-ID', ''))
+print('Thread-ID:', data.get('threadId', ''))
+"
+```
