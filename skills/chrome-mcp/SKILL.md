@@ -49,6 +49,22 @@ user-invocable: false
 - `javascript_tool` で取得した `getBoundingClientRect()` の座標はビューポート座標なので、`computer` ツールでクリックする場合はスクリーンショット座標に変換が必要: `ss_x = vp_x * ss_width / vp_width`
 - 変換後の座標が画面外（スクリーンショットの幅/高さを超える）の場合、要素がビューポート外にあるため、先にスクロールが必要
 
+## OAuth・ポップアップ操作
+
+- OAuth 認証ボタン（Google・X・Apple など）は `window.open()` でポップアップを開くため、Chrome 拡張機能の制約により `left_click` 時に「Detached while handling command」エラーが発生する
+- 回避策: クリック前に `javascript_tool` で `window.open` をオーバーライドし、OAuth URL を同タブでリダイレクトさせる
+
+```js
+window.open = function(url, ...args) {
+  window.location.href = url;
+  return { closed: false, focus: () => {}, close: () => {} };
+};
+```
+
+- オーバーライド後は `document.querySelector('button[aria-label="X"]').click()` のように JavaScript からボタンをクリックする（`computer` ツールのクリックでは間に合わない場合がある）
+- OAuth ページで既存ログインアカウントと対象アカウントが異なる場合はキャンセルし、別の認証方法（メール/ID + パスワード）に切り替える
+- note のログインでは `input[type="text"]` に note ID を `javascript_tool` で直接セットできる（`input.value = 'xxx'; input.dispatchEvent(new Event('input', { bubbles: true }))`）
+
 ## 一般的なブラウザ操作
 
 - 操作開始時は必ず `tabs_context_mcp` でタブ情報を取得すること
