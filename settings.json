@@ -1,7 +1,8 @@
 {
   "env": {
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-    "ENABLE_TOOL_SEARCH": "true"
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1"
   },
   "permissions": {
     "allow": [],
@@ -11,7 +12,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "enableAllProjectMcpServers": true,
   "statusLine": {
     "type": "command",
