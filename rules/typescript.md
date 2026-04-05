@@ -2,7 +2,7 @@
 
 ## 型定義
 
-- 型の定義においては、interface より type alias を使用して下さい（既存で使用されている場合を除く）
+- 型の定義においては、interface より type alias を使用して下さい（既存のプロジェクトの状態を調査し、プロジェクトでinterfaceが多く使用されている場合には、interfaceを使用する必要があることに注意して）
 - enumは使用せず、`as const` オブジェクト + union型を使用して下さい（ex: `const Status = { Active: "active", Inactive: "inactive" } as const; type Status = typeof Status[keyof typeof Status];`。値一覧が必要な場合は `Object.values(Status)` で取得可能）
 
 ## 関数の型
