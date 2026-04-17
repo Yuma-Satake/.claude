@@ -23,4 +23,5 @@ telemetry/
 session-env/
 sessions
 policy-limits.json
-.image-cache
+image-cache
+.chrome
