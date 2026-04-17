@@ -28,6 +28,12 @@
 - `slack-mcp`: Slack MCPツール使用時に参照
 - `chrome-mcp`: Chrome MCPツール使用時に参照
 - `claude-code-spec`: Claude Codeの機能仕様（スキル、フック、設定等）について正確な情報が必要な場合に参照
+- `anti-ai-design`: デザイナー不在のプロジェクトでWebフロントエンドのUI実装時に参照（AIっぽいデザインの回避）
+
+## Plugins 適用ガイド
+
+- `context7`: ライブラリ・フレームワーク・API等の最新ドキュメント取得時に使用
+- `skill-creator`: スキルの新規作成・改善・評価時に使用
 
 ## サブエージェント適用ガイド
 
