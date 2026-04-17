@@ -24,4 +24,5 @@ session-env/
 sessions
 policy-limits.json
 image-cache
-.chrome
+chrome
+plugins/install-counts-cache.json
