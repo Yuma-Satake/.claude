@@ -26,3 +26,4 @@ policy-limits.json
 image-cache
 chrome
 plugins/install-counts-cache.json
+plugins/installed_plugins.json
