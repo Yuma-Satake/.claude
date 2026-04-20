@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    format-settings:
+      glob: "settings.json"
+      run: jq '.' settings.json > settings.json.tmp && mv settings.json.tmp settings.json
+      stage_fixed: true
