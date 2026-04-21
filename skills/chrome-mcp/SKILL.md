@@ -1,75 +1,71 @@
 ---
 name: chrome-mcp
-description: ブラウザ自動化のベストプラクティスを提供します。Claude in Chrome（mcp__claude-in-chrome__*）ツールでWebページを操作する場合、フォーム入力、要素の検索、値の取得、スクリーンショット撮影を行う場合に使用します。
+description: Claude in Chrome（mcp__claude-in-chrome__* ツール）でブラウザ操作を行う際のベストプラクティスとサイト固有ナレッジを提供する。Webページのフォーム入力・要素検索・値取得・スクリーンショット撮影・OAuthログイン・SPAの操作・ブラウザ自動化を行う場合には必ず使用すること。note.com・Google Sheets・Google Docs・fortee・Amazon・GitHub・Slack・Google Cloud Console など特定サイトを操作するときは、固有の落とし穴回避ナレッジが含まれるため、ブラウザ操作を開始する前に必ず参照すること。ユーザーが「ブラウザで〜して」「〜を開いて操作して」「Webページから値を取って」と言った場合にも発動する。
 user-invocable: false
 ---
 
 # Browser Automation (Claude in Chrome)
 
+このスキルは Claude in Chrome（`mcp__claude-in-chrome__*`）を使う際の汎用ベストプラクティスと、特定サイト固有のナレッジへのインデックスを提供する。
+
+## サイト固有ナレッジの読み込み
+
+操作対象のサイトに対応するファイルが `references/` 配下にある場合、**ブラウザ操作を始める前に必ず読むこと**。サイト固有の落とし穴やハマりどころが事前に回避できる。
+
+| サイト / 領域 | ファイル | 読むべき場面 |
+|---|---|---|
+| note.com | `references/note.md` | note のエディタで記事作成・編集を行うとき |
+| Google Sheets / スプレッドシート | `references/google-sheets.md` | Sheets でセル入力・値の取得を行うとき |
+| fortee | `references/fortee.md` | fortee の organizer 画面を操作するとき |
+| OAuth 認証（Google/X/Apple 等） | `references/oauth.md` | OAuth ボタン経由のログインが必要なとき |
+| ブラウザ操作パターン（汎用） | `references/browser-patterns.md` | フォーム入力・値取得・DOM 操作・ダイアログ回避など具体的テクニックが必要なとき |
+
+新しいサイトのナレッジが溜まったら、`references/{site-name}.md` を追加して上表に追記すること。
+
+## 基本方針
+
+### 使うべきツール
+
+- **ブラウザ操作には Claude in Chrome（`mcp__claude-in-chrome__*`）を使う**
+- **agent-browser / Playwright など独立ブラウザは使わない**: ユーザーが実際に使っている Chrome のログイン状態を共有できないため、Google・社内ツールなどで再認証が必要になり事故る
+- 単に Web ページのテキストを取得するだけなら `WebFetch` や `WebSearch` の方が軽い
+
+### セッション開始時
+
+- 最初に `tabs_context_mcp` でタブ情報を取得する
+- 既存タブの ID を前セッションから流用しない（無効なので再取得する）
+- ユーザーが作業中のタブを奪わないよう、新しい作業は `tabs_create_mcp` で新規タブを開く
+
 ## フォーム操作
 
 ### 基本方針
 
-- `read_page(filter="interactive")` でフォーム構造と `ref_id` を最初に把握すること
-- `form_input` で入力できるフィールドは一括で同時セットすること
-- `form_input` が効かないフィールド（SPAのcombobox・ラジオボタン等）は `ref` 指定の `left_click` + `type` + `key(Enter/Tab)` で入力すること
-- 座標クリックは使わず、すべて `ref` 指定で操作すること
-- スクリーンショットは最小限（入力確認時と完了確認時のみ）にすること
-
-### form_input の挙動
-
-- `form_input` はフィールドの既存値を完全に置き換える。事前に `triple_click` でクリアする必要はない
-- あるフィールドの入力が他フィールドを自動補完する場合（例: 郵便番号→住所）、補完後に `form_input` で上書きすれば問題なく動作する
-- 同じ構造のフォームを複数回操作する場合、`read_page` で取得した `ref` はページ再訪後も同番号になることが多く、再利用できる
-
-### その他
-
-- テキスト入力の上書きには `triple_click` で全選択してから `type` で入力すること
-- ボタンクリックが反応しない場合は `find` でボタン要素を特定し、`ref` 指定でクリックすること
-
-## 値の取得
-
-- 画面上で切れている値は `read_page` で `ref_id` を指定し、DOM内の要素から全文を取得できる
-- クリップボードAPIはセキュリティ制約で使えない場合がある。`read_page` による DOM 直接参照を優先すること
-- コピーボタンのクリック + `navigator.clipboard.readText()` は信頼性が低い
-
-## テキスト入力の注意点
-
-- `type` アクションは絵文字（✅など）を入力できない場合がある。絵文字入力が必要な場合は、セルをダブルクリックして編集モードに入った上で `javascript_tool` の `document.execCommand('insertText', false, '絵文字')` を使用すること
-
-## JavaScript による DOM 操作
-
-- `javascript_tool` で要素を検索して `.click()` を実行する場合、DOM ツリーの親要素をたどる回数（`parentElement` の繰り返し）が正しいか慎重に確認すること。ページのDOM構造が想定と異なると、意図しない要素がクリックされるリスクがある
-- `.click()` を実行する前に、対象要素のテキストやクラス名をログ出力して正しい要素であることを確認すること（例: `JSON.stringify({ text: deployBtn.textContent, class: deployBtn.className })`）
-- `scrollIntoView()` はページのスクロールコンテナが `window` 以外（例: 固定レイアウトの内部コンテナ）の場合に機能しないことがある。スクリーンショットで要素が画面に表示されていることを確認してからクリックすること
-
-## スクリーンショット座標とビューポート座標の変換
-
-- ビューポートサイズとスクリーンショットサイズは異なる場合がある（例: viewport 2042x1124, screenshot 1476x812）
-- `javascript_tool` で取得した `getBoundingClientRect()` の座標はビューポート座標なので、`computer` ツールでクリックする場合はスクリーンショット座標に変換が必要: `ss_x = vp_x * ss_width / vp_width`
-- 変換後の座標が画面外（スクリーンショットの幅/高さを超える）の場合、要素がビューポート外にあるため、先にスクロールが必要
-
-## OAuth・ポップアップ操作
-
-- OAuth 認証ボタン（Google・X・Apple など）は `window.open()` でポップアップを開くため、Chrome 拡張機能の制約により `left_click` 時に「Detached while handling command」エラーが発生する
-- 回避策: クリック前に `javascript_tool` で `window.open` をオーバーライドし、OAuth URL を同タブでリダイレクトさせる
-
-```js
-window.open = function(url, ...args) {
-  window.location.href = url;
-  return { closed: false, focus: () => {}, close: () => {} };
-};
-```
-
-- オーバーライド後は `document.querySelector('button[aria-label="X"]').click()` のように JavaScript からボタンをクリックする（`computer` ツールのクリックでは間に合わない場合がある）
-- OAuth ページで既存ログインアカウントと対象アカウントが異なる場合はキャンセルし、別の認証方法（メール/ID + パスワード）に切り替える
-- note のログインでは `input[type="text"]` に note ID を `javascript_tool` で直接セットできる（`input.value = 'xxx'; input.dispatchEvent(new Event('input', { bubbles: true }))`）
+- `read_page(filter="interactive")` でフォーム構造と `ref_id` を最初に把握する
+- `form_input` で入力できるフィールドは一括で同時にセットする
+- 座標クリックは使わず、すべて `ref` 指定で操作する
+- スクリーンショットは最小限（入力確認時と完了確認時のみ）にする
+- `form_input` が効かないフィールドや具体的な操作テクニックは `references/browser-patterns.md` を参照
 
 ## 一般的なブラウザ操作
 
-- 操作開始時は必ず `tabs_context_mcp` でタブ情報を取得すること
-- 新しいセッションでは既存タブのIDを再利用しないこと
-- ページの読み込みが完了したかは、タブのタイトル変化で判断できる
-- 小さいUI要素は `zoom` で拡大して確認してから操作すること
-- `find` は自然言語でのUI要素検索が可能で、座標指定より信頼性が高い
-- ページ遷移が遅いサイトでは、操作後に `wait` で数秒待機してから `screenshot` を撮ること
+- `find` は自然言語での UI 要素検索が可能で、座標指定より信頼性が高い
+- **同一 URL への `navigate` 再実行はリロードを引き起こす**。ログインセッションが切れるサイトでは、サイト内のリンク・ボタン経由で遷移する
+- 座標変換・ダイアログ回避・DOM 操作などの具体テクニックは `references/browser-patterns.md` を参照
+
+## 操作終了時のナレッジ反映
+
+ブラウザ操作を伴うタスクが一段落したら（最終報告を返す直前に）、**このスキルに反映すべき新しい知見がないかを必ず自己レビューすること**。これを怠ると、同じ落とし穴に次回もハマる。
+
+チェック項目:
+
+- **サイト固有のハマりどころ**: ボタンが `<span>` でアクセシビリティツリーに出ない、特定のキーが無視される、確認ダイアログで止まる等
+- **有効だった回避策**: 特定のセレクタ、`execCommand` の使い方、URL パラメータ、`fetch` による POST 回避など
+- **UI の前提条件**: ログイン状態、権限、設定により挙動が変わる場合
+- **入力・出力のコツ**: form_input が効くフィールド／効かないフィールド、値取得の信頼できる経路
+
+反映手順:
+
+1. 既存の `SKILL.md` 本体と `references/` 配下に同等の記述があるか確認する
+2. ない場合は、ユーザーに **「今回の操作で得た『〜』というナレッジをスキルに反映しますか？」と具体的に提案する**
+3. ユーザーが承認した場合のみ、対応する `references/{site}.md` または `SKILL.md` に追記する
+4. 新しいサイトのナレッジが一定量溜まったら `references/{site}.md` を新規作成し、`SKILL.md` のインデックス表にも追加する
