@@ -13,7 +13,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "sonnet",
+  "model": "opus",
   "enableAllProjectMcpServers": true,
   "statusLine": {
     "type": "command",
@@ -28,5 +28,18 @@
   "alwaysThinkingEnabled": true,
   "plansDirectory": "./.claude/plans",
   "skipDangerousModePermissionPrompt": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__claude-in-chrome__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome MCPツール使用中。chrome-mcpスキル（~/.claude/skills/chrome-mcp/SKILL.md）と、操作対象サイトに対応する references/ 配下のナレッジファイル（note.md / oauth.md / google-sheets.md / fortee.md 等）を確認してから操作すること。\"}}'"
+          }
+        ]
+      }
+    ]
+  }
 }
