@@ -16,6 +16,7 @@ user-invocable: false
 |---|---|---|
 | note.com | `references/note.md` | note のエディタで記事作成・編集を行うとき |
 | Google Sheets / スプレッドシート | `references/google-sheets.md` | Sheets でセル入力・値の取得を行うとき |
+| Google Docs / ドキュメント | `references/google-docs.md` | Docs で見出しスタイル適用・コンテンツ貼り付けを行うとき |
 | fortee | `references/fortee.md` | fortee の organizer 画面を操作するとき |
 | OAuth 認証（Google/X/Apple 等） | `references/oauth.md` | OAuth ボタン経由のログインが必要なとき |
 | ブラウザ操作パターン（汎用） | `references/browser-patterns.md` | フォーム入力・値取得・DOM 操作・ダイアログ回避など具体的テクニックが必要なとき |
