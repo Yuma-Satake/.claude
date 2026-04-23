@@ -44,7 +44,6 @@
 - `nextjs-expert`: Next.js開発・サーバーレス・SSG最適化
 - `typescript-expert`: TypeScript開発・型安全性の改善
 - `claude-code-guide`: Claude Codeの機能仕様・API・SDKに関する質問時
-- `fujino-san`: コード変更後のデグレード・エッジケース・考慮漏れレビュー（コード変更時に必ず起動）
 - `frontend-quality-guardian`: フロントエンドコードの型安全性・規約・React固有の問題チェック（フロントエンド変更時に必ず起動）
 - `qa-test-reviewer`: テストカバレッジ・テスタビリティレビュー（既存テスト基盤があるリポジトリでのコード変更時に起動）
 - `rules-guardian`: ルールファイルへの準拠チェック（コード変更時に必ず起動）
