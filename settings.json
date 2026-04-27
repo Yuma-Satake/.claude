@@ -35,7 +35,8 @@
   "enabledPlugins": {
     "context7@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true
+    "vercel@claude-plugins-official": true,
+    "datadog@claude-plugins-official": true
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
