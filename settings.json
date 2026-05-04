@@ -16,6 +16,16 @@
   "model": "sonnet",
   "enableAllProjectMcpServers": true,
   "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Hero.aiff"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "mcp__claude-in-chrome__.*",
@@ -42,5 +52,7 @@
   "alwaysThinkingEnabled": true,
   "plansDirectory": "./.claude/plans",
   "skipDangerousModePermissionPrompt": true,
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
   "voiceEnabled": true
 }
