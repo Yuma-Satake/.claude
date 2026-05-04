@@ -28,6 +28,19 @@ btn ? (btn.click(), 'clicked') : 'not found';
 - Expertモードは複数回X検索を実施するため、完了まで1〜2分かかる
 - `get_page_text` の返却テキストにはUIボタン名（"History" "Private" "Expert" など）が混在する。Grokの実際の回答部分だけを抽出してユーザーに提示すること
 
+## エラー対処: "Grok was unable to reply"
+
+Expert modeでタイムアウトするとエラー画面になる。Retryボタンをjsクリックで再試行する:
+
+```javascript
+const buttons = Array.from(document.querySelectorAll('button'));
+const retryBtn = buttons.find(b => b.textContent.trim() === 'Retry');
+retryBtn ? (retryBtn.click(), 'clicked Retry') : 'Retry not found';
+```
+
+- `document.querySelector('button')` ではボタンを特定できないため `Array.from + find` でテキスト検索する
+- Retry後は再度ポーリングしてフェーズを確認する
+
 ## 前提条件
 
 - XにChromeでログイン済みであること
