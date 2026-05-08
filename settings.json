@@ -46,14 +46,16 @@
     "context7@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "vercel@claude-plugins-official": true,
-    "datadog@claude-plugins-official": true
+    "datadog@claude-plugins-official": false
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "plansDirectory": "./.claude/plans",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": false,
   "voiceEnabled": true
 }
