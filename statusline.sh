@@ -30,4 +30,8 @@ RATE_BAR=""
 
 RATE_COLOR='\033[34m'
 
-echo -e "${MODEL} ${COLOR}[${BAR}] ${PCT}%${RESET} limit:${RATE_COLOR}[${RATE_BAR}] ${RATE_PCT}%${RESET}"
+if [ "${CLAUDE_CODE_USE_BEDROCK}" = "1" ]; then
+  echo -e "${MODEL} (🧠Bedrock) ${COLOR}[${BAR}] ${PCT}%${RESET}"
+else
+  echo -e "${MODEL} ${COLOR}[${BAR}] ${PCT}%${RESET} limit:${RATE_COLOR}[${RATE_BAR}] ${RATE_PCT}%${RESET}"
+fi
