@@ -16,7 +16,7 @@
   },
   "enableAllProjectMcpServers": true,
   "hooks": {
-    "Notification": [
+    "Stop": [
       {
         "hooks": [
           {
@@ -46,7 +46,7 @@
     "context7@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "vercel@claude-plugins-official": true,
-    "datadog@claude-plugins-official": false,
+    "datadog@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true
   },
