@@ -1,6 +1,6 @@
 ---
 name: pr-create
-description: 現在のブランチをpushしてPull Requestを作成・更新する。ユーザーが「PRを作って」「プルリクエストを出して」と依頼した場合、またはレビュー用にコード変更を共有する場合に使用します。事前にcommitスキルで変更をコミットしておくことが前提です。-dオプションでドラフトPRとして作成します。
+description: 現在のブランチをpushしてPull Requestを作成・更新する。ユーザーが「PRを作って」「プルリクエストを出して」「レビューに出して」「プルリク作って」「PR出して」と依頼した場合、またはレビュー用にコード変更を共有する場合に使用する。コミット済みでない変更がある場合はコミット・pushも行ってからPRを作成する。-dオプションでドラフトPRとして作成する。
 argument-hint: "[-d]"
 model: sonnet
 ---
@@ -9,55 +9,50 @@ model: sonnet
 
 引数: $ARGUMENTS
 
-## 現在のGit状態
+## 手順
 
-- デフォルトブランチ: !`git remote show origin | grep HEAD`
-- 現在のブランチ: !`git branch --show-current`
-- ステータス: !`git status --short`
-- 直近コミット: !`git log --oneline -10`
-- ブランチの全コミット: !`base=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | awk '{print $NF}'); git log --oneline origin/$base..HEAD 2>/dev/null || echo "差分なし"`
-- ブランチの全差分: !`base=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | awk '{print $NF}'); git diff origin/$base..HEAD 2>/dev/null || echo "差分なし"`
-- 既存PR: !`gh pr view --json number,title,url,baseRefName 2>/dev/null || echo "既存PRなし"`
-- PRテンプレート: !`cat $(find . -path '*/.github/*pull_request_template*' -o -name 'pull_request_template.md' 2>/dev/null | head -1) 2>/dev/null || echo "テンプレートなし"`
+### Step 1: 状態の把握
 
-## 動作モード
+1. `git branch --show-current` で現在のブランチを確認する
+2. `git remote show origin | grep 'HEAD branch'` でデフォルトブランチを確認する
+3. `git status --short` でコミットされていない変更を確認する
+4. `git log --oneline -10` で直近コミットを確認する
+5. `base=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | awk '{print $NF}'); git log --oneline origin/$base..HEAD 2>/dev/null || echo "差分なし"` でブランチの全コミットを確認する
+6. `base=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | awk '{print $NF}'); git diff origin/$base..HEAD 2>/dev/null || echo "差分なし"` でブランチの全差分を確認する
+7. `gh pr view --json number,title,url,baseRefName 2>/dev/null || echo "既存PRなし"` で既存PRを確認する
+8. `cat $(find . -path '*/.github/*pull_request_template*' -o -name 'pull_request_template.md' 2>/dev/null | head -1) 2>/dev/null || echo "テンプレートなし"` でPRテンプレートを確認する
 
-- 引数なし → 通常のPRを作成・更新する
-- `-d` → ドラフトPRとして作成する（`gh pr create --draft`）
-  - 既存PRの更新時にはドラフト状態の変更は行わない
+### Step 2: ブランチの確認
 
-## 動作フロー
+1. 現在のブランチがデフォルトブランチ、または `epic/` などのepicブランチである場合: ユーザに確認を求めてから続行する
+2. 作業ブランチにいる場合: そのまま Step 3 へ
 
-1. **ブランチ判定**
-   - 作業ブランチにいる場合 → そのまま続行
-   - デフォルトブランチ or epicブランチにいる場合 → ユーザに確認を求める
-2. **push**
-3. **PR判定**
-   - 既存PRあり → PRの説明文を更新
-   - 既存PRなし → 新規PR作成（`-d` 指定時はドラフトとして作成）
+### Step 3: コミットされていない変更の処理
 
-コミットされていない変更（ステータスに差分）がある場合は、PR作成の前に `commit` を `-p` オプション付きで実行してコミットとpushを行う。
+`git status --short` の結果に変更がない場合はこのステップをスキップし Step 4 へ。
 
-## PRの向き先
+コミットされていない変更がある場合は、PR作成の前に `commit` スキルを `-p` オプション付きで実行してコミットとpushを行い、完了後は Step 5 へ進む（Step 4 はスキップ）。
 
-- デフォルトブランチから派生 → デフォルトブランチへ
-- epicブランチから派生 → epicブランチへ
+### Step 4: push
 
-epicブランチとは `epic/` などで命名されたブランチを指す。
+1. `git ls-remote --heads origin <branch>` でリモートにブランチが存在するか確認する
+2. リモートにブランチが存在する場合: `git push` を実行する
+3. リモートにブランチが存在しない場合: `git push -u origin <branch>` を実行する
 
-## PRタイトル
+### Step 5: PR の作成・更新
 
-### issue番号が既知の場合
+#### PR の向き先
 
-`Fix #<issue_number> <title>` の形式で記載する。
+- デフォルトブランチから派生したブランチ → デフォルトブランチへ
+- epicブランチから派生したブランチ → epicブランチへ
+
+#### PR タイトルの生成
+
+issue番号が既知の場合は `Fix #<issue_number> <title>` の形式で記載する。
 
 例: `Fix #42 ログイン時のバリデーションエラーを修正`
 
-### issue番号が不明の場合
-
-`<type>: <title>` の形式で記載する。
-
-### type一覧
+issue番号が不明の場合は `<type>: <title>` の形式で記載する。
 
 | type | 用途 |
 | --- | --- |
@@ -69,37 +64,28 @@ epicブランチとは `epic/` などで命名されたブランチを指す。
 | `test` | テストの追加・修正 |
 | `chore` | ビルド・ツール関連 |
 
-## PR説明文
+タイトル・説明文はコミットと差分の内容を最優先に生成する。会話の文脈はあくまで補足情報として扱い、内容の根拠は常に実際のコード変更に基づくこと。
 
-### テンプレート
+#### PR 説明文の生成
 
-テンプレートが存在する場合は必ず使用する。
+テンプレートが存在する場合は必ず使用する。テンプレートがない場合、以下の2点を必ず記載する。
 
-### 必須要素
+1. 概要（What）: このPRで何が変わるか
+2. 背景（Why）: なぜこの変更が必要か
 
-テンプレートがない場合、以下の2点を必ず記載する。テンプレートにこれらの要素が含まれている場合はテンプレートに従う。
-
-1. **概要（What）**: このPRで何が変わるか
-2. **背景（Why）**: なぜこの変更が必要か
-
-### 記述スタイル
-
+記述スタイル:
 - 誇張表現や主観的な評価を含めない
-- 文章として記述することは避け、言い切り形式で簡潔に記載する
+- 言い切り形式で簡潔に記載する
 - 日本語で記載（英語の方が分かりやすい用語は英語で記載）
 - エラーハンドリング・retry処理・テストした内容など実装の本質でない箇所については言及しない
 
-## アサイン
+#### 作成・更新の実行
 
-- PR作成後、自分自身をアサインする（`gh pr edit --add-assignee @me`）
+- 既存PRあり → `gh pr edit` でPR説明文を更新する
+- 既存PRなし → `gh pr create` で新規PR作成する（`-d` 指定時は `gh pr create --draft`）
 
-## 基本ルール
+### Step 6: アサイン
 
-- ブランチ操作には `git checkout` ではなく `git switch` を使用する
+PR作成・更新後、自分自身をアサインする。
 
-## 生成の優先度
-
-PRのタイトル・説明文は**コミットと差分の内容を最優先**に生成する。会話の文脈はあくまで補足情報として扱い、内容の根拠は常に実際のコード変更に基づくこと。
-
-- ブランチの全コミットと差分を分析し、変更内容を正確に記述する
-- 会話の中で議論された意図や背景は参考にしてよいが、差分に反映されていない内容を含めない
+`gh pr edit --add-assignee @me`
