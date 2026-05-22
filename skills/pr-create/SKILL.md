@@ -1,11 +1,11 @@
 ---
-name: pr
+name: pr-create
 description: 現在のブランチをpushしてPull Requestを作成・更新する。ユーザーが「PRを作って」「プルリクエストを出して」と依頼した場合、またはレビュー用にコード変更を共有する場合に使用します。事前にcommitスキルで変更をコミットしておくことが前提です。-dオプションでドラフトPRとして作成します。
 argument-hint: "[-d]"
 model: sonnet
 ---
 
-# pr
+# pr-create
 
 引数: $ARGUMENTS
 
