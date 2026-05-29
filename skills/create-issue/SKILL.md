@@ -81,8 +81,3 @@ issueに含める内容：
 
 issueテンプレートがある場合は `.github/ISSUE_TEMPLATE/` のフォーマットに従う。
 `gh label list` でリポジトリのラベルを確認し、適切なものを付与する。
-
-### 5. fix-issueへの引き継ぎ確認
-
-issue作成後、作成したissue URLをユーザに伝え、「このissueを今すぐ対応しますか？」とテキストで確認する。
-対応する場合は `fix-issue` スキルを作成したissue番号で呼び出す。

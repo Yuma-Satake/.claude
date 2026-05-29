@@ -29,3 +29,4 @@ plugins/install-counts-cache.json
 plugins/installed_plugins.json
 .last-cleanup
 plugins/plugin-catalog-cache.json
+.last-update-result.json
