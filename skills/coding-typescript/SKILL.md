@@ -10,15 +10,9 @@ description: TypeScriptのコーディング規約を提供する。型定義を
 ## 型定義
 
 - 型の定義においては、`interface` より `type alias` を使用すること（既存のプロジェクトで `interface` が多く使用されている場合は `interface` を使用）
-- `enum` は使用せず、`as const` オブジェクト + union型を使用すること
-
-```ts
-const Status = { Active: "active", Inactive: "inactive" } as const;
-type Status = typeof Status[keyof typeof Status];
-// 値一覧が必要な場合は Object.values(Status) で取得
-```
-
+- `enum` は使用せず、`as const` オブジェクト + union型を使用すること（値の一覧が必要な場合には、Object.values() を使用）
 - `as const` オブジェクトの値を使用する際は、文字列リテラルを直接書かず、必ずオブジェクトのプロパティを参照すること（例: `"active"` ではなく `Status.Active`）
+- 型定義においては、ValueObjectを意識し、プリミティブ型（string/number/boolean）を直接使用するのではなく、必要に応じて型エイリアス・ブランド型を使用し、意味のある型を定義すること（例: `type UserId = string & { __brand: "UserId" }`）
 
 ## 関数の型
 
