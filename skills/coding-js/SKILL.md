@@ -1,7 +1,9 @@
 ---
 name: coding-js
-description: JavaScriptのコーディング規約を提供する。JS/TSファイルを新規作成・編集する際、関数を実装する際、非同期処理を実装する際に必ず参照すること。JSDoc、関数型プログラミング、イミュータビリティ、エラーハンドリングなどの規約が含まれる。TypeScriptファイルを編集する場合は coding-typescript も必ず合わせて参照すること。
+description: JavaScriptのコーディング規約を提供する。JS/TSファイルを新規作成・編集する際、関数を実装する際、非同期処理を実装する際に必ず参照すること。JSDoc、関数型プログラミング、イミュータビリティ、エラーハンドリングなどの規約が含まれる。
 ---
+
+> TypeScriptファイルを編集する場合は coding-typescript も必ず合わせて参照すること。
 
 # JavaScript / TypeScript コーディング規約
 

@@ -1,7 +1,9 @@
 ---
 name: coding-typescript
-description: TypeScriptのコーディング規約を提供する。型定義を書く際、enumやclassを使おうとする際、関数の型を定義する際に必ず参照すること。type alias/interface の使い分け、as const、型安全性、classの禁止などの規約が含まれる。TSファイルを編集する場合は coding-js も必ず合わせて参照すること。
+description: TypeScriptのコーディング規約を提供する。型定義を書く際、enumやclassを使おうとする際、関数の型を定義する際に必ず参照すること。type alias/interface の使い分け、as const、型安全性、classの禁止などの規約が含まれる。
 ---
+
+> TSファイルを編集する場合は coding-js も必ず合わせて参照すること。
 
 # TypeScript コーディング規約
 
