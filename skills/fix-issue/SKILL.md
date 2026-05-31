@@ -108,11 +108,13 @@ Planに沿って実装する。
 
 ### 7. レビュー
 
-変更内容に応じて使用すべきskillsを洗い出し（コーディングならコーディングのskills、TSならTSのskills）、それらを **worker agent** に渡してレビューを依頼する。
+reviewer agentに渡してレビューを依頼する。
 
 workerへの指示には以下を含める：
 - レビューしてほしい変更ファイルと変更の概要
 - 使用するべきskills一覧（workerがSkillツールでロードしてレビューに活用する）
+
+1つのskillには1つのworker agentを割り当てる。
 
 指摘への対応:
 
