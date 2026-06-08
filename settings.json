@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome MCPツール使用中。chrome-mcpスキル（~/.claude/skills/chrome-mcp/SKILL.md）と、操作対象サイトに対応する references/ 配下のナレッジファイル（note.md / oauth.md / google-sheets.md / fortee.md 等）を確認してから操作すること。\"}}'"
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome MCPツール使用時は必ずchrome-mcpスキル（~/.claude/skills/chrome-mcp/SKILL.md）を確認してから操作する\"}}'"
           }
         ]
       }
