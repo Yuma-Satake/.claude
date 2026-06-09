@@ -28,7 +28,7 @@ description: Goのコーディング規約を提供する。Goファイルを新
 ## コンテキスト
 
 - DBクエリ・外部API呼び出しなど全てのI/Oに `context.Context` を第一引数として渡す
-- `context.Background()` はプログラムのエントリポイントのみで使用する
+- `context.Background()` はメイン関数・初期化処理・テスト、および外部からContextを受け取らない場合の最上位Contextとして使用する
 - `context.WithValue` でコンテキストに値を詰める際は unexported な型をキーに使い、基本型（`string` 等）をキーにしない
 
 ## インタフェース設計
@@ -41,7 +41,7 @@ description: Goのコーディング規約を提供する。Goファイルを新
 
 - SQLインジェクション防止のため、ユーザー入力は必ずプレースホルダーを使用し、文字列結合は禁止する（`?` はMySQL/SQLite系、`$1` はPostgreSQL系）
 - クエリ実行後は `defer rows.Close()` を忘れない
-- `errors.Is(err, sql.ErrNoRows)` で「レコードなし」と実際のエラーを区別する
+- `errors.Is(err, sql.ErrNoRows)` で単一行クエリ（`QueryRow().Scan()`）の「レコードなし」と実際のエラーを区別する（`Query()` で結果が空の場合は `rows.Next()` が `false` を返すだけで `ErrNoRows` にはならない）
 - `SetMaxOpenConns` / `SetMaxIdleConns` / `SetConnMaxLifetime` でコネクションプールを必ず設定する
 - トランザクションが必要な処理はトランザクション内にまとめ、更新後に読み取る場合は `SELECT FOR UPDATE` を使う
 

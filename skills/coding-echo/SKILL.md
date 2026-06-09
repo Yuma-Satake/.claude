@@ -63,7 +63,7 @@ func getUser(c echo.Context) error {
 ## データバインディング
 
 - `c.Bind(&req)` はContent-Type（JSON / XML / フォーム）を自動判別してリクエストをバインドする。バインド後に必ずバリデーションを実行する
-- `c.Validate` を使うには事前に `e.Validator` にバリデーター実装（例: `go-playground/validator`）を設定すること。未設定の場合は実行時panicする
+- `c.Validate` を使うには事前に `e.Validator` にバリデーター実装（例: `go-playground/validator`）を設定すること。未設定の場合は `ErrValidatorNotRegistered` エラーが返される
 
 ```go
 var req CreateUserRequest
