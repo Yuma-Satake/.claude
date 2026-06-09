@@ -19,11 +19,11 @@ description: Goのコーディング規約を提供する。Goファイルを新
 
 ## 命名規則
 
-- パッケージ名は小文字・単数形にする（例: `user` ○、`users` / `userService` ✗）
+- パッケージ名は小文字にする。ドメイン・サービス系パッケージは単数形を推奨する（例: `user` ○、`userService` ✗）が、`strings` / `bytes` のような用途別パッケージは複数形も許容する
 - エラー変数は `Err` プレフィックスを付ける（例: `ErrNotFound`, `ErrUnauthorized`）
-- インタフェース名は `Doer` / `Reader` のように動詞+`er` が慣例
+- インタフェース名は `Reader` / `Writer` のように動詞+`er` を基本とする。ドメイン概念を表す場合は `UserRepository` / `EventPublisher` のような複合名詞も許容する
 - レシーバー名は型名の頭文字1〜2文字を使い、全メソッドで統一する（例: `u *User`）
-- ブール変数・関数名は `is` / `has` / `can` プレフィックスを付ける（例: `isActive`, `hasPermission`）
+- ブール変数名は意味が伝わる名前を選ぶ。`is` / `has` / `can` プレフィックスは補助的に使ってよいが必須ではない（例: `valid`, `found` も可）
 
 ## コンテキスト
 
@@ -39,7 +39,7 @@ description: Goのコーディング規約を提供する。Goファイルを新
 
 ## DBアクセス
 
-- SQLインジェクション防止のため、ユーザー入力は必ずプレースホルダー（`?` / `$1`）を使用し、文字列結合は禁止
+- SQLインジェクション防止のため、ユーザー入力は必ずプレースホルダーを使用し、文字列結合は禁止する（`?` はMySQL/SQLite系、`$1` はPostgreSQL系）
 - クエリ実行後は `defer rows.Close()` を忘れない
 - `errors.Is(err, sql.ErrNoRows)` で「レコードなし」と実際のエラーを区別する
 - `SetMaxOpenConns` / `SetMaxIdleConns` / `SetConnMaxLifetime` でコネクションプールを必ず設定する
