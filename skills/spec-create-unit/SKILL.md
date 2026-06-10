@@ -1,6 +1,6 @@
 ---
 name: spec-create-unit
-description: 自律開発ワークフローのUnit Issueを起票する。spec-bootstrapでのroadmap一括起票、またはpmがroadmap補充・Unit分割を行う際に使用する。人間との対話を前提とするcreate-issueと異なり、constitution・visionに基づく自己判断で起票し、判断できない事項はblocked:humanとして残す。
+description: 自律開発ワークフローのUnit Issueを起票する。spec-orchestrateがroadmap先頭の未起票Unitを逐次起票する際、またはpmがUnit分割やroadmap補充を行う際に使用する。人間との対話を前提とするcreate-issueと異なり、constitution・visionに基づく自己判断で起票し、判断できない事項はESCALATEで呼び出し元に報告する。
 argument-hint: "[Unitの概要]"
 ---
 
@@ -18,8 +18,8 @@ Unitの概要 `$ARGUMENTS` をもとに、自律開発ワークフロー用のUn
 
 呼び出し元の指示に従う。明示がない場合は自律実行として扱う。
 
-- ユーザ同席（spec-bootstrapからの呼び出し等で明示された場合）: AskUserQuestionによる確認ができる
-- 自律実行（サブエージェントとしての実行等）: ユーザへの質問はできない。判断できない事項は `ESCALATE:` で呼び出し元に報告する
+- ユーザ同席（ユーザが直接 `/spec-create-unit` を呼び出した場合など、明示されたとき）: AskUserQuestionによる確認ができる
+- 自律実行（spec-orchestrateからの逐次起票dispatch・pmサブエージェントからの分割起票など）: ユーザへの質問はできない。判断できない事項は `ESCALATE:` で呼び出し元に報告する
 
 ## このスキルの責務
 

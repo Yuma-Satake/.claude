@@ -1,6 +1,6 @@
 ---
 name: spec-bootstrap
-description: 自律開発ワークフローの初回立ち上げを行う。constitution・visionの作成、phaseラベルの整備、visionからのroadmap起案、Unit Issueの一括起票までを対話的に実行する。「自律開発をセットアップして」「このサービスでspecワークフローを始めたい」と依頼された場合に使用する。サービスリポジトリごとに1回実行する。
+description: 自律開発ワークフローの初回立ち上げを行う。constitution・visionの作成、phaseラベルの整備、visionからのroadmap起案・保存までを対話的に実行する。「自律開発をセットアップして」「このサービスでspecワークフローを始めたい」と依頼された場合に使用する。サービスリポジトリごとに1回実行する。Unit Issueの起票はspec-orchestrateが逐次行うため、bootstrapでは起票しない。
 ---
 
 # spec-bootstrap
@@ -48,7 +48,7 @@ description: 自律開発ワークフローの初回立ち上げを行う。cons
 
 `docs/adr/` を作成する（空なら `.gitkeep` を置く）。
 
-### 5. roadmap の起案
+### 5. roadmap の起案と保存
 
 pmサブエージェントに以下を依頼する。
 
@@ -59,23 +59,20 @@ pmサブエージェントに以下を依頼する。
 
 pmの提案をユーザに提示し、AskUserQuestionで承認を得る。修正指示があれば反映して再提示する。
 
-### 6. Unit Issue の一括起票
+承認されたroadmapを `~/.claude/skills/spec-bootstrap/templates/spec-roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Unitを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
 
-承認されたroadmap順に、Unitごとに spec-create-unit skill をロードして起票する。
+Unit Issueの一括起票はここでは行わない。spec-orchestrateがboltごとに先頭の未起票Unitを起票することで、先行Unitの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
 
-- 起票順がそのまま優先順位になる（Issue番号昇順 = roadmap順）
-- 依存関係は本文の「依存」セクションに `#番号` で記載する
+### 6. 初期コミット
 
-### 7. 初期コミット
-
-`docs/constitution.md`・`docs/vision.md`・`docs/adr/` をコミットする（commit skillを使用する）。
+`docs/constitution.md`・`docs/vision.md`・`docs/roadmap.md`・`docs/adr/` をコミットする（commit skillを使用する）。
 
 constitutionには「変更はPRで行う」とあるが、初回作成はユーザ同席で内容を確定させているため、例外としてデフォルトブランチへ直接コミットしてよい。
 
-### 8. 完了報告
+### 7. 完了報告
 
 以下を報告する。
 
-- 作成したdocs・ラベル・起票したUnit一覧
-- 自律駆動の開始方法: `/loop 10m /spec-orchestrate`
+- 作成したdocs・ラベル・roadmap.mdに記載したUnit数
+- 自律駆動の開始方法: `/loop 10m /spec-orchestrate`（先頭Unitの起票からspec-orchestrateが自動で進める）
 - ユーザの関与点: `blocked:human` ラベルの付いたIssueへのコメント裁定のみ
