@@ -1,9 +1,9 @@
 ---
-name: spec-bootstrap
-description: 自律開発ワークフローの初回立ち上げを行う。constitution・visionの作成、phaseラベルの整備、visionからのroadmap起案・保存までを対話的に実行する。「自律開発をセットアップして」「このサービスでspecワークフローを始めたい」と依頼された場合に使用する。サービスリポジトリごとに1回実行する。Unit Issueの起票はspec-orchestrateが逐次行うため、bootstrapでは起票しない。
+name: spec-setup
+description: 自律開発ワークフローの初回立ち上げを行う。constitution・visionの作成、phaseラベルの整備、visionからのroadmap起案・保存までを対話的に実行する。「自律開発をセットアップして」「このサービスでspecワークフローを始めたい」と依頼された場合に使用する。サービスリポジトリごとに1回実行する。Feature Issueの起票はspec-runが逐次行うため、setupでは起票しない。
 ---
 
-# spec-bootstrap
+# spec-setup
 
 自律開発ワークフローをサービスリポジトリに導入する。ユーザ同席を前提とした対話的なskillであり、ここで確定した判断がその後の自律駆動の基準になる。
 
@@ -24,7 +24,7 @@ description: 自律開発ワークフローの初回立ち上げを行う。cons
 
 `docs/constitution.md` と `docs/vision.md` が存在しない場合、テンプレートから複製する。
 
-- テンプレート: `~/.claude/skills/spec-bootstrap/templates/spec-constitution.md.tmpl` および `spec-vision.md.tmpl`
+- テンプレート: `~/.claude/skills/spec-setup/templates/spec-constitution.md.tmpl` および `spec-vision.md.tmpl`
 - AskUserQuestionでユーザに質問しながら各セクションを埋める。1回あたり最大4問とし、回答を受けて深掘りする
 - 特に「非ゴール」「優先順位の解法」「エスカレーション基準」「マージポリシー」は自律駆動の品質を決めるため、曖昧なまま進めない
 - 既に存在する場合は内容を読み、空欄セクションがあれば同様に埋める
@@ -36,11 +36,11 @@ description: 自律開発ワークフローの初回立ち上げを行う。cons
 | label | color |
 |---|---|
 | phase:proposed | e4e669 |
-| phase:spec_review | fbca04 |
-| phase:spec_fix | f9d0c4 |
-| phase:impl | 1d76db |
-| phase:code_review | 5319e7 |
-| phase:impl_fix | b60205 |
+| phase:wait_spec_review | fbca04 |
+| phase:wait_spec_fix | f9d0c4 |
+| phase:coding | 1d76db |
+| phase:wait_code_review | 5319e7 |
+| phase:wait_code_fix | b60205 |
 | phase:done | 0e8a16 |
 | blocked:human | d93f0b |
 
@@ -53,15 +53,15 @@ description: 自律開発ワークフローの初回立ち上げを行う。cons
 pmサブエージェントに以下を依頼する。
 
 - `docs/constitution.md` と `docs/vision.md` を読むこと
-- visionを、独立してデプロイ可能かつ単体で価値を持つUnitの列に分解すること
-- 各Unitについて: 名前・Outcome（1〜2文）・依存するUnit・実装順序を提示すること
+- visionを、独立してデプロイ可能かつ単体で価値を持つFeatureの列に分解すること
+- 各Featureについて: 名前・Outcome（1〜2文）・依存するFeature・実装順序を提示すること
 - 実装方針には踏み込まないこと
 
 pmの提案をユーザに提示し、AskUserQuestionで承認を得る。修正指示があれば反映して再提示する。
 
-承認されたroadmapを `~/.claude/skills/spec-bootstrap/templates/spec-roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Unitを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
+承認されたroadmapを `~/.claude/skills/spec-setup/templates/spec-roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Featureを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
 
-Unit Issueの一括起票はここでは行わない。spec-orchestrateがcycleごとに先頭の未起票Unitを起票することで、先行Unitの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
+Feature Issueの一括起票はここでは行わない。spec-runがcycleごとに先頭の未起票Featureを起票することで、先行Featureの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
 
 ### 6. 初期コミット
 
@@ -73,6 +73,6 @@ constitutionには「変更はPRで行う」とあるが、初回作成はユー
 
 以下を報告する。
 
-- 作成したdocs・ラベル・roadmap.mdに記載したUnit数
-- 自律駆動の開始方法: `/loop 10m /spec-orchestrate`（先頭Unitの起票からspec-orchestrateが自動で進める）
+- 作成したdocs・ラベル・roadmap.mdに記載したFeature数
+- 自律駆動の開始方法: `/loop 10m /spec-run`（先頭Featureの起票からspec-runが自動で進める）
 - ユーザの関与点: `blocked:human` ラベルの付いたIssueへのコメント裁定のみ

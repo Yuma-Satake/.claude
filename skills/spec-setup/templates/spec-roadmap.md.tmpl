@@ -1,15 +1,15 @@
 # Roadmap
 
-このファイルはvisionから分解したUnitの実装順を示す。masterはboltごとに先頭の未起票Unitを起票し、起票時の最新コンテキスト（先行Unitの結果・ADR・vision更新）を反映させる。一括起票はしない。
+このファイルはvisionから分解したFeatureの実装順を示す。masterはboltごとに先頭の未起票Featureを起票し、起票時の最新コンテキスト（先行Featureの結果・ADR・vision更新）を反映させる。一括起票はしない。
 
 ## 運用ルール
 
 - 「順序」列の番号がそのまま実装優先順位である
 - 「依存」列の数字は順序番号を指す（Issue番号ではない）
 - 「Issue」列はmasterが起票時に `#NN` で埋める。空欄（`-`）は未起票を意味する
-- Unitの追加・順序変更はPRで行う。pmがroadmap補充を行う場合も同様
+- Featureの追加・順序変更はPRで行う。pmがroadmap補充を行う場合も同様
 
-## Unit一覧
+## Feature一覧
 
 | 順序 | 名前 | Outcome | 依存 | Issue |
 |---|---|---|---|---|
