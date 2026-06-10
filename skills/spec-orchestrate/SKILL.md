@@ -105,7 +105,7 @@ phaseごとの指示内容:
 
 | 報告 | masterの処理 |
 |---|---|
-| `ESCALATE:` を含む | `blocked:human` を付与し、質問・主張をjournalコメントとして投稿してユーザにmentionする。phaseは変更しない |
+| `ESCALATE:` を含む | `blocked:human` を付与し、質問・主張をjournalコメントとして投稿する。phaseは変更しない。その後 Discord に通知する（後述） |
 | pm完了（proposed / spec_fix） | 本文に受け入れ基準・タスクが記入されていることを確認し phase:spec_review へ |
 | reviewer指摘なし（spec_review） | phase:impl へ |
 | reviewer指摘あり（spec_review） | 指摘をjournalコメントに転記し phase:spec_fix へ |
@@ -113,9 +113,21 @@ phaseごとの指示内容:
 | reviewer指摘なし（code_review） | チェックボックス本文の転記を含む最新のjournalコメントから対象タスクを特定しチェックボックスを更新する。未チェックタスクが残れば phase:impl へ、全完了なら phase:done へ |
 | reviewer指摘あり（code_review） | 指摘をjournalコメントに転記し phase:impl_fix へ |
 
-レビューサイクルには上限を設ける。同一Issueで spec_review → spec_fix または code_review → impl_fix の遷移が3回に達したら、遷移させずに `blocked:human` を付与し、往復の経緯と由来（仕様系かコード系か）を要約してユーザにmentionする（指摘が収束しないのはconstitutionか仕様の不備のシグナルである）。往復回数は、直近の裁定要約journal以降（なければIssue全体）のjournalコメントの遷移記録から数える。
+レビューサイクルには上限を設ける。同一Issueで spec_review → spec_fix または code_review → impl_fix の遷移が3回に達したら、遷移させずに `blocked:human` を付与し、往復の経緯と由来（仕様系かコード系か）を要約してjournalコメントに投稿する（指摘が収束しないのはconstitutionか仕様の不備のシグナルである）。その後 Discord に通知する（後述）。往復回数は、直近の裁定要約journal以降（なければIssue全体）のjournalコメントの遷移記録から数える。
 
 遷移のたびにjournalコメントをIssueに投稿する: `[master]` で始め、実行したagent・行った処理の要約・遷移先phaseを言い切りで簡潔に書く。
+
+#### blocked:human 付与時の Discord 通知
+
+`blocked:human` を付与した直後に以下を実行する。`$ISSUE_URL` は `gh issue view N --json url -q .url` で取得する。
+
+```bash
+curl -s -X POST "$DISCORD_WEBHOOK_URL" \
+  -H "Content-Type: application/json" \
+  -d "{\"content\": \"**[spec] 裁定待ち** Issue #N が blocked:human になりました。\\n$ISSUE_URL\"}"
+```
+
+`$DISCORD_WEBHOOK_URL` が未設定の場合は通知をスキップし、cycle終了報告に「Discord通知スキップ（DISCORD_WEBHOOK_URL未設定）」と記載する。
 
 ### 5. phase:done の処理
 
@@ -123,7 +135,7 @@ masterが直接実行する。並列dispatch枠（3件）には含めない。
 
 1. 当該Issueに紐づくPRの有無を `gh pr list --head feature/issue-N` で確認する
 2. PRがなければ `gh pr create --head feature/issue-N` で本文に `Closes #N` を含むPRを作成し、docs/constitution.md のマージポリシーに従う（例: `gh pr merge --auto --squash`）。ポリシーが未記載なら `blocked:human` を付与して確認を仰ぐ
-3. PRが既にある場合は状態を確認する。マージ済みならIssueのcloseを確認して完了。CI実行中なら何もせず次のcycleで再確認する。CI失敗・コンフリクト・レビュー待ちで停滞している場合は `blocked:human` を付与し、状況をjournalコメントで報告する
+3. PRが既にある場合は状態を確認する。マージ済みならIssueのcloseを確認して完了。CI実行中なら何もせず次のcycleで再確認する。CI失敗・コンフリクト・レビュー待ちで停滞している場合は `blocked:human` を付与し、状況をjournalコメントで報告する。その後 Discord に通知する（blocked:human 付与時の Discord 通知参照）
 
 ### 6. cycle終了報告
 
