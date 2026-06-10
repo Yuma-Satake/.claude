@@ -61,7 +61,7 @@ pmの提案をユーザに提示し、AskUserQuestionで承認を得る。修正
 
 承認されたroadmapを `~/.claude/skills/spec-bootstrap/templates/spec-roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Unitを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
 
-Unit Issueの一括起票はここでは行わない。spec-orchestrateがboltごとに先頭の未起票Unitを起票することで、先行Unitの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
+Unit Issueの一括起票はここでは行わない。spec-orchestrateがcycleごとに先頭の未起票Unitを起票することで、先行Unitの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
 
 ### 6. 初期コミット
 
