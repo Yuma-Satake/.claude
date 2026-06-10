@@ -1,9 +1,9 @@
 ---
-name: spec-setup
-description: 自律開発ワークフローの初回立ち上げを行う。constitution・visionの作成、phaseラベルの整備、visionからのroadmap起案・保存までを対話的に実行する。「自律開発をセットアップして」「このサービスでspecワークフローを始めたい」と依頼された場合に使用する。サービスリポジトリごとに1回実行する。Feature Issueの起票はspec-runが逐次行うため、setupでは起票しない。
+name: pilot-setup
+description: 自律開発ワークフローの初回立ち上げを行う。constitution・visionの作成、phaseラベルの整備、visionからのroadmap起案・保存までを対話的に実行する。「自律開発をセットアップして」「このサービスでspecワークフローを始めたい」と依頼された場合に使用する。サービスリポジトリごとに1回実行する。Feature Issueの起票はpilot-runが逐次行うため、setupでは起票しない。
 ---
 
-# spec-setup
+# pilot-setup
 
 自律開発ワークフローをサービスリポジトリに導入する。ユーザ同席を前提とした対話的なskillであり、ここで確定した判断がその後の自律駆動の基準になる。
 
@@ -24,7 +24,7 @@ description: 自律開発ワークフローの初回立ち上げを行う。cons
 
 `docs/constitution.md` と `docs/vision.md` が存在しない場合、テンプレートから複製する。
 
-- テンプレート: `~/.claude/skills/spec-setup/templates/spec-constitution.md.tmpl` および `spec-vision.md.tmpl`
+- テンプレート: `~/.claude/skills/pilot-setup/templates/spec-constitution.md.tmpl` および `spec-vision.md.tmpl`
 - AskUserQuestionでユーザに質問しながら各セクションを埋める。1回あたり最大4問とし、回答を受けて深掘りする
 - 特に「非ゴール」「優先順位の解法」「エスカレーション基準」「マージポリシー」は自律駆動の品質を決めるため、曖昧なまま進めない
 - 既に存在する場合は内容を読み、空欄セクションがあれば同様に埋める
@@ -59,9 +59,9 @@ pmサブエージェントに以下を依頼する。
 
 pmの提案をユーザに提示し、AskUserQuestionで承認を得る。修正指示があれば反映して再提示する。
 
-承認されたroadmapを `~/.claude/skills/spec-setup/templates/spec-roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Featureを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
+承認されたroadmapを `~/.claude/skills/pilot-setup/templates/spec-roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Featureを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
 
-Feature Issueの一括起票はここでは行わない。spec-runがcycleごとに先頭の未起票Featureを起票することで、先行Featureの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
+Feature Issueの一括起票はここでは行わない。pilot-runがcycleごとに先頭の未起票Featureを起票することで、先行Featureの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
 
 ### 6. 初期コミット
 
@@ -74,5 +74,5 @@ constitutionには「変更はPRで行う」とあるが、初回作成はユー
 以下を報告する。
 
 - 作成したdocs・ラベル・roadmap.mdに記載したFeature数
-- 自律駆動の開始方法: `/loop 10m /spec-run`（先頭Featureの起票からspec-runが自動で進める）
+- 自律駆動の開始方法: `/loop 10m /pilot-run`（先頭Featureの起票からpilot-runが自動で進める）
 - ユーザの関与点: `blocked:human` ラベルの付いたIssueへのコメント裁定のみ
