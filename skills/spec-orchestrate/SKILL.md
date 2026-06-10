@@ -124,7 +124,7 @@ phaseごとの指示内容:
 ```bash
 curl -s -X POST "$DISCORD_WEBHOOK_URL" \
   -H "Content-Type: application/json" \
-  -d "{\"content\": \"**[spec] 裁定待ち** Issue #N が blocked:human になりました。\\n$ISSUE_URL\"}"
+  -d "{\"content\": \"<@448217636611031051> **[spec] 裁定待ち** Issue #N が blocked:human になりました。\\n$ISSUE_URL\"}"
 ```
 
 `$DISCORD_WEBHOOK_URL` が未設定の場合は通知をスキップし、cycle終了報告に「Discord通知スキップ（DISCORD_WEBHOOK_URL未設定）」と記載する。
