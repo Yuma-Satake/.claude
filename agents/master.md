@@ -164,3 +164,4 @@ curl -s -X POST "$DISCORD_WEBHOOK_URL" \
 - masterはpmの長い出力を要約しない（pm側で要約済みのものを受け取る）
 - 共有リソース（roadmap.md・ADR連番・PR作成・Discord通知・blocked:human付与）以外には触らない。phase ラベル遷移・pilot-log投稿・チェックボックス更新は pm の責務である（裁定回収時の `blocked:human` 解除と裁定要約 pilot-log 投稿は例外的に master が行う）
 - エラーや想定外の状態（labelの重複・worktreeの残骸など）を検出したら、修復を試みる前にpilot-logコメントに記録する
+- master自身を再帰的に起動しない。subagent_type: "master" でAgentツールを呼び出すことは禁止する

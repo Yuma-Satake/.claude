@@ -1,6 +1,6 @@
 ---
 name: pilot-run
-description: 自律開発ワークフローの1サイクルを実行する。GitHub Issueのphaseラベルを見て、動かせるFeatureにpmサブエージェントを振り分け、結果に応じてphaseを遷移させる。「cycleを回して」「自律開発を進めて」「Issueを進めて」「開発を自動で回して」と依頼された場合、または /loop で常駐駆動する場合に必ず使用すること。constitution.mdとroadmap.mdが揃っているプロジェクトで開発を進める状況なら、ユーザーが「実装して」と明示しなくても積極的に呼び出す。
+description: 自律開発ワークフローの1サイクルを実行する。GitHub Issueのphaseラベルを見て、動かせるFeatureにpmサブエージェントを振り分け、結果に応じてphaseを遷移させる。「cycleを回して」「自律開発を進めて」「Issueを進めて」「開発を自動で回して」と依頼された場合、または /loop で常駐駆動する場合に必ず使用すること。constitution.mdとroadmap.mdが揃っているプロジェクトで開発を進める状況なら、ユーザーが「実装して」と明示しなくても積極的に呼び出す。メインセッション（ユーザとの直接の会話）でのみ有効。サブエージェント（master・pm・worker・reviewer）内からは絶対に呼び出さない。
 ---
 
 # pilot-run
