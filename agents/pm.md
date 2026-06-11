@@ -120,17 +120,19 @@ worker完了後の処理:
 | `apps/web` 配下のファイルを含む（Next.js） | coding-nextjs |
 | Go ファイル（`.go`）を含む | coding-go |
 
-reviewer 2体を並列起動する（同一メッセージ内で複数Agent呼び出し）:
+判定されたskillを重複排除した上で、reviewer A（仕様観点）と、規約観点のreviewerを判定skillごとに1体ずつ**並列起動**する（同一メッセージ内で複数Agent呼び出し）。reviewer agentは1体につき最大1 skillしかロードできないため、規約観点のreviewerはskillの数だけ起動する。
 
-**reviewer A（仕様観点）**:
+**reviewer A（仕様観点・skillなし）**:
 「`git fetch origin` を実行した上で、`origin/feature/issue-N` と `origin/<デフォルトブランチ>` のdiffをレビューすること。評価対象は今回完了したタスク（pilot-logコメントの `COMPLETED_TASK:` 行のテキストと一致するもの）に対応する受け入れ基準のみとすること。未着手タスクに対応する基準は評価しない（未実装は必須修正ではなく次タスクで対応される）。観点: 対象受け入れ基準とテストコードの対応が取れているか・アーキテクチャ判断にADR（docs/adr/）が起案されているか。必須修正の判定基準: 受け入れ基準の未達・セキュリティ問題・ビルドまたはテスト失敗を引き起こすもののみ。出力の最終行は必ず `code-review: wait_code_fix` または `code-review: coding` の1行のみとすること」
 
-**reviewer B（規約観点）**:
-「`git fetch origin` を実行した上で、`origin/feature/issue-N` と `origin/<デフォルトブランチ>` のdiffをレビューすること。Skillツールで以下のskillをロードし、そのコーディング規約に照らしてレビューすること: <判定されたskill一覧>。必須修正の判定基準（以下に該当するもののみ）: 返り値型・引数型の未定義による型安全性の欠如・破壊的メソッドの使用・hooks規約違反・nullableの未処理。推奨止まりにする基準（`## 軽微修正` セクションに分離し code-review に影響させないこと）: 型エイリアスとinterfaceの使い分け・命名スタイル・インポート順・末尾改行・コメント追加。出力の最終行は必ず `code-review: wait_code_fix` または `code-review: coding` の1行のみとすること」
+**reviewer B群（規約観点・判定skill 1つにつき1体）**:
+判定されたskillごとに1体のreviewerを起動する。各reviewerのプロンプトは以下とする:
 
-両方の結果を回収して最終判定:
-- どちらか一方でも `code-review: wait_code_fix` → 両方の `## 必須修正` をマージして pilot-log に転記、`phase:wait_code_fix` に遷移、続いて wait_code_fix 処理へ
-- 両方とも `code-review: coding` → worker の `COMPLETED_TASK:` 行のテキストを使い Issue 本文の `- [ ] <テキスト>` を `- [x] <テキスト>` に置換してチェックボックスを更新。未チェックタスクが残れば `phase:coding` に遷移して続いて phase:coding 処理へ。全完了なら `phase:done` に遷移して master に完了報告（doneのPR処理はmasterが行う）
+「`git fetch origin` を実行した上で、`origin/feature/issue-N` と `origin/<デフォルトブランチ>` のdiffをレビューすること。Skillツールで `<割り当てるskill名>` をロードし、そのコーディング規約に照らしてレビューすること。必須修正の判定基準（以下に該当するもののみ）: 返り値型・引数型の未定義による型安全性の欠如・破壊的メソッドの使用・hooks規約違反・nullableの未処理。推奨止まりにする基準（`## 軽微修正` セクションに分離し code-review に影響させないこと）: 型エイリアスとinterfaceの使い分け・命名スタイル・インポート順・末尾改行・コメント追加。出力の最終行は必ず `code-review: wait_code_fix` または `code-review: coding` の1行のみとすること」
+
+すべての結果を回収して最終判定:
+- いずれか1体でも `code-review: wait_code_fix` → 全reviewerの `## 必須修正` をマージ（同一指摘は重複排除）して pilot-log に転記、`phase:wait_code_fix` に遷移、続いて wait_code_fix 処理へ
+- すべて `code-review: coding` → worker の `COMPLETED_TASK:` 行のテキストを使い Issue 本文の `- [ ] <テキスト>` を `- [x] <テキスト>` に置換してチェックボックスを更新。未チェックタスクが残れば `phase:coding` に遷移して続いて phase:coding 処理へ。全完了なら `phase:done` に遷移して master に完了報告（doneのPR処理はmasterが行う）
 - code-review が見つからないreviewerがいる → `ESCALATE:` でmasterに報告
 
 レビューサイクル上限: 同一Issueで `wait_code_review → wait_code_fix` の往復が3回に達したら、それ以上は遷移させず `ESCALATE:` でmasterに報告する。
