@@ -61,7 +61,7 @@ pmの提案をユーザに提示し、AskUserQuestionで承認を得る。修正
 
 承認されたroadmapを `~/.claude/skills/pilot-setup/templates/roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Featureを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
 
-Feature Issueの一括起票はここでは行わない。pilot-runがcycleごとに先頭の未起票Featureを起票することで、先行Featureの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
+Feature Issueの一括起票はここでは行わない。pilot-runから起動されるmasterサブエージェントがcycleごとに先頭の未起票Featureを起票することで、先行Featureの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
 
 ### 6. 初期コミット
 
@@ -74,7 +74,7 @@ constitutionには「変更はPRで行う」とあるが、初回作成はユー
 以下を報告する。
 
 - 作成したdocs・ラベル・roadmap.mdに記載したFeature数
-- 自律駆動の開始方法: `/loop 10m /pilot-run`（先頭Featureの起票からpilot-runが自動で進める）
+- 自律駆動の開始方法: `/loop 10m /pilot-run`（pilot-runスキルが1cycleごとにmasterサブエージェントを起動し、先頭Featureの起票から自動で進める）
 - ユーザの関与点: `blocked:human` ラベルの付いたIssueへのコメント裁定のみ
 
 ## 管理するテンプレート
@@ -86,5 +86,5 @@ constitutionには「変更はPRで行う」とあるが、初回作成はユー
 | constitution.md.tmpl | constitution初期作成 | pilot-setup（手順2） |
 | vision.md.tmpl | vision初期作成 | pilot-setup（手順2） |
 | roadmap.md.tmpl | roadmap初期作成 | pilot-setup（手順5） |
-| adr.md.tmpl | ADR起案 | pilot-run（手順1）・pilot-fix-feature（手順3） |
+| adr.md.tmpl | ADR起案 | pm agent（プロダクト判断時）・pilot-fix-feature（手順3） |
 | spec-feature-issue.md.tmpl | Feature Issue本文 | pilot-create-feature（手順4） |
