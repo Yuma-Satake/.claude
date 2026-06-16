@@ -1,6 +1,6 @@
 ---
 name: pilot-setup
-description: 自律開発ワークフローの初回立ち上げを行う。constitution・visionの作成、phaseラベルの整備、visionからのroadmap起案・保存までを対話的に実行する。「自律開発をセットアップして」「pilot-runを始めたい」「このプロジェクトに自律開発ワークフローを導入したい」と依頼された場合は必ずこのスキルを使用すること。constitution.mdやphaseラベルが未整備なリポジトリでpilot-runを使おうとしている場合は、まずこのスキルを実行する必要がある。サービスリポジトリごとに1回だけ実行する。
+description: 自律開発ワークフローの初回立ち上げを行う。constitution・visionの作成、phaseラベルの整備、visionからのroadmap起案・保存までを対話的に実行する。「自律開発をセットアップして」「pilot-specやpilot-codingを始めたい」「このプロジェクトに自律開発ワークフローを導入したい」と依頼された場合は必ずこのスキルを使用すること。constitution.mdやphaseラベルが未整備なリポジトリでpilot-spec/pilot-codingを使おうとしている場合は、まずこのスキルを実行する必要がある。サービスリポジトリごとに1回だけ実行する。
 ---
 
 # pilot-setup
@@ -24,7 +24,7 @@ description: 自律開発ワークフローの初回立ち上げを行う。cons
 
 `docs/constitution.md` と `docs/vision.md` が存在しない場合、テンプレートから複製する。
 
-- テンプレート: `~/.claude/skills/pilot-setup/templates/constitution.md.tmpl` および `vision.md.tmpl`
+- テンプレート: `${CLAUDE_PLUGIN_ROOT}/skills/pilot-setup/templates/constitution.md.tmpl` および `vision.md.tmpl`
 - AskUserQuestionでユーザに質問しながら各セクションを埋める。1回あたり最大4問とし、回答を受けて深掘りする
 - 特に「非ゴール」「優先順位の解法」「エスカレーション基準」「マージポリシー」は自律駆動の品質を決めるため、曖昧なまま進めない
 - 既に存在する場合は内容を読み、空欄セクションがあれば同様に埋める
@@ -50,18 +50,18 @@ description: 自律開発ワークフローの初回立ち上げを行う。cons
 
 ### 5. roadmap の起案と保存
 
-pmサブエージェントに以下を依頼する。
+pilot-pmサブエージェントに以下を依頼する。
 
 - `docs/constitution.md` と `docs/vision.md` を読むこと
 - visionを、独立してデプロイ可能かつ単体で価値を持つFeatureの列に分解すること
 - 各Featureについて: 名前・Outcome（1〜2文）・依存するFeature・実装順序を提示すること
 - 実装方針には踏み込まないこと
 
-pmの提案をユーザに提示し、AskUserQuestionで承認を得る。修正指示があれば反映して再提示する。
+pilot-pmの提案をユーザに提示し、AskUserQuestionで承認を得る。修正指示があれば反映して再提示する。
 
-承認されたroadmapを `~/.claude/skills/pilot-setup/templates/roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Featureを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
+承認されたroadmapを `${CLAUDE_PLUGIN_ROOT}/skills/pilot-setup/templates/roadmap.md.tmpl` をもとに `docs/roadmap.md` として保存する。各Featureを表に1行ずつ書き、「Issue」列は `-`（未起票）とする。
 
-Feature Issueの一括起票はここでは行わない。pilot-runから起動されるmasterサブエージェントがcycleごとに先頭の未起票Featureを起票することで、先行Featureの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
+Feature Issueの一括起票はここでは行わない。pilot-specから起動されるpilot-masterサブエージェントがcycleごとに先頭の未起票Featureを起票することで、先行Featureの実装結果・ADR・vision更新といった最新コンテキストを反映できる。
 
 ### 6. 初期コミット
 
@@ -74,7 +74,7 @@ constitutionには「変更はPRで行う」とあるが、初回作成はユー
 以下を報告する。
 
 - 作成したdocs・ラベル・roadmap.mdに記載したFeature数
-- 自律駆動の開始方法: `/loop 10m /pilot-run`（pilot-runスキルが1cycleごとにmasterサブエージェントを起動し、先頭Featureの起票から自動で進める）
+- 自律駆動の開始方法: spec/coding を別セッションで並走させる。セッションA: `/loop 30m /pilot:pilot-spec`（要件定義側、先頭Featureの起票から仕様レビューまで自動で進める）。セッションB: `/loop 30m /pilot:pilot-coding`（実装側、`phase:coding` 到達 Issue を実装・コードレビュー・PR作成まで自動で進める）
 - ユーザの関与点: `blocked:human` ラベルの付いたIssueへのコメント裁定のみ
 
 ## 管理するテンプレート
@@ -86,5 +86,5 @@ constitutionには「変更はPRで行う」とあるが、初回作成はユー
 | constitution.md.tmpl | constitution初期作成 | pilot-setup（手順2） |
 | vision.md.tmpl | vision初期作成 | pilot-setup（手順2） |
 | roadmap.md.tmpl | roadmap初期作成 | pilot-setup（手順5） |
-| adr.md.tmpl | ADR起案 | pm agent（プロダクト判断時）・pilot-fix-feature（手順3） |
+| adr.md.tmpl | ADR起案 | pilot-pm agent（プロダクト判断時）・pilot-fix-feature（手順3） |
 | spec-feature-issue.md.tmpl | Feature Issue本文 | pilot-create-feature（手順4） |
