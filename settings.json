@@ -50,7 +50,8 @@
     "vercel@claude-plugins-official": true,
     "datadog@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": true,
+    "discord@claude-plugins-official": true
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
