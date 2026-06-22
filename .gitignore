@@ -31,3 +31,4 @@ plugins/installed_plugins.json
 plugins/plugin-catalog-cache.json
 .last-update-result.json
 plugins/.last_inuse_sweep
+channels/discord/.env
