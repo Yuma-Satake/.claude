@@ -7,6 +7,10 @@
     "AWS_REGION": "us-east-1",
     "DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/1514089113093931029/b9Uadsmi4OO6NFpsSgQQYzYbziJh1-6VT0vymiq19yOBZ4SIMN-3xiUoLGtyVN9pEXfD"
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [],
     "deny": [
@@ -71,9 +75,5 @@
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": false,
-  "voiceEnabled": true,
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  }
+  "voiceEnabled": true
 }
