@@ -51,7 +51,16 @@
     "datadog@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "discord@claude-plugins-official": true
+    "discord@claude-plugins-official": true,
+    "conference-organizing-knowledge@conference-organizing-knowledge": true
+  },
+  "extraKnownMarketplaces": {
+    "conference-organizing-knowledge": {
+      "source": {
+        "source": "github",
+        "repo": "fec-nagoya-org/conference-organizing-knowledge"
+      }
+    }
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
@@ -62,5 +71,9 @@
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": false,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
 }
