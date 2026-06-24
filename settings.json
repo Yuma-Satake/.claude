@@ -56,13 +56,13 @@
     "gopls-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "discord@claude-plugins-official": true,
-    "conference-organizing-knowledge@conference-organizing-knowledge": true
+    "conference-organizing-knowledge-skill@conference-organizing-knowledge-skill": true
   },
   "extraKnownMarketplaces": {
-    "conference-organizing-knowledge": {
+    "conference-organizing-knowledge-skill": {
       "source": {
         "source": "github",
-        "repo": "fec-nagoya-org/conference-organizing-knowledge"
+        "repo": "fec-nagoya-org/conference-organizing-knowledge-skill"
       }
     }
   },
