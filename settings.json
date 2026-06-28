@@ -55,7 +55,8 @@
     "gopls-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "discord@claude-plugins-official": true,
-    "conference-organizing-knowledge-skill@conference-organizing-knowledge-skill": true
+    "conference-organizing-knowledge-skill@conference-organizing-knowledge-skill": true,
+    "cloudflare@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "conference-organizing-knowledge-skill": {
