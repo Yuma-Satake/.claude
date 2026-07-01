@@ -5,7 +5,7 @@
   ],
   "groups": {
     "1514089091296137258": {
-      "requireMention": true,
+      "requireMention": false,
       "allowFrom": []
     },
     "1513217774191771780": {
@@ -13,7 +13,7 @@
       "allowFrom": []
     },
     "1518486431952273408": {
-      "requireMention": true,
+      "requireMention": false,
       "allowFrom": []
     }
   },
