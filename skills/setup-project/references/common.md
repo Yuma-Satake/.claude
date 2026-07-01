@@ -23,6 +23,14 @@
 | Gitフック | Lefthook | husky + lint-staged |
 | テスト | Vitest | Jest |
 
+## pnpm利用時の注意事項
+
+- pnpm v10以降はセキュリティ上、依存パッケージの`postinstall`等のビルドスクリプト（lefthookのバイナリダウンロードなど）をデフォルトでブロックする。`pnpm install`実行後に`[ERR_PNPM_IGNORED_BUILDS]`が出た場合は、`pnpm approve-builds --all`（または対象パッケージを指定して`pnpm approve-builds <pkg>`）を実行して承認する。承認結果は`pnpm-workspace.yaml`の`allowBuilds`に記録されるため、これもコミット対象に含める。
+
+## miseの初回セットアップ時の注意事項
+
+- 新規に`mise.toml`を配置したプロジェクトで`mise install`等を実行すると、`mise ERROR Config files in ... are not trusted`というエラーになる場合がある。先に`mise trust`を実行して設定ファイルを信頼させる必要がある。
+
 ## セットアップ時に必ず導入するもの
 
 - Lefthookによるpre-commitフック（Biomeのチェックを走らせる）
