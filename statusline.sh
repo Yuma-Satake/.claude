@@ -3,7 +3,7 @@ input=$(cat)
 
 MODEL=$(echo "$input" | jq -r '.model.display_name // "Unknown"')
 PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
-BAR_WIDTH=30
+BAR_WIDTH=21
 FILLED=$((PCT * BAR_WIDTH / 100))
 EMPTY=$((BAR_WIDTH - FILLED))
 
@@ -40,10 +40,12 @@ if [ -n "$RESETS_AT" ] && [ "$RATE_PCT" -ge 80 ]; then
   RESET_LABEL=" (reset:${RESET_TIME})"
 fi
 
+CWD=$(basename "$(pwd)")
+
 if [ "${CLAUDE_CODE_USE_BEDROCK}" = "1" ]; then
-  echo -e "${MODEL} (🧠Bedrock) ${COLOR}[${BAR}] ${PCT}%${RESET}"
+  echo -e "${BOLD}/${CWD}${RESET} ${MODEL} (🧠Bedrock) ${COLOR}[${BAR}] ${PCT}%${RESET}"
 else
   PREFIX="${BOLD}${MODEL}${RESET}"
   [ -n "$GIT_BRANCH" ] && PREFIX="${BOLD}⎇ ${GIT_BRANCH}${RESET} ${BOLD}${MODEL}${RESET}"
-  echo -e "${PREFIX} ctx:${COLOR}[${BAR}] ${PCT}%${RESET} limit:${RATE_COLOR}[${RATE_BAR}] ${RATE_PCT}%${RESET_LABEL}${RESET}"
+  echo -e "${BOLD}/${CWD}${RESET} ${PREFIX} ctx:${COLOR}[${BAR}] ${PCT}%${RESET} limit:${RATE_COLOR}[${RATE_BAR}] ${RATE_PCT}%${RESET_LABEL}${RESET}"
 fi

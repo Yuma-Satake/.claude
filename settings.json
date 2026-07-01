@@ -4,8 +4,11 @@
     "ENABLE_TOOL_SEARCH": "true",
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
     "CLAUDE_CODE_NO_FLICKER": "1",
-    "AWS_REGION": "us-east-1",
-    "DISCORD_WEBHOOK_URL": "https://discord.com/api/webhooks/1514089113093931029/b9Uadsmi4OO6NFpsSgQQYzYbziJh1-6VT0vymiq19yOBZ4SIMN-3xiUoLGtyVN9pEXfD"
+    "AWS_REGION": "us-east-1"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   },
   "permissions": {
     "allow": [],
@@ -51,7 +54,17 @@
     "datadog@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "discord@claude-plugins-official": true
+    "discord@claude-plugins-official": true,
+    "conference-organizing-knowledge-skill@conference-organizing-knowledge-skill": true,
+    "cloudflare@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "conference-organizing-knowledge-skill": {
+      "source": {
+        "source": "github",
+        "repo": "fec-nagoya-org/conference-organizing-knowledge-skill"
+      }
+    }
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
