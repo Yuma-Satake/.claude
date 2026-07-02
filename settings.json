@@ -14,11 +14,13 @@
     "allow": [],
     "deny": [
       "Bash(git reset:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git restore:*)",
+      "Bash(git clean:*)"
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "sonnet",
+  "model": "fable",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "Stop": [
@@ -40,6 +42,15 @@
             "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome MCPツール使用時は必ずchrome-mcpスキル（~/.claude/skills/chrome-mcp/SKILL.md）を確認してから操作する\"}}'"
           }
         ]
+      },
+      {
+        "matcher": "mcp__slack__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Slack MCPツール使用時は必ずslack-mcpスキル（~/.claude/skills/slack-mcp/SKILL.md）を確認してから操作する\"}}'"
+          }
+        ]
       }
     ]
   },
@@ -56,7 +67,8 @@
     "typescript-lsp@claude-plugins-official": true,
     "discord@claude-plugins-official": true,
     "conference-organizing-knowledge-skill@conference-organizing-knowledge-skill": true,
-    "cloudflare@claude-plugins-official": true
+    "cloudflare@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "conference-organizing-knowledge-skill": {
