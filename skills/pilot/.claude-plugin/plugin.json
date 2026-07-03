@@ -1,8 +1,0 @@
-{
-  "name": "pilot",
-  "description": "自律開発ワークフロー（pilot kit）。constitution・vision・roadmapを起点にGitHub Issueのphaseラベルを進行させ、master/pm/worker/reviewer の4 agent が spec セッション（要件定義）と coding セッション（実装）を別々の /loop で並走させて自律駆動する。",
-  "version": "1.0.0",
-  "author": {
-    "name": "Yuma Satake"
-  }
-}
