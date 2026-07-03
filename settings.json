@@ -20,7 +20,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "opus",
+  "model": "claude-opus-4-7",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "Stop": [
