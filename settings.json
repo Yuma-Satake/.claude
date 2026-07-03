@@ -20,7 +20,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "fable",
+  "model": "opus",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "Stop": [
@@ -81,7 +81,6 @@
   "language": "japanese",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "plansDirectory": "./.claude/plans",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "remoteControlAtStartup": true,
