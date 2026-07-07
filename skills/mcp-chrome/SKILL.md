@@ -1,5 +1,5 @@
 ---
-name: chrome-mcp
+name: mcp-chrome
 description: Claude in Chrome（mcp__claude-in-chrome__* ツール）でブラウザ操作を行う際のベストプラクティスとサイト固有ナレッジを提供する。Webページのフォーム入力・要素検索・値取得・スクリーンショット撮影・OAuthログイン・SPAの操作・ブラウザ自動化を行う場合には必ず使用すること。note.com・Google Sheets・Google Docs・fortee・Amazon・GitHub・Slack・Google Cloud Console など特定サイトを操作するときは、固有の落とし穴回避ナレッジが含まれるため、ブラウザ操作を開始する前に必ず参照すること。ユーザーが「ブラウザで〜して」「〜を開いて操作して」「Webページから値を取って」と言った場合にも発動する。
 user-invocable: false
 ---

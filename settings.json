@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome MCPツール使用時は必ずchrome-mcpスキル（~/.claude/skills/chrome-mcp/SKILL.md）を確認してから操作する\"}}'"
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome MCPツール使用時は必ずmcp-chromeスキル（~/.claude/skills/mcp-chrome/SKILL.md）を確認してから操作する\"}}'"
           }
         ]
       },
@@ -48,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Slack MCPツール使用時は必ずslack-mcpスキル（~/.claude/skills/slack-mcp/SKILL.md）を確認してから操作する\"}}'"
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Slack MCPツール使用時は必ずmcp-slackスキル（~/.claude/skills/mcp-slack/SKILL.md）を確認してから操作する\"}}'"
           }
         ]
       }
