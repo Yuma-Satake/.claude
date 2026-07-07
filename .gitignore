@@ -12,6 +12,7 @@ cache
 paste-cache
 history.jsonl
 plugins/marketplaces/claude-plugins-official
+plugins/marketplaces/conference-organizing-knowledge-skill
 plugins/known_marketplaces.json
 plugins/blocklist.json
 tasks/
