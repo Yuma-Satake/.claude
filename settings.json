@@ -51,6 +51,24 @@
             "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Slack MCPツール使用時は必ずmcp-slackスキル（~/.claude/skills/mcp-slack/SKILL.md）を確認してから操作する\"}}'"
           }
         ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/inject-parallel-agents.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Planモード後の実行原則: 可能な限りユーザとのやり取りを避け、実行を完了まで継続する。タスクを分解し、依存関係を整理して並列実行可能な箇所は複数のサブエージェントで並行して進める。クラウドサービスの設定確認・変更が必要な場合はCLIやブラウザ操作で自力対応する。\"}}'"
+          }
+        ]
       }
     ]
   },
