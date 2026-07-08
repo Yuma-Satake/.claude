@@ -20,7 +20,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "claude-opus-4-7",
+  "model": "fable",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "Stop": [
@@ -104,5 +104,6 @@
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": false,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "advisorModel": "claude-opus-4-7"
 }
