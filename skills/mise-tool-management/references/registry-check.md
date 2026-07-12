@@ -1,14 +1,12 @@
 # miseレジストリ登録確認手順
 
-新しいツールを `mise.toml` に追加する前に、必ず登録状況を確認する。
-
 ## 1. ショートハンド検索
 
 ```sh
 mise registry <name>
 ```
 
-登録されていれば `asdf:mise-plugins/mise-poetry` のようにバックエンド接頭辞つきのフルネームが返る。何も返らない場合は未登録。
+登録されていれば `asdf:mise-plugins/mise-poetry` のようにバックエンド接頭辞つきのフルネームがstdoutに返る。未登録の場合は `tool not found in registry: <name>` がstderrに出力され、非ゼロ終了コードで終わる。
 
 部分一致で探したいときは全件を出力してフィルタする。
 
@@ -16,7 +14,7 @@ mise registry <name>
 mise registry | grep -i <keyword>
 ```
 
-同名で複数バックエンドが登録されている場合もあるため、grep結果は複数行になり得る。優先順位は SKILL.md の「バックエンド選定の優先順位」に従う。
+複数バックエンドで登録されているツールもある。優先順位は SKILL.md の「バックエンド選定の優先順位」に従う。
 
 ## 2. バックエンド別の絞り込み
 
@@ -30,13 +28,21 @@ mise registry -b core
 
 ## 3. JSON出力による厳密判定
 
-スクリプトから判定したい場合はJSONで取得する。
+スクリプトから登録有無を判定したい場合。
 
 ```sh
 mise registry --json <name>
 ```
 
-存在しない場合は空オブジェクトが返る。CIやhookから呼び出す場合はexit codeではなく出力内容で判定する。
+登録があればJSONが返る。未登録時はJSONを一切返さず、stderrにエラーを出して非ゼロ終了する。CIやhookからは終了コードで判定する。
+
+```sh
+if mise registry <name> >/dev/null 2>&1; then
+  echo "registered"
+else
+  echo "not registered"
+fi
+```
 
 ## 4. 実際にインストール可能か確認
 

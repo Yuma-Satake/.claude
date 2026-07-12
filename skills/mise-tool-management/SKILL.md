@@ -5,33 +5,32 @@ description: miseで開発ツール（CLI・ランタイム）を追加・更新
 
 # mise ツール管理方針
 
-miseで新しいツールを導入・更新するときは、必ず以下のフローで進める。
+miseで新しいツールを導入・更新するときは以下のフローで進める。
 
 ## 導入フロー
 
 1. レジストリ確認: `mise registry <name>` でショートハンドが引けるか確認する。詳細は `references/registry-check.md` を参照する
-2. 未登録の場合の代替バックエンド判断: aqua もしくは github バックエンドで導入可能か調査する。詳細は `references/github-fallback.md` を参照する
-3. バージョン固定: `latest` を書かず、必ず具体的なバージョン番号を `mise.toml` に記載する
-4. 反映確認: `mise install` と `mise doctor` で解決状況を確認する
+2. 未登録時の代替バックエンド判断: aqua もしくは github バックエンドで導入可能か調査する。詳細は `references/github-fallback.md` を参照する
+3. 反映確認: `mise install` と `mise doctor` で解決状況を確認する
 
 ## 基本ルール
 
 - `mise.toml` はプロジェクトルートに配置し、コミット対象に含める
 - 新規に `mise.toml` を配置した直後は `mise trust` を実行してから `mise install` を実行する
 - グローバル導入（`~/.config/mise/config.toml`）はユーザの明示指示がある場合のみ行い、プロジェクト用ツールは常にプロジェクトの `mise.toml` に書く
-- `mise use <name>@<version>` で追加すると `mise.toml` に自動追記される。手書きで足す場合はセクション（`[tools]`）とキーの重複に注意する
-- 削除は `mise use --rm <name>` を用い、`mise.toml` を直接編集する場合も対応するインストール済みバージョンを `mise uninstall` で消す
+- 追加は `mise use <name>@<version>` を使う。`mise.toml` の `[tools]` セクションに自動追記される
+- 削除は `mise use --rm <name>` を使う。`mise.toml` を手動編集した場合は `mise uninstall` でインストール済みバージョンも削除する
 
 ## バックエンド選定の優先順位
 
 1. コアバックエンド（`core:`）で提供されるランタイム（node, python, go, ruby など）は素の名前で指定する
-2. aquaレジストリで提供されるツールは `aqua:owner/name` を優先する（署名検証やSLSA検証を持つため）
+2. aquaレジストリで提供されるツールは `aqua:owner/name` を優先する（レジストリエントリに `github_artifact_attestations` / `cosign` / `slsa_provenance` の設定があるものは署名検証も走る）
 3. aquaに無くGitHubリリースにバイナリがある場合は `github:owner/name` を使う
-4. `ubi:` は非推奨のため新規採用しない。既存の `ubi:` 記述を見つけたら `github:` への置換を提案する
-5. `asdf:` `vfox:` はサプライチェーン上のリスクがあるため新規採用しない
+4. `ubi:` は非推奨のため新規採用しない。詳細は `references/github-fallback.md` の ubi 節を参照する
+5. `asdf:` `vfox:` はレジストリへの新規登録が受け付けられないため新規採用しない
 
 ## 禁止事項
 
-- `mise.toml` に `latest` や範囲指定（`^1.2.3` など）を書かない
+- `mise.toml` に `latest` や範囲指定（`^1.2.3` など）を書かない。具体的なバージョン番号を記載する
 - レジストリに存在するのに `github:` を明示的に指定して上書きしない。ユーザに理由がある場合のみ許容する
 - ユーザに確認せず勝手にツールをインストールしない。導入するツール名・バージョン・バックエンドを提示し合意を得てから実行する

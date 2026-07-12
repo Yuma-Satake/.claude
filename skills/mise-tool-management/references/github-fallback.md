@@ -22,7 +22,7 @@
 "aqua:<owner>/<name>" = "<version>"
 ```
 
-aquaは署名検証・SLSA検証を組み込みで行うため、条件が合えばgithubバックエンドより優先する。
+aquaに登録があればgithubより優先する。ただし署名検証・SLSA検証が自動で走るのは、aquaレジストリの当該エントリに `github_artifact_attestations` / `cosign` / `slsa_provenance` の設定が入っているツールに限られる。全ツールで自動的に検証されるわけではない。
 
 ## GitHubバックエンドで解決可能かのチェック
 
@@ -55,7 +55,6 @@ mise use <backend>:<owner>/<repo>@<version>
 | アセット名の自動判定に失敗する | `matching` または `matching_regex` |
 | バイナリ名がリポジトリ名と異なる | `bin` または `rename_exe` |
 | アーカイブ内のサブディレクトリにバイナリがある | `bin_path`, `strip_components` |
-| 一つのリリースから複数バイナリを取り出したい | `tool_alias` を分けて `matching` を変える |
 | macOSで `.app` を避けたい | `no_app = true` |
 
 記載例。
@@ -63,6 +62,20 @@ mise use <backend>:<owner>/<repo>@<version>
 ```toml
 [tools]
 "github:oxc-project/oxc" = { version = "0.34.0", matching = "oxlint" }
+```
+
+## 一つのリリースから複数バイナリを取り出すケース
+
+一つのGitHubリリースが複数のバイナリを含む場合、`tool_alias` で別名を分け、それぞれに異なる `matching` を指定する。
+
+```toml
+[tool_alias]
+oxlint = "github:oxc-project/oxc"
+oxfmt = "github:oxc-project/oxc"
+
+[tools]
+oxlint = { version = "0.34.0", matching = "oxlint" }
+oxfmt = { version = "0.34.0", matching = "oxfmt" }
 ```
 
 ## 判断できないケース
