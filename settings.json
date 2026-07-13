@@ -99,11 +99,11 @@
   "language": "japanese",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "advisorModel": "claude-opus-4-7",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": false,
-  "voiceEnabled": true,
-  "advisorModel": "claude-opus-4-7"
+  "voiceEnabled": true 
 }
