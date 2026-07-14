@@ -20,7 +20,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "claude-opus-4-7",
+  "model": "sonnet",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "Stop": [
