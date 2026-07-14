@@ -77,13 +77,9 @@
     "command": "~/.claude/statusline.sh"
   },
   "enabledPlugins": {
-    "context7@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true,
-    "datadog@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "discord@claude-plugins-official": true,
+    "datadog@claude-plugins-official": false,
+    "discord@claude-plugins-official": false,
     "conference-organizing-knowledge-skill@conference-organizing-knowledge-skill": true,
     "cloudflare@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true
