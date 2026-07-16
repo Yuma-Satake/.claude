@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/inject-parallel-agents.sh"
+            "command": "~/.claude/hooks/inject-agent-use.sh"
           }
         ]
       },

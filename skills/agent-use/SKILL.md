@@ -1,9 +1,9 @@
 ---
-name: parallel-agents
+name: agent-use
 description: 複数のサブエージェントを並列駆動する際の原則。Agentツールでサブエージェントを起動する前、タスクを分解して並列実行の計画を立てる際に使用する。プロンプトの書き方、worktree隔離、共有リソースの扱いを定める。Agentツール使用時にはフックで本文が自動注入される。
 ---
 
-# parallel-agents
+# agent-use
 
 複数のサブエージェントを並列駆動する場合の原則。
 
