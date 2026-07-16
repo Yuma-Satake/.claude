@@ -28,7 +28,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay -v 0.3 /System/Library/Sounds/Hero.aiff"
+            "command": "afplay -v 0.5 /System/Library/Sounds/Hero.aiff"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/check-knowledge-review-pending.sh"
           }
         ]
       }

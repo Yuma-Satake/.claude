@@ -35,3 +35,4 @@ plugins/.last_inuse_sweep
 channels/discord/.env
 channels/discord/inbox
 remote-settings.json
+state/
