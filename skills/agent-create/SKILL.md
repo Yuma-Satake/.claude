@@ -1,9 +1,9 @@
 ---
-name: agent-creator
+name: agent-create
 description: .claude/agents/ 配下にagentファイルを新規作成・編集する際の仕様とベストプラクティスを提供する。agentを作る、agentを追加したい、agentを修正したいと言われた場合に使用する。
 ---
 
-# agent-creator
+# agent-create
 
 ## agentファイルの配置
 
