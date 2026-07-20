@@ -55,8 +55,8 @@
         "hooks": [
           {
             "type": "command",
-            "if": "Bash(git commit *)",
-            "command": "~/.claude/hooks/set-knowledge-review-flag.sh"
+            "command": "~/.claude/hooks/set-knowledge-review-flag.sh",
+            "if": "Bash(git commit *)"
           }
         ]
       }
@@ -122,7 +122,7 @@
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "advisorModel": "claude-opus-4-7",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
