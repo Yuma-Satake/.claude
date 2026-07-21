@@ -21,7 +21,7 @@ code .
 open -a "Visual Studio Code" .
 ```
 
-3. VSCodeを開いたことをユーザーに一言伝える。差分の確認が目的の場面では、Source Controlビュー(`Cmd+Shift+G`または左のアクティビティバーのアイコン)で変更一覧を見られる旨を添える。
+3. VSCodeを開いたことをユーザーに一言伝える。
 
 ## 注意点
 
