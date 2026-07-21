@@ -1,5 +1,5 @@
 ---
-name: mise-tool-management
+name: tool-mise-management
 description: miseで開発ツール（CLI・ランタイム）を追加・更新・削除する際に参照するスキル。ツールがmiseレジストリに登録されているかの確認手順、未登録ツールをGitHubリリースやaquaレジストリ経由で導入する判断フローを含む。「miseでツールを追加して」「mise.tomlに入れて」「このCLIをmiseで管理したい」「miseで入るか調べて」「バージョン管理どうする」といった依頼で必ず使用すること。
 ---
 
