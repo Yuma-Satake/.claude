@@ -30,7 +30,7 @@ fi
 
 "$flag_script" mark-reminded "$repo_path" "$session_id"
 
-message="commit時にknowledge-reviewが未実行のまま保留されています（対象リポジトリ: ${repo_path}）。現在ユーザーから依頼されている作業があればそれを優先する。他に依頼作業がなければ、ユーザーに確認を取らずそのままknowledge-reviewスキルを実行する。依頼作業がある場合はそれを優先し、完了した時点で同様に確認なしで実行する。"
+message="commit時にknowledge-reviewが未実行のまま保留されています（対象リポジトリ: ${repo_path}）。現在ユーザーから依頼されている作業、または直前の自分の応答がユーザーへの確認待ちの質問・承認待ちで終わっている（タスクが完了しておらずユーザーの回答を待っている）場合は、それを優先しknowledge-reviewは実行しない。この場合は何もせずそのまま応答を終了し、ユーザーからの返信を待つ。他に依頼作業や確認待ちがなければ、ユーザーに確認を取らずそのままknowledge-reviewスキルを実行する。依頼作業がある場合はそれを優先し、完了した時点で同様に確認なしで実行する。"
 
 jq -n --arg msg "$message" \
   '{hookSpecificOutput: {hookEventName: "Stop", additionalContext: $msg}}'
