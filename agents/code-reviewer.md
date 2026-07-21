@@ -1,5 +1,5 @@
 ---
-name: coding-reviewer
+name: code-reviewer
 description: コードのレビューに使う。指定されたskillの観点でコードベースと変更を精査し、規約違反・改善点を漏れなくリストアップする読み取り専用のコードレビューAgent。コードの実装・修正が完了した後、およびPR作成前に使用する。コードは修正せず報告のみ行う。skillは最大1つまで指定可能。skillを指定しない場合はレビュー観点の指定が必須。ファイルの事実確認(ファクトチェック)には使用しない。
 color: yellow
 disallowedTools: Edit, Write, NotebookEdit
