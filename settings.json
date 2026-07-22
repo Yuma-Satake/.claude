@@ -124,7 +124,7 @@
   "language": "japanese",
   "alwaysThinkingEnabled": true,
   "effortLevel": "medium",
-  "advisorModel": "claude-opus-4-7",
+  "advisorModel": "claude-opus-4-8",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "remoteControlAtStartup": true,
