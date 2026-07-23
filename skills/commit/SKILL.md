@@ -27,6 +27,7 @@ model: sonnet
 3. stash した場合: `git stash pop` で変更を復元する
 4. コンフリクトが発生した場合: 内容を確認して手動で解消し、`git add <file>` でマークしてから Step 3 へ進む
 5. untrackedファイルがリモートと衝突して pull が失敗した場合: `reference.md` の該当手順に従う
+6. `git pull` が "divergent branches" エラーで失敗する場合（ローカル・リモート双方に新規コミットがある分岐状態）: ローカルの未pushコミットがリモート側の変更と同一ファイルを変更していないか `git log --oneline origin/<branch>` で確認し、衝突しないと判断できれば `git pull --rebase` で統合する。ローカルコミットが既に他者と共有され得る状態、または衝突の可能性がある場合はユーザーに手動でのreconcile方法（merge/rebase）を確認する
 
 リモートより進んでいる（ahead）だけの場合はこのステップをスキップする。
 
