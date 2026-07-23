@@ -21,7 +21,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "sonnet",
+  "model": "claude-sonnet-5",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "SessionStart": [
@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/Users/yuma_satake/.claude/hooks/herdr-agent-state.sh' session",
+            "command": "~/.claude/hooks/herdr-agent-state.sh session",
             "timeout": 10
           }
         ]
