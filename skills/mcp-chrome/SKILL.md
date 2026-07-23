@@ -21,6 +21,7 @@ user-invocable: false
 | Amazon（amazon.co.jp） | `references/amazon.md` | Amazon で商品検索・価格確認を行うとき |
 | Grok（x.com/i/grok） | `references/grok.md` | Grok でチャット送信・回答取得を行うとき |
 | OAuth 認証（Google/X/Apple 等） | `references/oauth.md` | OAuth ボタン経由のログインが必要なとき |
+| Google Workspace 管理コンソール（admin.google.com） | `references/google-admin.md` | ユーザー・グループ管理などadmin.google.comを操作するとき |
 | ブラウザ操作パターン（汎用） | `references/browser-patterns.md` | フォーム入力・値取得・DOM 操作・ダイアログ回避など具体的テクニックが必要なとき |
 
 新しいサイトのナレッジが溜まったら、`references/{site-name}.md` を追加して上表に追記すること。
@@ -52,6 +53,8 @@ user-invocable: false
 ## 一般的なブラウザ操作
 
 - `find` は自然言語での UI 要素検索が可能で、座標指定より信頼性が高い
+- 座標クリック（`coordinate` 指定）は避け、`find` や `read_page` で取得した `ref` 指定を優先する。これはフォーム入力に限らず、ボタン・カレンダー・ダイアログ内要素などクリック操作全般に適用する方針であり、座標指定は最終手段にとどめる
+- クリック直後に画面が変化しない・ダイアログが開閉しないことがある（1 回目のクリックはハイライト等の視覚変化のみで、実際の遷移や開閉が伴わない場合がある）。1〜2 秒 `wait` してから同じ要素を再度クリックする、または `find`/`read_page` で `ref` を取り直してから再クリックする。クリック後は必ずスクリーンショットや `tabs_context_mcp` で結果を確認すること
 - **同一 URL への `navigate` 再実行はリロードを引き起こす**。ログインセッションが切れるサイトでは、サイト内のリンク・ボタン経由で遷移する
 - 座標変換・ダイアログ回避・DOM 操作などの具体テクニックは `references/browser-patterns.md` を参照
 
