@@ -113,18 +113,10 @@
     "cloudflare@claude-plugins-official": false,
     "frontend-design@claude-plugins-official": true
   },
-  "extraKnownMarketplaces": {
-    "conference-organizing-knowledge-skill": {
-      "source": {
-        "source": "github",
-        "repo": "fec-nagoya-org/conference-organizing-knowledge-skill"
-      }
-    }
-  },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "advisorModel": "claude-opus-4-8",
+  "advisorModel": "claude-opus-5",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "remoteControlAtStartup": true,
