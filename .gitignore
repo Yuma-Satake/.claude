@@ -36,3 +36,7 @@ channels/discord/.env
 channels/discord/inbox
 remote-settings.json
 state/
+settings.local.json
+daemon.log
+daemon/
+jobs/
