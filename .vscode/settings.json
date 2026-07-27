@@ -1,1 +1,4 @@
-{}
+{
+  "prettier.enable": false,
+  "biome.enabled": false
+}
