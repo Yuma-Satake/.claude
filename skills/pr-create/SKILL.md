@@ -83,6 +83,22 @@ issue番号が不明の場合は `<type>: <title>` の形式で記載する。
 
 PR 説明文に画像（スクリーンショット等）を含める場合は、`coding-git-workflow` skill の「gh CLI 拡張」セクションを参照してアップロード方法を確認する。
 
+画面変更の Before / After を掲載する場合は、以下の形式で横並びの HTML テーブルにする。
+
+```html
+<table>
+<tr><th>Before</th><th>After</th></tr>
+<tr>
+<td><img src="<Before画像URL>" width="300"></td>
+<td><img src="<After画像URL>" width="300"></td>
+</tr>
+</table>
+```
+
+- `gh image` で画像をアップロードし、出力された Markdown から画像 URL を使用する
+- `img` の `width` は `300` に固定する
+- `img` に `height` 属性を指定しない
+
 #### 作成・更新の実行
 
 - 既存PRあり → `gh pr edit` でPR説明文を更新する
