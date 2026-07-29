@@ -1,9 +1,9 @@
 ---
-name: x-search
-description: X（Twitter）の投稿をGrok経由でリアルタイム検索するスキル。hermes-agentのx_search_toolを直接呼び出してrawなデータを取得する。「x_searchで調べて」「Xで検索して」「x-searchで〜」「X上の反応を調べて」「ポストを検索して」のように言われた場合、またはXのリアルタイム情報・トレンド・口コミ調査が必要な場合に必ず使用すること。grokスキルよりもrawなデータが得られるため、他のエージェントとの連携にも適している。
+name: tool-x-search
+description: X（Twitter）の投稿をGrok経由でリアルタイム検索するスキル。hermes-agentのx_search_toolを直接呼び出してrawなデータを取得する。「x_searchで調べて」「Xで検索して」「tool-x-searchで〜」「X上の反応を調べて」「ポストを検索して」のように言われた場合、またはXのリアルタイム情報・トレンド・口コミ調査が必要な場合に必ず使用すること。grokスキルよりもrawなデータが得られるため、他のエージェントとの連携にも適している。
 ---
 
-# x-search
+# tool-x-search
 
 引数: $ARGUMENTS
 
@@ -22,7 +22,7 @@ description: X（Twitter）の投稿をGrok経由でリアルタイム検索す�
 ### 2. x_search の実行
 
 ```bash
-uvx --from hermes-agent python ~/.claude/skills/x-search/scripts/x_search.py "クエリ文字列"
+uvx --from hermes-agent python ~/.claude/skills/tool-x-search/scripts/x_search.py "クエリ文字列"
 ```
 
 - 実行は**バックグラウンドで行わず**、結果が返るまで待つ
@@ -48,5 +48,5 @@ uvx --from hermes-agent hermes auth add xai-oauth
 hermes-agent のバージョンが古い可能性がある。以下でキャッシュをクリアして再実行：
 
 ```bash
-uvx --from hermes-agent --refresh python ~/.claude/skills/x-search/scripts/x_search.py "クエリ"
+uvx --from hermes-agent --refresh python ~/.claude/skills/tool-x-search/scripts/x_search.py "クエリ"
 ```
