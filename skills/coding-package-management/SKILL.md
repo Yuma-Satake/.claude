@@ -1,6 +1,7 @@
 ---
 name: coding-package-management
 description: 依存パッケージの追加・削除・更新を行う際に参照する規約。npm/yarn/pnpmなどのパッケージマネージャを使う場面、package.jsonやlockファイルを操作する場面、新しいライブラリを導入する場面、バージョン指定を行う場面で必ず使用すること。
+user-invocable: false
 ---
 
 # パッケージ管理規約

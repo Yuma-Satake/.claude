@@ -1,10 +1,10 @@
 ---
-name: claude-code-spec
+name: tool-claude-code
 description: Claude Code の機能仕様・設定方法・フロントマター・フックの書き方・スキルの仕様・MCP設定・CLAUDE.md の書き方など、Claude Code に関する正確な情報が必要なときに積極的に使う。「スキルのフロントマターにどんなフィールドが書ける？」「フックのイベント名は？」「settings.json の書き方は？」「エージェントタイプを追加するには？」という疑問が生じたら、組み込み知識だけで答えず必ずこのスキルを使って一次情報源を確認すること。ユーザーから「ドキュメントを確認して」「リポジトリを見て」「仕様を調べて」と指示されたときはもちろん、Claude Code の設定・拡張機能・API について実装するときも積極的に発動させること。
-user-invokable: true
+user-invocable: true
 ---
 
-# claude-code-spec
+# tool-claude-code
 
 Claude Code の一次情報源を参照して、正確な仕様・設定方法・ベストプラクティスを提供する。
 

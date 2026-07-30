@@ -1,6 +1,7 @@
 ---
 name: coding-gh-actions
 description: GitHub Actionsのワークフローファイルのコーディング規約を提供する。`.github/workflows/` 配下のYAMLファイルを新規作成・編集する際に必ず参照すること。トリガー設定、権限管理、シークレット・環境変数の扱い、ジョブ・ステップ設計、再利用可能ワークフロー、サードパーティActionのバージョン固定など、GitHub Actions実装のための規約が含まれる。
+user-invocable: false
 ---
 
 # GitHub Actions コーディング規約

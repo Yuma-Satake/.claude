@@ -1,6 +1,7 @@
 ---
 name: coding-nextjs
 description: Next.jsのコーディング規約を提供する。Next.jsのApp Routerを使う際に必ず参照すること。バージョン確認、clientコンポーネントでのparamsの取得方法、appディレクトリの共通化ファイル配置など固有の落とし穴を含む規約が含まれる。
+user-invocable: false
 ---
 
 > Next.jsファイルを編集する場合は coding-react も必ず合わせて参照すること。

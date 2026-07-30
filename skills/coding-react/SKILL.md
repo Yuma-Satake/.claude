@@ -1,6 +1,7 @@
 ---
 name: coding-react
 description: Reactのコーディング規約を提供する。Reactコンポーネント・hooksを使う際に必ず参照すること。useEffect/useRefなどのhooks使用、コンポーネント設計、コロケーションに関する規約が含まれる。
+user-invocable: false
 ---
 
 > Next.jsファイルを編集する場合は coding-nextjs も必ず合わせて参照すること。

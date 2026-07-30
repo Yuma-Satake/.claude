@@ -1,6 +1,7 @@
 ---
 name: coding-echo
 description: Echo v4のコーディング規約を提供する。EchoでHTTPエンドポイント・ミドルウェア・ルーティングを実装する際に必ず参照すること。ルート設計、ミドルウェアの書き方、データバインディング、エラーレスポンスのパターンが含まれる。
+user-invocable: false
 ---
 
 > Echo関連ファイルを編集する場合は `coding-go` も必ず合わせて参照すること。

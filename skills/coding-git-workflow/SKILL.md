@@ -1,6 +1,7 @@
 ---
 name: coding-git-workflow
 description: Git操作を行う際の規約を提供する。ブランチ切り替え・作成、ファイルのリネーム・移動、GitHub issueやPRの編集など、gitコマンドを使う場面で必ず参照すること。「ブランチを切って」「ファイルを移動して」「PRを更新して」などの操作が含まれる場合に使用する。
+user-invocable: false
 ---
 
 # Git操作規約
