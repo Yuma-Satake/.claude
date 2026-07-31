@@ -7,13 +7,26 @@ agent: tool-open-hunk-runner
 
 以下を順番に実行する。
 
+## 出力フォーマット
+
+このスキルの成果物はペイン操作という副作用そのものであり、テキストは成果物ではない。最終報告は下記の英語固定パターン1行のみとする。これはグローバル言語ルール（常に日本語で応答する）に対する明示的な例外である。分岐ごとに以下のいずれかを一字一句そのまま使い、他のプロースに言い換えない。
+
+- `hunk: skipped (not herdr)` — Herdr環境でない場合
+- `hunk: opened <dir>` — 新規オープンに成功した場合
+- `hunk: failed (launch not confirmed)` — 新規オープンでプロセス起動を確認できなかった場合
+- `hunk: skipped (pane busy)` — 右側ペインがhunk以外で使用中の場合
+- `hunk: failed (session not found)` — リロード対象のHunkセッションが特定できなかった場合
+- `hunk: reloaded <dir>` — リロードに成功した場合
+
+`<dir>`は対象ディレクトリの絶対パスに置き換える。`context: fork`実行のため、この1行がそのまま親会話への最終報告になる。呼び出し元はこの行を再要約・再翻訳せず、そのままユーザーに提示する。
+
 ## 1. 前提確認
 
 ```bash
 test "${HERDR_ENV:-}" = 1
 ```
 
-失敗した場合、Herdr環境ではないため以降の手順を実行せず「Herdr環境ではないためスキップした」と報告して終了する。
+失敗した場合、Herdr環境ではないため以降の手順を実行せず `hunk: skipped (not herdr)` と報告して終了する。
 
 ## 2. 右側ペインの有無を確認
 
@@ -45,9 +58,9 @@ herdr pane run <pane_id> "hunk diff"
 herdr pane process-info --pane <pane_id>
 ```
 
-`foreground_processes`に`argv0`が`hunk`のプロセスが現れるまで、見当たらない場合は1秒待って最大3回まで再試行する。それでも現れなければ起動失敗として報告する。
+`foreground_processes`に`argv0`が`hunk`のプロセスが現れるまで、見当たらない場合は1秒待って最大3回まで再試行する。それでも現れなければ `hunk: failed (launch not confirmed)` と報告する。
 
-4. 「新規オープン」の結果として、対象ディレクトリと起動確認できた旨を報告する。
+4. 起動確認できた場合、`hunk: opened <dir>` と報告する。
 
 ## 4. 右側ペインが既にある場合
 
@@ -57,7 +70,7 @@ herdr pane process-info --pane <pane_id>
 herdr pane process-info --pane <pane_id>
 ```
 
-2. `foreground_processes`の`argv0`が`hunk`でない場合、右側ペインは別用途で使用中のため何も変更せず「右側ペインはhunk以外が使用中のためスキップした」と報告して終了する。
+2. `foreground_processes`の`argv0`が`hunk`でない場合、右側ペインは別用途で使用中のため何も変更せず `hunk: skipped (pane busy)` と報告して終了する。
 
 3. `argv0`が`hunk`の場合、そのプロセスの`pid`を取得し、ttyを特定する
 
@@ -73,7 +86,7 @@ ps -p <pid> -o tty=
 hunk session list
 ```
 
-`location[tty]`が3で得たtty文字列と一致するセッションのIDを特定する（以下 `<session_id>`）。一致するセッションが見つからない場合は特定不能として報告する。
+`location[tty]`が3で得たtty文字列と一致するセッションのIDを特定する（以下 `<session_id>`）。一致するセッションが見つからない場合は `hunk: failed (session not found)` と報告する。
 
 5. セッションをリロードする
 
@@ -81,4 +94,4 @@ hunk session list
 hunk session reload <session_id> -- diff
 ```
 
-6. 「リロード」の結果と対象ディレクトリを報告する。
+6. リロードに成功したら `hunk: reloaded <dir>` と報告する。
