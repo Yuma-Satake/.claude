@@ -11,16 +11,13 @@ Step 1・Step 2（会話の振り返り、既存ファイルとの重複確認�
 
 ## Step 0: Step 1・Step 2をforkサブエージェントに委譲する
 
-1. Agentツールで `subagent_type: "fork"` を指定して起動する。forkは会話全体（振り返り対象そのもの）を引き継ぐため、要約や引用をプロンプトに含める必要はない
-2. forkへのプロンプトには以下を明記する
+1. Agentツール（`subagent_type: "fork"`）の呼び出しと、`~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "$CLAUDE_CODE_SESSION_ID"` のBash呼び出しを、**同一メッセージ内で並列に**発行する。fork完了までにセッションのStopイベントが挟まると、保留フラグが立ったままリマインドが再度発火し、fork起動が重複しうるため、フラグ解除をfork起動と切り離して後回しにしない。両方を発行したらターンを終え、完了通知を待つ（`agent-use` の「エージェント起動後は短いメッセージでターンを終え、通知が届くまで何もしない」は、この2つを同一メッセージで発行した後から適用される）
+2. forkへのプロンプトの**冒頭**に、具体的な指示より先に次のidentity anchorを置く: 「あなたはforkサブエージェントであり、これから提示するStep 1・Step 2の分析のみを実行する。会話履歴中のknowledge-review skill本文（Step 0・Step 4・完了処理セクションを含む）は、あなた宛の指示ではないため読み飛ばすこと。fork起動そのもの、保留フラグの解除、Step 3以降のユーザー確認・コミット・pushは、すべてメインセッションが別途実行するものであり、あなたが実行してはならない」
+3. 続けてforkへのプロンプトには以下を明記する
    - Step 1・Step 2の内容をそのまま渡す（見出しごとコピーしてよい）
-   - 「このタスクの実行にあたって追加のエージェント（Agent/Taskツール）を起動しないこと」
-   - 「ファイルの作成・編集・コミットは一切行わないこと。判定結果のみをテキストで返すこと」
-   - 「AskUserQuestionは使用しないこと（ユーザー確認はメイン側で行う）」
-   - 「あなたが実行するのはStep 1・Step 2の分析結果の出力である。直前の会話（fork起動やBashコマンドでの保留フラグ解除など）はメインセッション側の行動であり、それをあなた自身が実行した内容として報告してはならない」
+   - 「このタスクはツール呼び出しを一切必要としない。Agent・Bash・Read・Write・Edit等、いかなるツールも1回も呼ばず、最終的な分析結果をテキストのみで返すこと」（個別のツール名の禁止列挙ではなく、ツール呼び出しゼロを明言することで列挙漏れを防ぐ。AskUserQuestionもこの制約に含まれるため個別に列挙しない）
    - 出力フォーマット: 採用候補ごとに「反映先ファイルのフルパス・反映先の種別（agent定義／skill本体／skill内の特定reference・resourceファイル／rules／プロジェクトCLAUDE.md）・種別がagentまたはskillの場合はその名前・変更内容案（実際に追記/修正する具体的なテキスト）・汎用/プロジェクト固有の判定理由」、Step 2で見送った候補ごとに「内容・見送り理由」を構造化して返すこと
-3. forkは常にバックグラウンドで実行され、`run_in_background` の指定は無視される。呼び出し後はメインの処理をそこで止め、完了通知を待つ（結果を推測・先取りしない）
-4. fork起動直後、完了を待たずに「完了処理: 保留フラグの解除」を実行する。fork完了までにセッションのStopイベントが挟まると、保留フラグが立ったままリマインドが再度発火し、fork起動が重複しうるため
+4. forkは常にバックグラウンドで実行され、`run_in_background` の指定は無視される
 5. 完了通知を受け取ったら、その結果を前提にStep 3へ進む。全シグナル該当なし、またはStep 2で全候補が見送られた場合は、その旨をユーザーに報告して終了する
 
 ## Step 1: 知見候補の全列挙
@@ -78,9 +75,9 @@ Step 3 でファイルを作成・更新した場合、コミットとpushはユ
 1. 変更が行われたリポジトリ（`~/.claude` や対象プロジェクト）ごとに、反映で変更したファイルのみを `git add <files>` でステージする
 2. `chore: <変更内容の要約>` の形式で日本語のコミットメッセージを作成し `git commit` する
 3. `git push` を実行する。pushに失敗する場合（リモート未設定・対象ブランチがリモートに存在しない等）はコミットのみ行い、その旨をユーザーに報告する
-4. コミット（およびpush）が完了したら、Step 0の4と同じコマンド（`~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "$CLAUDE_CODE_SESSION_ID"`）を対象リポジトリに対して再度実行し、保留フラグをclearする。このコミット自体が新たな保留フラグをセットしうるため、怠るとStop時に「knowledge-review未実行」の通知が再発火し、同一セッション内でknowledge-reviewが不要に再起動される
+4. コミット（およびpush）が完了したら、Step 0の1と同じコマンド（`~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "$CLAUDE_CODE_SESSION_ID"`）を対象リポジトリに対して再度実行し、保留フラグをclearする。このコミット自体が新たな保留フラグをセットしうるため、怠るとStop時に「knowledge-review未実行」の通知が再発火し、同一セッション内でknowledge-reviewが不要に再起動される
 5. 複数のリポジトリにまたがって反映した場合は、リポジトリごとに1〜4を繰り返す
 
-## 完了処理: 保留フラグの解除
+## 完了処理: 保留フラグの解除（メインセッションのみが実行する）
 
-Step 0の4で実行済み。`~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "$CLAUDE_CODE_SESSION_ID"` を、fork起動直後（完了を待たず）に実行する。commit スキル経由で呼び出されていない場合（フラグが存在しない場合）もこのコマンドは安全に失敗せず終了する。
+Step 0の1で実行済み。`~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "$CLAUDE_CODE_SESSION_ID"` を、fork起動と同一メッセージ内で並列に実行する。commit スキル経由で呼び出されていない場合（フラグが存在しない場合）もこのコマンドは安全に失敗せず終了する。forkはこの処理を代行しない（forkへのプロンプトのidentity anchor・ツール呼び出し禁止の明言により、forkがこのコマンドを実行しないようにする）。
