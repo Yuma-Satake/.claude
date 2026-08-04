@@ -1,6 +1,6 @@
 ---
 name: coding-git-workflow
-description: Git操作を行う際の規約を提供する。ブランチ切り替え・作成、ファイルのリネーム・移動、GitHub issueやPRの編集など、gitコマンドを使う場面で必ず参照すること。「ブランチを切って」「ファイルを移動して」「PRを更新して」などの操作が含まれる場合に使用する。
+description: Git操作を行う際の規約を提供する。ブランチ切り替え・作成、ファイルのリネーム・移動、GitHub issueやPRの編集など、gitコマンドを使う場面で必ず参照すること。「ブランチを切って」「ファイルを移動して」「PRを更新して」などの操作が含まれる場合に使用する。PRやissueへの画像添付は専用の`tool-gh-image` skillを使用する。
 user-invocable: false
 ---
 
@@ -17,7 +17,6 @@ user-invocable: false
 - `git add <path1> <path2> ...` で複数パスを同時指定した場合、いずれか1つでもパスが存在しない（例: 既に `git rm` 済み、`git mv` でパスが変わっている）と、コマンド全体が失敗し他の正当なパスも一切ステージされない。複数パスを1コマンドでaddした直後は必ず `git status` でステージ結果を確認すること
 - `git status --short` の2文字ステータスコードは、1文字目=index（ステージ済み）、2文字目=ワークツリー（未ステージ）で独立した意味を持つ。例えば `RM` は「rename+modified という1つの状態」ではなく「indexでは既にリネーム済みだが、ワークツリーにはさらに未ステージの変更が残っている」ことを示す。1文字ずつ分けて読むこと
 
-## gh CLI 拡張
+## GitHubへの画像添付
 
-- issue や PR に画像を貼り付けたい場合、`gh image` 拡張機能を使ってアップロードし Markdown 用の URL を取得する
-- 使用例: `gh image <ファイル> --repo owner/repo` を実行すると `![alt text](url)` 形式のテキストが返るので、issue/PR 本文にそのまま貼り付ける
+issueやPRの本文・コメントに画像を貼り付ける場合は、`tool-gh-image` skillを必ず使用する。
