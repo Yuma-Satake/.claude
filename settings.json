@@ -119,12 +119,13 @@
   "effortLevel": "high",
   "advisorModel": "claude-opus-5",
   "voice": {
-    "enabled": false
+    "enabled": true,
+    "mode": "hold"
   },
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": false,
-  "voiceEnabled": false
+  "voiceEnabled": true
 }
