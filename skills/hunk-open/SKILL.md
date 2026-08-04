@@ -1,6 +1,6 @@
 ---
 name: hunk-open
-description: Herdr環境で、現在のペインの右側にHunkのdiff表示を用意する。右側にまだ無ければペインを分割してhunk diffを起動し、既に起動していればリロードする。issue-fixなど、作業完了時やレビュー修正後にユーザへ差分を見せたい場面で使用する。Herdr環境でない場合は何もしない。
+description: Herdr環境で、現在のペインの右側にHunkのdiff表示を用意する。右側にまだ無ければ現在のworktreeでhunk diffを起動し、既に起動していれば表示対象が現在のworktreeと一致することを確認する。一致すればリロードし、一致しなければ同じペインで現在のworktreeのHunkを再起動する。issue-fixなど、作業完了時やレビュー修正後にユーザへ差分を見せたい場面で使用する。Herdr環境でない場合は何もしない。
 context: fork
 agent: haiku-agent-wrapper
 background: true
@@ -17,7 +17,13 @@ background: true
 - `hunk: failed (launch not confirmed)` — 新規オープンでプロセス起動を確認できなかった場合
 - `hunk: skipped (pane busy)` — 右側ペインがhunk以外で使用中の場合
 - `hunk: failed (session not found)` — リロード対象のHunkセッションが特定できなかった場合
+- `hunk: failed (reload failed)` — Hunkセッションのリロードに失敗した場合
+- `hunk: failed (stop not confirmed)` — 別worktreeのHunkプロセスを停止できなかった場合
+- `hunk: failed (restart not confirmed)` — 対象worktreeでのHunk再起動を確認できなかった場合
+- `hunk: failed (worktree not confirmed)` — リロード後のHunkセッションを取得できなかった場合
+- `hunk: failed (worktree mismatch)` — リロードまたは再起動後もHunkセッションが対象worktreeと一致しない場合
 - `hunk: reloaded <dir>` — リロードに成功した場合
+- `hunk: reopened <dir>` — 同じ右側ペインで対象worktreeのHunk再起動に成功した場合
 
 `<dir>`は対象ディレクトリの絶対パスに置き換える。`context: fork`実行のため、この1行がそのまま親会話への最終報告になる。呼び出し元はこの行を再要約・再翻訳せず、そのままユーザーに提示する。
 
@@ -29,20 +35,32 @@ test "${HERDR_ENV:-}" = 1
 
 失敗した場合、Herdr環境ではないため以降の手順を実行せず `hunk: skipped (not herdr)` と報告して終了する。
 
-## 2. 右側ペインの有無を確認
+## 2. 対象ディレクトリを特定
+
+```bash
+if target_dir="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+  target_dir="$(cd "$target_dir" && pwd -P)"
+else
+  target_dir="$(pwd -P)"
+fi
+```
+
+Gitリポジトリ内では現在のworktreeルート、Gitリポジトリ外では現在の物理ディレクトリを対象ディレクトリとする。以降の`<dir>`には`$target_dir`を使用する。
+
+## 3. 右側ペインの有無を確認
 
 ```bash
 herdr pane layout --pane "$HERDR_PANE_ID"
 ```
 
-`panes`配列から`focused_pane_id`に一致するpaneの`rect`を自分の位置とし、それより`rect.x`が大きいpaneが右側ペインである。無ければ3、あれば4を実行する。
+`panes`配列から`focused_pane_id`に一致するpaneの`rect`を自分の位置とし、それより`rect.x`が大きいpaneが右側ペインである。無ければ4、あれば5を実行する。
 
-## 3. 右側ペインが無い場合（新規オープン）
+## 4. 右側ペインが無い場合（新規オープン）
 
 1. 新規ペインを分割する
 
 ```bash
-herdr pane split --current --direction right --cwd "$PWD" --no-focus
+herdr pane split --current --direction right --cwd "$target_dir" --no-focus
 ```
 
 `.result.pane.pane_id`を取得する（以下 `<pane_id>`）。
@@ -63,7 +81,7 @@ herdr pane process-info --pane <pane_id>
 
 4. 起動確認できた場合、`hunk: opened <dir>` と報告する。
 
-## 4. 右側ペインが既にある場合
+## 5. 右側ペインが既にある場合
 
 1. 前面プロセスを確認する
 
@@ -84,15 +102,74 @@ ps -p <pid> -o tty=
 4. 対応するHunkセッションを特定する
 
 ```bash
-hunk session list
+hunk session list --json
 ```
 
-`location[tty]`が3で得たtty文字列と一致するセッションのIDを特定する（以下 `<session_id>`）。一致するセッションが見つからない場合は `hunk: failed (session not found)` と報告する。
+`sessions[].terminal.locations[]`の`source`が`tty`かつ`tty`が3で得た文字列と一致するセッションから、`sessionId`と`repoRoot`を取得する（以下 `<session_id>`、`<session_repo_root>`）。一致するセッションが見つからない場合は `hunk: failed (session not found)` と報告する。
 
-5. セッションをリロードする
+5. Hunkセッションのworktreeを対象ディレクトリと照合する
+
+`<session_repo_root>`を`cd`して`pwd -P`で物理パスへ正規化し、`$target_dir`と比較する。正規化できない場合も不一致として扱う。
+
+6. 一致する場合は現在のセッションのディレクトリでリロードする
 
 ```bash
 hunk session reload <session_id> -- diff
 ```
 
-6. リロードに成功したら `hunk: reloaded <dir>` と報告する。
+コマンドが失敗した場合は `hunk: failed (reload failed)` と報告する。
+
+リロード後のworktreeを取得する。
+
+```bash
+hunk session get <session_id> --json
+```
+
+コマンドが失敗した場合は `hunk: failed (worktree not confirmed)` と報告する。
+
+`session.repoRoot`を`cd`して`pwd -P`で物理パスへ正規化し、`$target_dir`と比較する。一致しない場合や正規化できない場合は `hunk: failed (worktree mismatch)` と報告する。
+
+一致を確認できたら `hunk: reloaded <dir>` と報告する。
+
+7. 一致しない場合は、同じ右側ペインでHunkを対象ディレクトリから再起動する
+
+現在のHunkを停止する。
+
+```bash
+herdr pane send-keys <pane_id> 'ctrl+c'
+```
+
+停止確認のためプロセス情報を取得する。
+
+```bash
+herdr pane process-info --pane <pane_id>
+```
+
+`foreground_processes`に`argv0`が`hunk`のプロセスが残っている場合は1秒待って最大3回まで再試行する。それでも残っていれば `hunk: failed (stop not confirmed)` と報告する。
+
+対象ディレクトリをshell用にエスケープし、同じペインでHunkを起動する。
+
+```bash
+target_dir_q="$(printf '%q' "$target_dir")"
+herdr pane run <pane_id> "cd -- $target_dir_q && hunk diff"
+```
+
+起動確認のためプロセス情報を取得する。
+
+```bash
+herdr pane process-info --pane <pane_id>
+```
+
+`foreground_processes`に`argv0`が`hunk`のプロセスが現れるまで、見当たらない場合は1秒待って最大3回まで再試行する。それでも現れなければ `hunk: failed (restart not confirmed)` と報告する。
+
+8. 再起動後のworktreeを確認する
+
+```bash
+hunk session list --json
+```
+
+4で得たtty文字列と一致し、かつ`sessionId`が再起動前の`<session_id>`と異なるセッションが現れるまで、見当たらない場合は1秒待って最大3回まで再試行する。再起動前のセッションが同じttyで残っていても対象にしない。それでも新しいセッションが見つからなければ `hunk: failed (session not found)` と報告する。
+
+一致するセッションの`repoRoot`を`cd`して`pwd -P`で物理パスへ正規化し、`$target_dir`と比較する。一致しない場合や正規化できない場合は `hunk: failed (worktree mismatch)` と報告する。
+
+一致を確認できたら `hunk: reopened <dir>` と報告する。
