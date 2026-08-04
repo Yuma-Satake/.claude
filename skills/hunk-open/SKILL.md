@@ -1,5 +1,5 @@
 ---
-name: tool-open-hunk
+name: hunk-open
 description: Herdr環境で、現在のペインの右側にHunkのdiff表示を用意する。右側にまだ無ければペインを分割してhunk diffを起動し、既に起動していればリロードする。issue-fixなど、作業完了時やレビュー修正後にユーザへ差分を見せたい場面で使用する。Herdr環境でない場合は何もしない。
 context: fork
 agent: haiku-agent-wrapper
