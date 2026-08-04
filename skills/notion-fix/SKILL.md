@@ -59,6 +59,8 @@ EnterWorktreeで呼び出しごとに新しい独立したworktreeを作成し�
 ## worktreeとブランチの命名
 
 - 短い識別子は `<タイトルスラッグ>-<ページIDサフィックス>` とする
+- worktree名は `notion-<対象ページの短い識別子>-<実行ID>` とする
+- 新規対応のブランチ名はworktree名と完全に同じ名前にする
 - タイトルスラッグはページタイトルを小文字化し、ASCII英数字以外の連続をハイフン1文字へ置換し、最大32文字に切り詰めてから先頭と末尾のハイフンを除去する。結果が空の場合は `page` を使用する
 - ページIDサフィックスには、ハイフンを除去して小文字化したページIDの末尾12文字を使用する
 - ページIDを取得できない、または正規化後のページIDが12文字未満の場合は、指定形式の識別子を生成できない旨と原因をメインコンテキストへ返し、worktreeを作成せず処理を終了する
@@ -97,12 +99,13 @@ TaskCreateで以下のタスクを作成し、各工程の開始時にin_progres
 ### 2. ブランチ設定
 
 - この呼び出し専用の実行IDとして小文字のUUIDを1つ生成する
-- EnterWorktreeに `name: "notion-<対象ページの短い識別子>-<実行ID>"` を指定する
+- `notion-<対象ページの短い識別子>-<実行ID>` をworktree名として保持する
+- EnterWorktreeの `name` にはworktree名を指定する
 - EnterWorktreeの実行前に同名worktreeが存在しないことを確認する。存在する場合は実行IDを再生成し、必ず未使用の名前にする
 - 同じNotionタスクまたは対応する既存PRのworktreeが別名で存在しても再開しない
 - 現在のセッションが別のworktree内にある場合は、AskUserQuestionで終了可否を確認し、承認された場合だけExitWorktreeを実行する
 - EnterWorktreeが既存worktreeを再開した場合は、その中で一切作業せず、直ちにExitWorktreeで離脱する。未コミットの変更などにより離脱できない場合はユーザへ報告して停止する。離脱後に新しい実行IDを生成し、別のworktreeを新規作成する
-- 新規対応では、作成されたブランチを `feature/notion-<対象ページの短い識別子>-<実行ID>` にリネームする
+- 新規対応では、作成されたブランチをworktree名と完全に同じ名前へリネームする
 - 既存PRを継続する場合は、PRのheadリポジトリ、headリモート、headブランチを記録し、最新headをfetchする。ローカルにheadブランチが存在する場合は、新しいworktree内で `git switch --ignore-other-worktrees <headブランチ>` を実行する。存在しない場合は `git switch --track -c <headブランチ> <headリモート>/<headブランチ>` を実行する。その後、`git merge --ff-only <headリモート>/<headブランチ>` で最新headまでfast-forwardする
 - 既存PRのブランチが古いworktreeに紐づいていても、そのworktreeを再利用せず、`gh pr checkout` も使用しない。共有するのはPRのブランチだけであり、作業するworktreeは必ず今回新規作成したものにする
 - 既存PRを更新するときは現在のheadブランチを元のheadリポジトリへpushし、既存PRを更新する。別PRを作成しない
@@ -161,6 +164,7 @@ Plan確定後、`notion-create-comment` で対象ページへ次を一度だけ�
 
 ### 5. 実装
 
+- 現在いるリポジトリが`sdd-cuckoo-workspace`だった場合、`open-feature`を実行する。ブランチ名が必要になるので、worktree名と同じ名前のブランチを指定する
 - 承認済みのPlanに沿って実装する
 - ユーザの追加指示を反映する
 - 独立した変更や調査は積極的に並列化する
