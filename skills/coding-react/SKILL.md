@@ -13,6 +13,7 @@ user-invocable: false
 - hooksの引数としてミュータブルな値やオブジェクトを渡しても、引数の値が変更されてもその変更がhooksの中では反映されないことを理解した上で実装すること
 - `useEffect` の第2引数の依存配列には、本当にそのhooksを再実行するために監視が必要な値のみを含めること
 - `useRef` はそれを使わないと実現不可能な場合を除き使用しないこと
+- 非同期処理の進行中フラグ (「送信中」「保存中」など) を `useState<boolean>` + `setPending(true)` / `try { ... await ... } finally { setPending(false) }` の手動制御で扱わないこと。代わりに `useTransition` を使い、`startTransition` を使用すること
 
 ## コンポーネント
 
