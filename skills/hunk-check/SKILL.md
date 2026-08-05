@@ -73,7 +73,8 @@ Hunkには返信スレッドやresolve状態がないため、対応済み注記
 
 - `newRange` がある場合はその先頭を `--new-line`、なければ `oldRange` の先頭を `--old-line` に指定する
 - `--summary` は `対応済み: <実施した変更>`、`--author` は `hunk-check` とする
-- `--rationale` の先頭に `source-note: <元コメントのnoteId>` を記載し、必要に応じてその後へ検証内容を記載する
+- `--rationale` の先頭に `source-note: <元コメントのnoteId>` を記載し、必要に応じてその後へ対応理由や補足を記載する
+- lint・テスト・ビルドの通過や実行結果などの検証内容は、対応済み注記の文章に記載しない。検証結果は最終報告にのみ記載する
 - `--summary`・`--rationale` には、紐づく元コメント1件に対する対応内容のみを書く。他のコメントへの言及や、複数コメントをまとめた全体的な対応内容・総括は書かない
 - 対応と検証の両方が成功したコメントにだけ追加する。未対応、部分対応、検証失敗には追加しない
 - 既存コメントのうち、`author` が `hunk-check` かつ `body` に同じ `source-note: <noteId>` を含むものがある場合は重複追加しない。`comment list` では追加時のsummaryとrationaleが`body`へ結合される
