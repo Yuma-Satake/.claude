@@ -19,6 +19,7 @@ user-invocable: false
 - 共通コンポーネントを使用する際、該当箇所のニーズを満たすために、無理に共通コンポーネントを拡張して使用することは避ける（例: `!important` でスタイルを当てる/共通コンポーネント自体を安易に拡張する）
 - ReactコンポーネントはJSDocの記載対象とする
 - `React.Component` のように、Reactのパッケージをインポートする際には、`React.` で使用せず、直接importして使用すること
+- `import('react').ReactElement` のようなインラインimport型は使用せず、`import type { ReactElement } from 'react'` のようにファイル先頭でimportすること
 
 ## コンポーネント設計
 
@@ -47,4 +48,3 @@ feature内のディレクトリ構成:
 | `/types` | そのfeature内でのみ使用されるtype定義 |
 | `/const` | そのfeature内でのみ使用される定数 |
 | `/services` | そのfeature内でのみ使用されるAPI通信などのサービス関数 |
-
