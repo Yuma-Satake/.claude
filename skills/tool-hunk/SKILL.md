@@ -145,6 +145,7 @@ Guidelines:
 
 ## Common errors
 
+- **Session loaded but `review` returns `files: []` / `fileCount: 0`** -- the plain `diff` command only shows unstaged changes. If the target changes are staged (`git add`ed) but not committed, they won't appear. Reload with `diff HEAD` to include both staged and unstaged changes against HEAD: `hunk session reload --repo . -- diff HEAD`.
 - **"No visible diff file matches ..."** -- the file is not in the loaded review. Check `context`, then `reload` if needed.
 - **"No active Hunk sessions"** -- if Hunk is visibly running, localhost may be blocked by the agent sandbox; retry with network/sandbox escalation. Otherwise ask the user to open Hunk.
 - **"Multiple active sessions match"** -- pass `<session-id>` explicitly.
