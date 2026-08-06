@@ -42,8 +42,12 @@ fi
 
 CWD=$(basename "$(pwd)")
 
-if [ "${CLAUDE_CODE_USE_BEDROCK}" = "1" ]; then
-  echo -e "${BOLD}/${CWD}${RESET} ${MODEL} (🧠Bedrock) ${COLOR}[${BAR}] ${PCT}%${RESET}"
+HAS_RATE_LIMITS=$(echo "$input" | jq -r 'if .rate_limits.five_hour.used_percentage != null then "1" else "0" end')
+
+if [ "$HAS_RATE_LIMITS" = "0" ]; then
+  LABEL=""
+  [ "${CLAUDE_CODE_USE_BEDROCK}" = "1" ] && LABEL=" (🧠Bedrock)"
+  echo -e "${BOLD}/${CWD}${RESET} ${MODEL}${LABEL} ${COLOR}[${BAR}] ${PCT}%${RESET}"
 else
   PREFIX="${BOLD}${MODEL}${RESET}"
   [ -n "$GIT_BRANCH" ] && PREFIX="${BOLD}⎇ ${GIT_BRANCH}${RESET} ${BOLD}${MODEL}${RESET}"
