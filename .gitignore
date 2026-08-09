@@ -40,3 +40,4 @@ settings.local.json
 daemon.log
 daemon/
 jobs/
+scheduled_tasks.lock
