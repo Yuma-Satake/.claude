@@ -133,7 +133,7 @@ herdr pane split --current --direction right --cwd "$target_dir" --no-focus
 2. Hunkを起動する
 
 ```bash
-herdr pane run <pane_id> "hunk diff"
+herdr pane run <pane_id> "hunk diff HEAD"
 ```
 
 3. 起動確認のためプロセス情報を取得する
@@ -179,7 +179,7 @@ hunk session list --json
 6. 一致する場合は現在のセッションのディレクトリでリロードする
 
 ```bash
-hunk session reload <session_id> -- diff
+hunk session reload <session_id> -- diff HEAD
 ```
 
 コマンドが失敗した場合は `hunk: failed (reload failed)` と報告する。
@@ -216,7 +216,7 @@ herdr pane process-info --pane <pane_id>
 
 ```bash
 target_dir_q="$(printf '%q' "$target_dir")"
-herdr pane run <pane_id> "cd -- $target_dir_q && hunk diff"
+herdr pane run <pane_id> "cd -- $target_dir_q && hunk diff HEAD"
 ```
 
 起動確認のためプロセス情報を取得する。
