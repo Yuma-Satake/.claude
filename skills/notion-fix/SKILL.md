@@ -108,7 +108,7 @@ TaskCreateで以下のタスクを作成し、各工程の開始時にin_progres
 
 ### 2. ブランチ設定
 
-- この呼び出し専用の実行IDとして小文字のUUIDを1つ生成する
+- この呼び出し専用の実行IDとして小文字のUUIDを1つ生成し、先頭8文字を実行IDとする
 - `notion-<対象ページの短い識別子>-<実行ID>` をworktree名として保持する
 - EnterWorktreeの `name` にはworktree名を指定する
 - EnterWorktreeの実行前に同名worktreeが存在しないことを確認する。存在する場合は実行IDを再生成し、必ず未使用の名前にする
