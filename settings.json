@@ -83,6 +83,15 @@
         ]
       },
       {
+        "matcher": "mcp__notion__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Notion MCPツール使用時は必ずmcp-notionスキル（~/.claude/skills/mcp-notion/SKILL.md）を確認してから操作する\"}}'"
+          }
+        ]
+      },
+      {
         "matcher": "Agent",
         "hooks": [
           {

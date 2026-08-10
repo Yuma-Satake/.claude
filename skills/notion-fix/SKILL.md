@@ -17,14 +17,17 @@ argument-hint: "[NotionページURL/ID/検索語] [追加指示]"
 
 ## Notion MCPの使用
 
-Notionの検索、取得、コメント取得、コメント投稿は必ずNotion MCPで行う。Notion APIへの直接リクエスト、`curl`、独自スクリプト、ブラウザ操作は使用しない。
+Notionの検索、取得、コメント取得、本文更新は必ずNotion MCPで行う。Notion APIへの直接リクエスト、`curl`、独自スクリプト、ブラウザ操作は使用しない。
+
+このプロジェクトのNotion MCPサーバー（`@notionhq/notion-mcp-server`）のツール名は `API-` プレフィックスのOpenAPIラッパー形式である。ベストプラクティスは `mcp-notion` スキル（~/.claude/skills/mcp-notion/SKILL.md）を参照する。
 
 使用するNotion MCPツール:
 
-- `notion-search`: 検索語から対象ページを特定する
-- `notion-fetch`: 対象ページ、関連ページ、親データソースを取得する
-- `notion-get-comments`: 対象ページのコメントとディスカッションを取得する
-- `notion-create-comment`: 確定した実装方針を対象ページへ記録する
+- `API-post-search`: 検索語から対象ページを特定する
+- `API-retrieve-a-page`: 対象ページ、関連ページのプロパティと親データソースの参照を取得する
+- `API-retrieve-page-markdown`: 対象ページの本文をMarkdownとして取得する
+- `API-retrieve-a-comment`: 対象ページ直下の未解決コメントを取得する（`block_id` にページIDを渡す）
+- `API-patch-block-children`: 確定した実装方針を対象ページの本文末尾へ追記する（`block_id` にページIDを渡し、`after` は省略する。`children` はMarkdown文字列ではなくNotionのブロックオブジェクト配列で渡す）
 
 ツールが遅延ロードされている場合はToolSearchでNotion MCPツールを検索してから使用する。Notion MCPが未接続、認証切れ、または対象ページへのアクセス権がない場合は、その事実と必要な対応を報告して終了する。
 
@@ -57,12 +60,12 @@ EnterWorktreeで呼び出しごとに新しい独立したworktreeを作成し�
 
 対象の特定と情報収集は、手順1のサブエージェントが一括して実行する。メインコンテキストではNotion本文やコメントの生データを取得しない。
 
-1. URL、ページID、データソースIDが指定された場合は `notion-fetch` で取得する
-2. 検索語が指定された場合は `notion-search` で候補を検索し、候補ページを `notion-fetch` で取得する
+1. URL、ページID、データソースIDが指定された場合は対象種別に応じて `API-retrieve-a-page` / `API-retrieve-a-data-source` / `API-retrieve-a-database` で取得する
+2. 検索語が指定された場合は `API-post-search` で候補を検索し、候補ページを `API-retrieve-a-page` で取得する
 3. 検索結果が複数あり一意に特定できない場合は、候補のタイトルとURLをメインへ返し、AskUserQuestionで対象を確認する
 4. 対象がデータベースまたはデータソース自体の場合は、実装対象となる個別のタスクページを確認する
 5. 取得したページの親がデータソースまたはデータベースであることを確認する。該当しない場合は、データソース内のタスクページではない旨をメインへ返す
-6. 対象ページのID、URL、タイトル、短い識別子をメインへ返し、以後のworktree名、ブランチ名、既存PR確認、コメント投稿に使用する
+6. 対象ページのID、URL、タイトル、短い識別子をメインへ返し、以後のworktree名、ブランチ名、既存PR確認、本文追記に使用する
 
 対象が見つからない場合は、URL、ID、検索語、Notion MCPのアクセス権を確認する。推測で別のページを選ばない。
 
@@ -94,8 +97,8 @@ TaskCreateで以下のタスクを作成し、各工程の開始時にin_progres
 
 サブエージェントへ次を依頼する。
 
-- `notion-fetch` による本文、プロパティ、親データソースの取得
-- `notion-get-comments` によるコメントとディスカッションの取得
+- `API-retrieve-a-page` によるプロパティ、親データソースの取得と `API-retrieve-page-markdown` による本文の取得
+- `API-retrieve-a-comment` による対象ページ直下の未解決コメントの取得
 - 本文やプロパティから参照される関連Notionページの確認。関連ページは1段階だけ辿る
 - 外部リンクと、リンク先で言及されるGitHub issueまたはPRの確認
 - 対象ページのURLとページIDをそれぞれ `gh pr list --state all --search` で検索し、PR側だけから対象ページを参照している既存PRの確認
@@ -168,14 +171,14 @@ TaskCreateで以下のタスクを作成し、各工程の開始時にin_progres
 - <調査で見つかったが今回実装しない改善。該当する場合のみ>
 ```
 
-Plan確定後、`notion-create-comment` で対象ページへ次を一度だけ投稿する。
+Plan確定後、`API-patch-block-children` で対象ページの本文末尾へ次を一度だけ追記する。`block_id` にページIDを渡し、`after` は省略する。既存の本文は保持し、コメントとしては投稿しない（コメントは編集できないため）。
 
 - 選択したアプローチ
 - 選択理由
 - 検討した代替案
 - 主要な変更箇所
 
-コメントは簡潔な箇条書きとし、要約や導入文を付けない。コメント投稿に失敗した場合は失敗を明示し、実装を成功扱いのまま黙って続行しない。権限または一時的なNotion MCPエラーなら、再試行可能性を判断して対処する。
+追記は簡潔な箇条書きとし、要約や導入文を付けない。追記に失敗した場合は失敗を明示し、実装を成功扱いのまま黙って続行しない。権限または一時的なNotion MCPエラーなら、再試行可能性を判断して対処する。
 
 ### 5. 実装
 
@@ -231,4 +234,4 @@ Plan確定後、`notion-create-comment` で対象ページへ次を一度だけ�
 - worktreeのパスとブランチ名
 - ExitWorktreeはユーザの明示的な指示があるまで実行しないこと
 
-Notionページのステータスやプロパティは自動更新しない。ユーザから明示的に依頼された場合のみ `notion-update-page` を使用する。
+Notionページのステータスやプロパティは自動更新しない。ユーザから明示的に依頼された場合のみ `API-patch-page` でステータスやプロパティを更新する（本文追記とは別用途）。
