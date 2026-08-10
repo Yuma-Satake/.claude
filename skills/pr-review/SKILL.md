@@ -62,6 +62,7 @@ argument-hint: "[pr-number]"
   - PR番号省略時: 現在のディレクトリの `git diff $(git merge-base origin/<デフォルトブランチ> HEAD)` で確認できる旨
 - 変更の概要（わかる範囲で）
 - 割り当てるskill名（1体につき1skillのみ）
+- 今回並列起動する全code-reviewerへの割り当てskill名の一覧
 - 「このタスクの調査・実行にあたって追加のエージェントを起動しないこと」
 - 「ReportFindingsツールで指摘を報告すること」
 
