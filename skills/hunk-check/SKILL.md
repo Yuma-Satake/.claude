@@ -58,7 +58,9 @@ done
 
 ## セッションが見つからない場合
 
-現在のworktreeに対応するライブセッションがないことを伝え、ユーザーにそのworktreeで `hunk diff` を起動してもらう。別のworktreeやリポジトリのセッションからコメントを回収しない。
+matchingSessionCountが0の場合、すぐに「セッションなし」と結論づけない。スタックPR（`gh stack`等）の子ブランチ用に軽量worktreeを追加して作業している場合、親ブランチのworktreeに紐づく既存セッションのdiff表示先が `hunk session reload -- diff <base>...<head>` で子ブランチとの差分へリダイレクトされて使われていることがある。`hunk session list --json` で他worktreeのセッションのdiff対象（source/target）を確認し、現在のブランチの差分を表示しているセッションがあればそれを使う。
+
+該当セッションが見つからない場合のみ、現在のworktreeに対応するライブセッションがないことを伝え、ユーザーにそのworktreeで `hunk diff` を起動してもらう。無関係な別worktree・別リポジトリのセッションからコメントを回収しない。
 
 ## 対応方針
 
