@@ -216,6 +216,7 @@ Plan確定後、`API-patch-block-children` で対象ページの本文末尾へ�
 - スコープ外の既存画面やconsumerへの変更拡大を提案しないこと
 - 割り当てるskill名
 - 今回並列起動する全code-reviewerへの割り当てskill名の一覧
+- coding-regressionを割り当てる場合、対象NotionページのURLまたはID
 - 追加のエージェントを起動しないこと
 
 すべての結果を回収し、重複を除いて必須修正へ対応する。修正が必要なskillだけ再レビューし、指摘がなくなるまで繰り返す。

@@ -50,6 +50,8 @@ argument-hint: "[pr-number]"
 - レビュー用skillには **coding-standards を常に無条件で含める**。言語・フレームワーク・レイヤーを問わず適用される規約であるため、ユーザーに確認せず必ず含める
 - レビュー用skillには **coding-architecture も原則含める**。変更差分が特定の単一層にとどまるなど、関心の分離・DRY原則の観点からどう見ても不要と判断できる場合に限り、含めないことができる。その場合は判断根拠をユーザに明示する
 - 上記2つ以外の追加skillは、変更ファイルの言語・フレームワーク・レイヤーから候補を推論し、**AskUserQuestion** の multiSelect: true で変更内容に適したskillsを提示して確認する（推奨候補をデフォルト選択trueにする。`coding-standards`/`coding-architecture` は選択肢に含めない）
+- PR番号省略時（ローカルdiff）で `coding-regression` を選定skillに含める場合、対象のissue番号またはNotionページのURLを確認する。ローカルdiffでの変更は基本的に既存のissue・Notionタスクを元に実装しているため、この参照を必須情報として扱う（自由入力のため通常のテキストで確認し、AskUserQuestionは使わない）
+  - 参照が得られない場合、**AskUserQuestion** で「`coding-regression` を含めずに進めてよいか」を確認する。同意が得られた場合のみ `coding-regression` を選定skillから外し、除外した理由を完了時報告に記載する
 
 ## 3. レビュー実行
 
@@ -63,6 +65,7 @@ argument-hint: "[pr-number]"
 - 変更の概要（わかる範囲で）
 - 割り当てるskill名（1体につき1skillのみ）
 - 今回並列起動する全code-reviewerへの割り当てskill名の一覧
+- `coding-regression` を割り当てる場合、PR番号省略時（ローカルdiff）は2.で確認したissue番号またはNotionページのURL
 - 「このタスクの調査・実行にあたって追加のエージェントを起動しないこと」
 - 「ReportFindingsツールで指摘を報告すること」
 

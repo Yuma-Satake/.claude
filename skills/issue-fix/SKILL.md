@@ -219,6 +219,7 @@ Planに沿って実装する。
 - スコープ外の既存画面やconsumerへの変更拡大を提案しないこと
 - 割り当てるskill名（code-reviewerがSkillツールでロードしてレビューに活用する。1体につき1 skillのみ）
 - 今回並列起動する全code-reviewerへの割り当てskill名の一覧
+- coding-regressionを割り当てる場合、対象issueの番号
 - 「このタスクの調査・実行にあたって追加のエージェントを起動しないこと」
 
 指摘への対応:
