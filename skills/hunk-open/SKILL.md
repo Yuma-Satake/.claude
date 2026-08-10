@@ -2,7 +2,7 @@
 name: hunk-open
 description: Herdr環境で、現在のペインの右側にHunkのdiff表示を用意する。会話内で実際に編集したファイルのGitルートを最優先し、submodule内部の差分はsubmodule直下で表示する。対象が会話から分からない場合だけ現在または兄弟worktreeから未コミット差分を持つリポジトリを特定する。右側にまだ無ければhunk diffを起動し、既に起動していれば表示対象を照合してリロードまたは再起動する。issue-fixなど、作業完了時やレビュー修正後にユーザへ差分を見せたい場面で使用する。Herdr環境でない場合は何もしない。
 context: fork
-agent: haiku-agent-wrapper
+agent: sonnet-agent-wrapper
 background: true
 ---
 
