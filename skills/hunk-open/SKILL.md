@@ -74,24 +74,38 @@ Gitリポジトリ外の場合は差分対象を解決できないため、`hunk
 
 ### 2.3 リポジトリの未コミット差分判定
 
-候補にするのは、次のコマンドの出力が空でないリポジトリだけとする。
+候補にするのは、次のコマンドの出力から2.3.1の除外を行った後も1行以上残るリポジトリだけとする。
 
 ```bash
 git -C <repo> status --porcelain --untracked-files=all --ignore-submodules=dirty
 ```
 
-`--ignore-submodules=dirty`はsuperproject側の` m <submodule>`をroot自身の差分と誤認しないために必要である。gitlink自体の更新、rootの通常ファイル、ステージ済み変更、未追跡ファイルは引き続き差分として検出される。
+`--ignore-submodules=dirty`はsubmodule**作業ツリー内**の未コミット変更を無視するだけであり、submoduleが指すコミット（gitlink）自体がrootの記録から進んでいる場合は、作業ツリーがclean でも` M <submodule_path>`が引き続き出力される。多くのマルチリポワークスペースでは「submoduleの参照コミットは明示指示があるまでrootにコミットしない」運用を取っており、submodule単体で作業している間はrootで常にこの行が現れる。これは実コードの差分ではなく参照ポインタの遅延であり、Hunkもsuperproject側では展開して表示できない（2の前文）ため、そのままでは無関係なrootを候補に誤検出し続ける。ステージ済み変更・通常ファイルの変更・未追跡ファイルは引き続き差分として検出してよい。
+
+### 2.3.1 gitlinkのみの行を除外する
+
+1. `<repo>/.gitmodules`が存在する場合、次でsubmoduleパスの一覧を取得する。
+
+```bash
+git -C <repo> config --file .gitmodules --get-regexp path
+```
+
+2. 2.3のstatus出力の各行から、先頭のステータスコード2文字と空白を除いたパス部分を取り出す（リネームの場合は`->`以降を使う）。
+3. そのパスが1で得たsubmoduleパスのいずれかに完全一致する行を除外する。
+4. `.gitmodules`が無い場合はこの除外を行わず、2.3の出力をそのまま使う。
+
+除外後に1行も残らない場合、そのリポジトリはgitlinkの遅延のみであり候補にしない。1行以上残る場合、そのリポジトリを候補にする（gitlink行自体は除外済みだが、他の行が候補判定を成立させている状態）。
 
 ### 2.4 現在worktree内の候補を収集
 
-1. `<current_repo>`自身が2.3の条件を満たす場合は候補に加える。
+1. `<current_repo>`自身が2.3・2.3.1の条件を満たす場合は候補に加える。
 2. `<current_repo>/.gitmodules`が存在する場合、次でsubmoduleパスを列挙する。
 
 ```bash
 git -C "$current_repo" config --file .gitmodules --get-regexp path
 ```
 
-3. 各`<current_repo>/<submodule_path>`がGitリポジトリとして初期化済みで、2.3の条件を満たす場合は、そのsubmoduleの物理パスを候補に加える。
+3. 各`<current_repo>/<submodule_path>`がGitリポジトリとして初期化済みで、2.3・2.3.1の条件を満たす場合は、そのsubmoduleの物理パスを候補に加える。
 4. 候補パスは`cd <path> && pwd -P`で正規化し、重複を除く。
 
 現在worktree内の候補が1件なら、そのパスを`target_dir`として手順3へ進む。2件以上なら単一ペインの表示対象を推測せず、`hunk: failed (diff target ambiguous)` と報告して終了する。
