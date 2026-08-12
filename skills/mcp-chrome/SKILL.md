@@ -22,6 +22,7 @@ user-invocable: false
 | Grok（x.com/i/grok） | `references/grok.md` | Grok でチャット送信・回答取得を行うとき |
 | OAuth 認証（Google/X/Apple 等） | `references/oauth.md` | OAuth ボタン経由のログインが必要なとき |
 | Google Workspace 管理コンソール（admin.google.com） | `references/google-admin.md` | ユーザー・グループ管理などadmin.google.comを操作するとき |
+| Gmail（mail.google.com） | `references/gmail.md` | メッセージパーマリンクからスレッドを開く・返信するとき |
 | ブラウザ操作パターン（汎用） | `references/browser-patterns.md` | フォーム入力・値取得・DOM 操作・ダイアログ回避など具体的テクニックが必要なとき |
 
 新しいサイトのナレッジが溜まったら、`references/{site-name}.md` を追加して上表に追記すること。

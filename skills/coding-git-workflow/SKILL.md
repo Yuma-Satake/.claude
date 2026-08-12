@@ -17,6 +17,8 @@ user-invocable: false
 - `git add <path1> <path2> ...` で複数パスを同時指定した場合、いずれか1つでもパスが存在しない（例: 既に `git rm` 済み、`git mv` でパスが変わっている）と、コマンド全体が失敗し他の正当なパスも一切ステージされない。複数パスを1コマンドでaddした直後は必ず `git status` でステージ結果を確認すること
 - `git status --short` の2文字ステータスコードは、1文字目=index（ステージ済み）、2文字目=ワークツリー（未ステージ）で独立した意味を持つ。例えば `RM` は「rename+modified という1つの状態」ではなく「indexでは既にリネーム済みだが、ワークツリーにはさらに未ステージの変更が残っている」ことを示す。1文字ずつ分けて読むこと
 
+- GitHub REST API（`gh api`経由も含む）でissue・PR作成時に`labels`へ未作成のラベル名を指定した場合の挙動は公式ドキュメントに明記されていない（[Create an issue](https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue)は「Only users with push access can set labels for new issues. Labels are silently dropped otherwise.」とのみ記載）。ラベルを使う自動化を組む場合は、未作成ラベル名を渡して自動作成に賭けるのではなく、事前に`gh label create`で対象ラベルを作成しておくこと
+
 ## GitHubへの画像添付
 
 issueやPRの本文・コメントに画像を貼り付ける場合は、`tool-gh-image` skillを必ず使用する。
