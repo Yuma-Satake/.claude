@@ -41,3 +41,7 @@ daemon.log
 daemon/
 jobs/
 scheduled_tasks.lock
+gh-review-reactions.cache
+pr-reactions-seen.txt
+pr-review-seen.txt
+watch-review-requests.lock
