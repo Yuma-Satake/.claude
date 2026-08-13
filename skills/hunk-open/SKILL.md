@@ -1,6 +1,6 @@
 ---
 name: hunk-open
-description: Herdr環境で、現在のペインの右側にHunkのdiff表示を用意する。会話内で実際に編集したファイルのGitルートを最優先し、submodule内部の差分はsubmodule直下で表示する。対象が会話から分からない場合だけ現在または兄弟worktreeから未コミット差分を持つリポジトリを特定する。右側にまだ無ければhunk diffを起動し、既に起動していれば表示対象を照合してリロードまたは再起動する。issue-fixなど、作業完了時やレビュー修正後にユーザへ差分を見せたい場面で使用する。Herdr環境でない場合は何もしない。
+description: Herdr環境で、現在のペインの右側にHunkのdiff表示を用意する。会話内で実際に編集したファイルのGitルートを最優先し、submodule内部の差分はsubmodule直下で表示する。対象が会話から分からない場合だけ現在または兄弟worktreeから未コミット差分を持つリポジトリを特定する。直前の作業が既にコミット済みで作業ツリーがcleanな場合は、そのコミット自体を差分に含める。右側にまだ無ければhunk diffを起動し、既に起動していれば表示対象を照合してリロードまたは再起動する。issue-fixなど、作業完了時やレビュー修正後にユーザへ差分を見せたい場面で使用する。Herdr環境でない場合は何もしない。
 ---
 
 以下を順番に実行する。
@@ -123,6 +123,26 @@ git -C "$current_repo" worktree list --porcelain
 
 以降の`<dir>`には`$target_dir`を使用する。`target_dir`がsubmoduleの場合、superprojectではなくsubmodule直下で`hunk diff`を起動する。
 
+### 2.7 差分ベースを決定する
+
+`target_dir`の作業ツリーに未コミットの変更が無い場合、`hunk diff HEAD`は常に空の差分になり、直前の作業がコミット済みであってもユーザーに何も見せられない。以下でHunkに渡す差分ベース（以下 `$diff_base`）を決定する。
+
+```bash
+git -C "$target_dir" status --porcelain --untracked-files=all --ignore-submodules=dirty
+```
+
+1. 出力が1行以上ある場合（未コミットの変更がある）、`diff_base=HEAD`とする。
+2. 出力が空の場合（作業ツリーがclean＝直前の作業は既にコミット済み）、まず会話内の記録から、このタスク中に`target_dir`へ複数コミットを行ったかを確認する。複数コミットしている場合、`HEAD~1`では直前1コミットしか差分に含まれずタスク全体の変更を見せられない。この場合は`diff_base`にタスク開始時点のHEAD（タスクで最初にコミットする直前のコミット）を使う。1コミットのみ、または会話内にコミット履行の記録が無い場合は次に進む。
+3. 上記に当たらない場合、親コミットの存在を確認する。
+
+```bash
+git -C "$target_dir" rev-parse --verify -q HEAD~1
+```
+
+成功すれば`diff_base=HEAD~1`とし、直前のコミット自体の変更を差分に含める。失敗する場合（HEADがリポジトリ最初のコミットで親が無い等）は`diff_base=HEAD`のままとする。
+
+以降の`hunk diff HEAD`は全て`hunk diff $diff_base`に読み替える。
+
 ## 3. 右側ペインの有無を確認
 
 ```bash
@@ -144,7 +164,7 @@ herdr pane split --current --direction right --cwd "$target_dir" --no-focus
 2. Hunkを起動する
 
 ```bash
-herdr pane run <pane_id> "hunk diff HEAD"
+herdr pane run <pane_id> "hunk diff $diff_base"
 ```
 
 3. 起動確認のためプロセス情報を取得する
@@ -190,7 +210,7 @@ hunk session list --json
 6. 一致する場合は現在のセッションのディレクトリでリロードする
 
 ```bash
-hunk session reload <session_id> -- diff HEAD
+hunk session reload <session_id> -- diff $diff_base
 ```
 
 コマンドが失敗した場合は `hunk: failed (reload failed)` と報告する。
@@ -227,7 +247,7 @@ herdr pane process-info --pane <pane_id>
 
 ```bash
 target_dir_q="$(printf '%q' "$target_dir")"
-herdr pane run <pane_id> "cd -- $target_dir_q && hunk diff HEAD"
+herdr pane run <pane_id> "cd -- $target_dir_q && hunk diff $diff_base"
 ```
 
 起動確認のためプロセス情報を取得する。
