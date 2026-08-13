@@ -9,3 +9,7 @@ user-invocable: false
 ## タイムスタンプ
 
 - CreateAt, UpdateAtは外部から受け取らず、DB層やDB自体で生成するようにする
+
+## マイグレーション
+
+- 適用済み（他環境で実行済み）のmigrationファイルは、コメントであっても手動で書き換えない。Prisma等は`_prisma_migrations`のようなテーブルにmigrationファイルのchecksumを保存し、デプロイ時に既存ファイルの内容と照合する。内容を変更すると、そのmigrationが既に適用された環境（dev/stg/prod）でchecksum不一致エラーが発生し、デプロイが止まる。記述の誤り・古さに気づいた場合は、まだ未適用（ローカルのみ・未マージ）であることを確認してから修正するか、後続のmigrationやドキュメントで補足する
