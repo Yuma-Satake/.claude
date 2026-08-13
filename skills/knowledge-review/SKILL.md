@@ -84,11 +84,17 @@ gitリポジトリ外（`git rev-parse --show-toplevel`が失敗する場所）�
 
 Step 3 でファイルを作成・更新した場合、コミットとpushはユーザーに確認せずそのまま実行する。
 
-保留フラグは、コミットを実行したBashコマンドの作業ディレクトリ（cwd）を基準にリポジトリを判定する。`git -C <path>`で別リポジトリを指定してもcwd自体は変わらないため、add・commit・フラグ解除は対象リポジトリに`cd`した上で同一のBashコマンド呼び出し内で完結させる（`cd <絶対パス> && <コマンド>`。手順ごとに呼び出しを分けると、次のコマンドで元のcwdに戻っている場合がある）。
+保留フラグは、コミットを実行したBashコマンドの作業ディレクトリ（cwd）を基準にリポジトリを判定する。`git -C <path>`で別リポジトリを指定してもcwd自体は変わらないため、add・commitは対象リポジトリに`cd`した上で実行する（`cd <絶対パス> && <コマンド>`。手順ごとに呼び出しを分けると、次のコマンドで元のcwdに戻っている場合がある）。
 
-1. 変更が行われたリポジトリ（`~/.claude` や対象プロジェクト）ごとに、`git add`・`git commit`・保留フラグの解除を1回のBashコマンド呼び出しで連結して実行する（このコミット自体がPostToolUseフックで新たな保留フラグを立て、次のStopで「knowledge-reviewを実行してください」と再度リマインドされるのを防ぐため）
+保留フラグを立てる`set-knowledge-review-flag.sh`はPostToolUseフックであり、Bashツール呼び出しが完了した後に`tool_response`内の`gitOperation.commit.kind`を見て発火する。そのため`git commit`とフラグ解除を同一のBashコマンド呼び出し内で連結しても、コミットが成立した時点でそのツール呼び出し自体の完了後にフックが発火し、フラグを再セットしてしまう（呼び出し内でclearを後置しても打ち消される）。commitとフラグ解除は必ず別のBashツール呼び出しに分ける。
+
+1. 変更が行われたリポジトリ（`~/.claude` や対象プロジェクト）ごとに、`git add`・`git commit`を1回のBashコマンド呼び出しで実行する
    ```
-   cd <リポジトリの絶対パス> && git add <files> && git commit -m "chore: <変更内容の要約>" && ~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "${CLAUDE_SESSION_ID}"
+   cd <リポジトリの絶対パス> && git add <files> && git commit -m "chore: <変更内容の要約>"
    ```
-2. `git push` を実行する。pushに失敗する場合（リモート未設定・対象ブランチがリモートに存在しない等）はコミットのみ行い、その旨をユーザーに報告する
-3. 複数のリポジトリにまたがって反映した場合は、リポジトリごとに1〜2を繰り返す
+2. 直前とは別のBashツール呼び出しで保留フラグを解除する（コミットと同じ呼び出し内では効果がないため、必ず呼び出しを分ける）
+   ```
+   cd <リポジトリの絶対パス> && ~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "${CLAUDE_SESSION_ID}"
+   ```
+3. `git push` を実行する。pushに失敗する場合（リモート未設定・対象ブランチがリモートに存在しない等）はコミットのみ行い、その旨をユーザーに報告する
+4. 複数のリポジトリにまたがって反映した場合は、リポジトリごとに1〜3を繰り返す

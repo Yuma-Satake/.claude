@@ -40,3 +40,5 @@ Notion MCPツールを使用する際に参照するナレッジ集。運用し�
   "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "<項目のテキスト>" } }] }
 }
 ```
+
+- 既存ブロックの内容を修正する場合、`API-update-a-block` は `type` パラメータをオブジェクト・JSON文字列いずれの形式で渡しても `body.paragraph should be defined` 等のvalidation_errorになり使用できない。代わりに `API-delete-a-block` で対象ブロックを削除し、`API-patch-block-children` で修正後の内容を再追加する

@@ -10,17 +10,16 @@ Claude Code の一次情報源を参照して、正確な仕様・設定方法�
 
 ## 情報源と使い分け
 
-### 設定値・フロントマター・内部実装 → 公式リポジトリ
+### 設定値・フロントマター・内部実装 → まず公式ドキュメント
 
-設定ファイルのキー名、フロントマターのフィールド定義、ディレクトリ構造などは、ソースコードが唯一の正解。
+`https://github.com/anthropics/claude-code` にはCLI本体を実装したソースコードは含まれておらず（ルートは`.claude-plugin`・`examples`・`plugins`・`scripts`・ドキュメント関連ファイルのみ）、設定ファイルのキー名やフロントマターのフィールド定義を`gh search code`で検索しても見つからない。これらの仕様は公式ドキュメントのreferenceテーブル（例: skills.md の「Frontmatter reference」）が唯一の正解であり、先に確認する。
 
-- リポジトリ: `https://github.com/anthropics/claude-code`
-- ファイル一覧: `gh api repos/anthropics/claude-code/contents/{path}`
-- コード検索: `gh search code --repo anthropics/claude-code "{query}"`
+- ドキュメント本文は生データで確認する: `curl -s https://code.claude.com/docs/en/{page}.md`（WebFetchの要約はreferenceテーブルの列を欠落させることがあるため、フィールド仕様など正確性が必要な確認では生データを直接読む）
+- リポジトリはサンプル実装（`examples/`・`plugins/`・`.claude/`配下）の参考程度にとどめる。ドキュメントに記載がない場合のみ、これらのディレクトリを`gh api repos/anthropics/claude-code/contents/{path}`で確認する
 
 ### 活用例・ベストプラクティス・概念説明 → 公式ドキュメント
 
-機能の概要や使い方はドキュメントサイトを WebFetch で参照する。
+機能の概要や使い方はドキュメントサイトを参照する。
 
 - ドキュメントインデックス: `https://code.claude.com/docs/llms.txt`（全ページ一覧）
 - 主要ページ:
@@ -40,10 +39,9 @@ Claude Code の一次情報源を参照して、正確な仕様・設定方法�
 ## 調査手順
 
 1. トピックを特定する（スキル / フック / 設定 / MCP / エージェント / CLAUDE.md 等）
-2. **仕様・フィールド定義が必要** → リポジトリのソースコードを `gh search code` で検索
-3. **使い方・概念が必要** → まず `llms.txt` で関連ページを特定し、WebFetch で本文を取得
-4. 両方が必要な場合は並行して調べる
-5. 得られた情報を元に正確な回答を生成する
+2. `llms.txt` で関連ページを特定し、`curl`でMarkdownを直接取得する（仕様・フィールド定義が必要な場合はreferenceテーブルを確認する）
+3. ドキュメントに記載がない場合のみ、リポジトリのサンプル実装を `gh api repos/anthropics/claude-code/contents/{path}` で確認する
+4. 得られた情報を元に正確な回答を生成する
 
 ## 調査のコツ
 
