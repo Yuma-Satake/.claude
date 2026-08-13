@@ -20,7 +20,9 @@ model: sonnet
 
 ### Step 1.5: リモートとの同期確認
 
-`git status` でローカルがリモートより遅れている（behind）場合は、コミット前に以下の手順で同期する。
+`git status` のahead/behind判定は最後にfetchした時点の情報に基づくため、判定の前に必ず `git fetch origin` を実行してから最新の状態で判定する。fetchせずに判定すると、他セッション・他worktreeが並行でpushした変更を見落とし、Step 5 のpushが失敗する。
+
+fetch後、`git status` でローカルがリモートより遅れている（behind）場合は、コミット前に以下の手順で同期する。
 
 1. ローカルに未コミットの変更がある場合: `git stash` で一時退避する
 2. `git pull` でリモートの変更を取り込む
