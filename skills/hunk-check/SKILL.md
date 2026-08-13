@@ -12,53 +12,25 @@ description: 現在作業中のworktreeに対応するHunkセッションから�
 以下の前処理で、現在のworktreeに一致するライブHunkセッションとユーザーコメントを注入する。
 
 ```!
-repo_root="$(git rev-parse --show-toplevel 2>/dev/null)"
-if [ -z "$repo_root" ]; then
-  printf '%s\n' 'error: not-git-repository'
-  exit 0
-fi
-
-if ! session_list="$(hunk session list --json 2>&1)"; then
-  printf 'repoRoot: %s\nerror: hunk-session-list-failed\ndetail: %s\n' "$repo_root" "$session_list"
-  exit 0
-fi
-
-if ! matching_sessions="$(printf '%s' "$session_list" | jq -c --arg root "$repo_root" '[.sessions[] | select(.repoRoot == $root) | {sessionId, title}]' 2>&1)"; then
-  printf 'repoRoot: %s\nerror: invalid-hunk-session-list\ndetail: %s\n' "$repo_root" "$matching_sessions"
-  exit 0
-fi
-
-matching_count="$(printf '%s' "$matching_sessions" | jq 'length')"
-printf 'repoRoot: %s\nmatchingSessionCount: %s\n' "$repo_root" "$matching_count"
-
-tab="$(printf '\t')"
-printf '%s' "$matching_sessions" | jq -r '.[] | [.sessionId, .title] | @tsv' |
-while IFS="$tab" read -r session_id title; do
-  if user_comments="$(hunk session comment list "$session_id" --type user --json 2>&1)"; then
-    printf 'sessionId: %s\ntitle: %s\nuserComments: %s\n' "$session_id" "$title" "$user_comments"
-  else
-    printf 'sessionId: %s\ntitle: %s\nerror: hunk-comment-list-failed\ndetail: %s\n' "$session_id" "$title" "$user_comments"
-  fi
-done
+bash ~/.claude/skills/hunk-check/scripts/hunk_check_context.sh
 ```
 
 ## 手順
 
-1. 注入されたセッションとユーザーコメントを確認する。前処理が無効化または失敗している場合だけ、同じ情報をBashツールで取得する
+1. 注入されたセッションとユーザーコメントを確認する。前処理が無効化または失敗している場合だけ、`bash ~/.claude/skills/hunk-check/scripts/hunk_check_context.sh` をBashツールで実行し同じ情報を取得する
 2. 各コメントについて対象ファイルと周辺コードを確認し、指摘の意図と必要な対応（コード修正・説明・対応不可）を判断する
 3. コード修正が必要な場合は、変更対象に応じたコーディング規約Skillを読み込み、コード・テスト・ドキュメント・設定・Skillなど必要な箇所を修正する
 4. 同じ種類の問題が変更差分内のほかの箇所にもないか検索し、該当箇所をまとめて修正する
 5. 編集を行った場合は、対象の各Hunkセッションに対して `hunk session reload <session-id> -- diff` を実行し、変更後の差分を再読み込みする
 6. 対応内容を対象ごとに検証する。コード変更では関連する最小のテスト・ビルド・lintを実行する
-7. `hunk session comment list <session-id> --type all --json` で既存注記を確認する
-8. 各ユーザーコメントについて、元コメントと同じファイル・同じ側・同じ開始行へ `hunk session comment add` で以下のいずれかの返信注記を追加する
+7. 各ユーザーコメントについて、以下のいずれかの返信注記を `bash ~/.claude/skills/hunk-check/scripts/hunk_check_reply.sh` で追加する。元コメントと同じファイル・同じ側・同じ開始行への紐付け、重複追加の防止はスクリプトが行う（引数・判定根拠はスクリプト内コメントを参照）
    - コード修正コメント: 対応と検証が成功したら対応済み注記を追加する
    - 説明を求めるコメント: 説明注記を追加する
-9. 全コメントについて、対応内容と結果を最終報告する
+8. 全コメントについて、対応内容と結果を最終報告する
 
 ## セッションが見つからない場合
 
-matchingSessionCountが0の場合、すぐに「セッションなし」と結論づけない。スタックPR（`gh stack`等）の子ブランチ用に軽量worktreeを追加して作業している場合、親ブランチのworktreeに紐づく既存セッションのdiff表示先が `hunk session reload -- diff <base>...<head>` で子ブランチとの差分へリダイレクトされて使われていることがある。`hunk session list --json` で他worktreeのセッションのdiff対象（source/target）を確認し、現在のブランチの差分を表示しているセッションがあればそれを使う。
+matchingSessionCountが0の場合、すぐに「セッションなし」と結論づけない。前処理の出力に含まれる `otherSessionCount` と各 `otherSession*`（他worktree・他リポジトリの候補セッションのsessionId・repoRoot・title・sourceLabel・fileCount）を確認する。スタックPR（`gh stack`等）の子ブランチ用に軽量worktreeを追加して作業している場合、親ブランチのworktreeに紐づく既存セッションのdiff表示先が `hunk session reload -- diff <base>...<head>` で子ブランチとの差分へリダイレクトされて使われていることがある。候補のtitle・sourceLabelから、現在のブランチの差分を表示しているセッションだと判断できればそれを使う（`hunk session list --json` にdiffのsource/targetを示す構造化フィールドは無いため、この判断は自動化せずここで行う）。
 
 該当セッションが見つからない場合のみ、現在のworktreeに対応するライブセッションがないことを伝え、ユーザーにそのworktreeで `hunk diff` を起動してもらう。無関係な別worktree・別リポジトリのセッションからコメントを回収しない。
 
@@ -78,25 +50,22 @@ Hunkには返信スレッドやresolve状態がないため、返信は元コメ
 
 ### 共通ルール
 
-- `newRange` がある場合はその先頭を `--new-line`、なければ `oldRange` の先頭を `--old-line` に指定する
-- `--author` は `hunk-check` とする
-- `--rationale` の先頭に `source-note: <元コメントのnoteId>` を記載する
+- 返信注記は `bash ~/.claude/skills/hunk-check/scripts/hunk_check_reply.sh --session <id> --file <path> --note-id <元コメントのnoteId> [--new-range-start <n>] [--old-range-start <n>] --summary <text> --rationale <text>` で追加する。元コメントの位置（`newRange`優先・なければ`oldRange`）への紐付け、author付与、`source-note`付与、重複追加の防止はスクリプトが行う（判定根拠はスクリプト内コメントを参照）
 - `--summary`・`--rationale` には、紐づく元コメント1件に対する内容のみを書く。他のコメントへの言及や、複数コメントをまとめた全体的な内容・総括は書かない
-- 既存コメントのうち、`author` が `hunk-check` かつ `body` に同じ `source-note: <noteId>` を含むものがある場合は重複追加しない。`comment list` では追加時のsummaryとrationaleが`body`へ結合される
 - 元の差分位置がHunk上から消えて注記を追加できない場合は、別の位置へ付け替えず最終報告に理由を記載する
-- 注記追加時に `--focus` は指定せず、ユーザーの表示位置を変更しない
+- スクリプトに `--focus` 相当のオプションは渡さず、ユーザーの表示位置を変更しない
 
 ### 対応済み注記（コード修正コメント用）
 
 - `--summary` は `対応済み: <実施した変更>`
-- `--rationale` には元コメントの `source-note` に続けて、必要に応じて対応理由や補足を記載する
+- `--rationale` には対応理由や補足のみを書く。`source-note` はスクリプトが自動で先頭に付与するため書かない
 - lint・テスト・ビルドの通過や実行結果などの検証内容は注記本文に記載しない。検証結果は最終報告にのみ記載する
 - 対応と検証の両方が成功したコメントにだけ追加する。未対応、部分対応、検証失敗には追加しない
 
 ### 説明注記（説明を求めるコメント用）
 
 - `--summary` は `説明: <要点1行>`
-- `--rationale` には元コメントの `source-note` に続けて、根拠となる該当コード・型・設計上の理由を簡潔に記載する
+- `--rationale` には根拠となる該当コード・型・設計上の理由のみを簡潔に記載する。`source-note` はスクリプトが自動で先頭に付与するため書かない
 - コード修正が発生しないコメントに対して追加する
 - 「説明できません」「わかりません」といった内容は書かない。説明できない場合は注記を追加せず、最終報告に理由を記載する
 
