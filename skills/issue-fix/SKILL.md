@@ -134,11 +134,12 @@ GitHub issue `<issue番号>` を修正する。`~/.claude/rules/` 配下のル�
    - **レビュー用skillsには `coding-architecture` も原則含める**。ユーザーには確認せずAIが判断する。
      - 変更予定の差分が特定の単一層にとどまるなど、関心の分離・DRY原則の観点からどう見ても不要と判断できる場合に限り、含めないことができる。その場合は判断根拠をユーザに明示する（Plan提示時、または決定事項として言及する）
      - ドキュメントのみの変更であっても、設計・アーキテクチャに関する判断を伴うタイミング（設計ドキュメントの新規作成・変更など）では含める
-   - 以下のAskUserQuestion・AI選定はいずれも `coding-standards` と `coding-architecture` 以外の追加skillの選定を指す
+   - **レビュー用skillsには `coding-regression` も常に無条件で含める**。要件網羅性・デグレの観点は変更差分のコードを読むだけでは検出できず、issueの受け入れ条件と既存動作の両面から検証が必要なため、モードや変更内容に関わらず必ず含める。
+   - 以下のAskUserQuestion・AI選定はいずれも `coding-standards`・`coding-architecture`・`coding-regression` 以外の追加skillの選定を指す
    - 通常モード: **AskUserQuestion** でアプローチ選択と追加のレビュー用skillsを確認する
      - 質問を投げる前に、選択肢がissue・リポジトリの実情に即しているか軽く裏取りする（「コンテキスト管理」参照)。的外れな選択肢は自由回答の往復を招き、コンテキストを余計に消費する
      - アプローチ選択: 複数案を選択肢として提示する（推奨案をデフォルト選択としてtrueにする）
-     - 追加のレビュー用skills: multiSelect: true で変更内容に適したskillsを提示する（`coding-standards` は選択肢に含めない。推奨スキルをデフォルト選択としてtrueにする）
+     - 追加のレビュー用skills: multiSelect: true で変更内容に適したskillsを提示する（`coding-standards`・`coding-architecture`・`coding-regression` は選択肢に含めない。推奨スキルをデフォルト選択としてtrueにする）
    - 自律モード: 以下の基準で **AI が自ら選定** する
      - アプローチ選定基準: issueの要求を満たすこと / プロジェクトの既存規約・パターンと整合すること / 変更範囲・リスクが必要最小限であること / 保守性を損なわないこと
      - 追加のレビュー用skills: 変更ファイルの言語・フレームワーク・レイヤー・変更の性質（機能追加/バグ修正/リファクタ）から関連するskillsを推論する（例: React変更なら `coding-react`, TypeScript変更なら `coding-typescript`）
