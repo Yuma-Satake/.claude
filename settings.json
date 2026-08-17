@@ -48,6 +48,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/check-knowledge-review-pending.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/detect-hallucinated-user-turn.sh"
           }
         ]
       }
