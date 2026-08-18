@@ -1,6 +1,6 @@
 ---
 name: skill-coding-skill-dedup
-description: coding-*系skill（coding-standards・coding-architecture・coding-js・coding-typescript等）のSKILL.md間で、同じ規約・原則が文言を変えて重複して記載されていないかを検出し、優先順位に基づき下位skill側の記載を削除するPRを発行する。3日に1回程度の定期cloud routineとして実行されるほか、手動で重複チェックしたい場合にも使用する。
+description: coding-*系skill（coding-standards・coding-architecture・coding-js-ts・coding-react-next等）のSKILL.md間で、同じ規約・原則が文言を変えて重複して記載されていないかを検出し、優先順位に基づき下位skill側の記載を削除するPRを発行する。3日に1回程度の定期cloud routineとして実行されるほか、手動で重複チェックしたい場合にも使用する。
 ---
 
 # coding-*系skillの重複検出・解消
@@ -26,7 +26,7 @@ ls skills/coding-*/SKILL.md
 
 同じ規約が上位・下位の間で重複している場合、上位の記載を正とし、下位側の記載を削除する。
 
-下位skill同士（例: `coding-js`と`coding-test`）の間で重複が見つかった場合、このskillでは優先順位が定義されていないため自動修正の対象外とする。該当箇所はコードを編集せず、PR本文の「検出したが自動修正しなかった重複」欄に記載するに留める。
+下位skill同士（例: `coding-js-ts`と`coding-test`）の間で重複が見つかった場合、このskillでは優先順位が定義されていないため自動修正の対象外とする。該当箇所はコードを編集せず、PR本文の「検出したが自動修正しなかった重複」欄に記載するに留める。
 
 ## 検出したい重複のレベル
 

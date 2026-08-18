@@ -43,7 +43,7 @@ description: .claude/agents/ 配下にagentファイルを新規作成・編集�
 ```yaml
 skills:
   - coding-standards
-  - coding-typescript
+  - coding-js-ts
 ```
 
 - 各エントリはskill名（ファイルパスではない）

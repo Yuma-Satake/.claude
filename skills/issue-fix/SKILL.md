@@ -142,7 +142,7 @@ GitHub issue `<issue番号>` を修正する。`~/.claude/rules/` 配下のル�
      - 追加のレビュー用skills: multiSelect: true で変更内容に適したskillsを提示する（`coding-standards`・`coding-architecture`・`coding-regression` は選択肢に含めない。推奨スキルをデフォルト選択としてtrueにする）
    - 自律モード: 以下の基準で **AI が自ら選定** する
      - アプローチ選定基準: issueの要求を満たすこと / プロジェクトの既存規約・パターンと整合すること / 変更範囲・リスクが必要最小限であること / 保守性を損なわないこと
-     - 追加のレビュー用skills: 変更ファイルの言語・フレームワーク・レイヤー・変更の性質（機能追加/バグ修正/リファクタ）から関連するskillsを推論する（例: React変更なら `coding-react`, TypeScript変更なら `coding-typescript`）
+     - 追加のレビュー用skills: 変更ファイルの言語・フレームワーク・レイヤー・変更の性質（機能追加/バグ修正/リファクタ）から関連するskillsを推論する（例: React変更なら `coding-react-next`, TypeScript変更なら `coding-js-ts`）
 
 **Phase 2: 詳細タスクの展開**
 
