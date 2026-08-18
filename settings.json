@@ -139,6 +139,7 @@
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
+  "autoContinueAtUsageLimit": true,
   "effortLevel": "high",
   "advisorModel": "claude-opus-5",
   "voice": {
