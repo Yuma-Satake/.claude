@@ -27,6 +27,7 @@ STATUS_STOP_FAIL="hunk: failed (stop not confirmed)"
 STATUS_RESTART_FAIL="hunk: failed (restart not confirmed)"
 STATUS_WORKTREE_NOT_CONFIRMED="hunk: failed (worktree not confirmed)"
 STATUS_WORKTREE_MISMATCH="hunk: failed (worktree mismatch)"
+STATUS_NO_DIFF="hunk: failed (no diff to show)"
 
 fail() { echo "$1"; exit 0; }
 
@@ -180,10 +181,31 @@ fi
 
 # target_dirがsubmoduleの場合、superprojectではなくsubmodule直下でhunk diffを起動する（呼び出し側で担保済み）。
 
+# --changed-fileが指定されている場合、clean/dirty判定をリポジトリ全体のstatusではなく
+# そのファイル群のパススペックに限定する。target_dirとは無関係な既存の未追跡ファイル・
+# ディレクトリ（例: .claude/worktrees/ 等の作業用残留物）がリポジトリ内に存在すると、
+# 全体statusは常に非空になり「直前の作業は既にコミット済み」を正しく検出できず、
+# diff_baseがHEADに固定されたまま実際には何も差分が無い（=画面に何も表示されない）
+# 結果になる。渡されたファイルパスに限定すれば、この無関係な残留物に影響されない。
+target_changed_rel=()
+if [ "${#changed_files[@]}" -gt 0 ]; then
+  for f in "${changed_files[@]}"; do
+    root="$(git_root_for_file "$f")"
+    [ -z "$root" ] && continue
+    [ "$(physical_path "$root")" = "$target_dir" ] || continue
+    rel="${f#"$root"/}"
+    target_changed_rel+=("$rel")
+  done
+fi
+
 # 差分ベースを決定する。target_dirの作業ツリーに未コミットの変更が無い場合、`hunk diff HEAD`は
 # 常に空の差分になり、直前の作業がコミット済みであってもユーザーに何も見せられない。
 diff_base="HEAD"
-status_out="$(git -C "$target_dir" status --porcelain --untracked-files=all --ignore-submodules=dirty 2>/dev/null)"
+if [ "${#target_changed_rel[@]}" -gt 0 ]; then
+  status_out="$(git -C "$target_dir" status --porcelain --untracked-files=all --ignore-submodules=dirty -- "${target_changed_rel[@]}" 2>/dev/null)"
+else
+  status_out="$(git -C "$target_dir" status --porcelain --untracked-files=all --ignore-submodules=dirty 2>/dev/null)"
+fi
 if [ -z "$status_out" ]; then
   # 作業ツリーがclean＝直前の作業は既にコミット済み。タスク中に対象へ複数コミットしている場合、
   # HEAD~1では直前1コミットしか差分に含まれずタスク全体の変更を見せられないため、
@@ -200,6 +222,23 @@ if [ "$dry_run" -eq 1 ]; then
   echo "target_dir=$target_dir"
   echo "diff_base=$diff_base"
   exit 0
+fi
+
+# diff_base確定後も、実際にhunkへ渡した時に表示される差分が空（tracked diffも対象範囲の
+# 未追跡ファイルも無い）なら、空のペインを黙って開かずここで明示的に失敗させる。
+# --changed-fileが指定されていれば対象ファイルのパススペックに限定し、無関係な既存の
+# 未追跡ファイルによって「差分あり」と誤検出しないようにする。
+if [ "${#target_changed_rel[@]}" -gt 0 ]; then
+  tracked_diff_empty=1
+  git -C "$target_dir" diff --quiet "$diff_base" -- "${target_changed_rel[@]}" 2>/dev/null && tracked_diff_empty=1 || tracked_diff_empty=0
+  untracked_out="$(git -C "$target_dir" ls-files --others --exclude-standard -- "${target_changed_rel[@]}" 2>/dev/null)"
+else
+  tracked_diff_empty=1
+  git -C "$target_dir" diff --quiet "$diff_base" 2>/dev/null && tracked_diff_empty=1 || tracked_diff_empty=0
+  untracked_out="$(git -C "$target_dir" ls-files --others --exclude-standard 2>/dev/null)"
+fi
+if [ "$tracked_diff_empty" -eq 1 ] && [ -z "$untracked_out" ]; then
+  fail "$STATUS_NO_DIFF"
 fi
 
 # --- 以下、herdr/hunkのペイン管理（会話コンテキストは不要） ---
