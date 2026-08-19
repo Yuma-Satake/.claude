@@ -131,7 +131,7 @@
   "language": "japanese",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "advisorModel": "claude-sonnet-5",
+  "advisorModel": "claude-opus-5",
   "voice": {
     "enabled": true,
     "mode": "hold"
