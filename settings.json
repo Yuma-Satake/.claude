@@ -23,7 +23,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "claude-sonnet-5",
+  "model": "sonnet",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "SessionStart": [
@@ -106,15 +106,6 @@
         ]
       },
       {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Planモード後の実行原則: 可能な限りユーザとのやり取りを避け、実行を完了まで継続する。タスクを分解し、依存関係を整理して並列実行可能な箇所は複数のサブエージェントで並行して進める。クラウドサービスの設定確認・変更が必要な場合はCLIやブラウザ操作で自力対応する。\"}}'"
-          }
-        ]
-      },
-      {
         "matcher": "Bash",
         "hooks": [
           {
@@ -140,7 +131,7 @@
   "language": "japanese",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "advisorModel": "claude-opus-5",
+  "advisorModel": "claude-sonnet-5",
   "voice": {
     "enabled": true,
     "mode": "hold"
