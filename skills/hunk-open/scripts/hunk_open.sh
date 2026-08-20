@@ -13,6 +13,10 @@
 # --dry-run: ペイン操作を行わず、解決した target_dir / diff_base のみ出力する（検証用）。
 #
 # 標準出力の最後の1行が最終ステータス（例: "hunk: opened /path"）。呼び出し元はこの1行のみを報告する。
+#
+# 複数リポジトリに変更がある場合、Hunkは1ペインに1リポジトリしか表示できないため対象は1つに絞る。
+# 従来はambiguousとして失敗させていたが、代わりに候補から1つを選んで表示し、残りは最終ステータス行に
+# 注記する（build_other_note）。
 
 set -uo pipefail
 
@@ -20,7 +24,6 @@ STATUS_NOT_HERDR="hunk: skipped (not herdr)"
 STATUS_PANE_BUSY="hunk: skipped (pane busy)"
 STATUS_LAUNCH_FAIL="hunk: failed (launch not confirmed)"
 STATUS_TARGET_NOT_FOUND="hunk: failed (diff target not found)"
-STATUS_TARGET_AMBIGUOUS="hunk: failed (diff target ambiguous)"
 STATUS_SESSION_NOT_FOUND="hunk: failed (session not found)"
 STATUS_RELOAD_FAIL="hunk: failed (reload failed)"
 STATUS_STOP_FAIL="hunk: failed (stop not confirmed)"
@@ -111,7 +114,21 @@ collect_candidates() {
   done < <(submodule_paths "$base")
 }
 
+# selected以外の候補を最終ステータス行向けに注記する。候補が無ければ空文字。
+build_other_note() {
+  local selected="$1"; shift
+  local others=() c joined
+  for c in "$@"; do
+    [ "$c" = "$selected" ] && continue
+    others+=("$c")
+  done
+  [ "${#others[@]}" -eq 0 ] && return 0
+  joined="$(printf '%s, ' "${others[@]}")"
+  printf ' (他にも変更あり、未表示: %s)' "${joined%, }"
+}
+
 target_dir=""
+other_note=""
 
 # 会話内の変更ファイルから解決する。superproject配下のsubmoduleファイルを変更した場合、対象は
 # superprojectではなくそのファイルが所属するsubmoduleのGitルートになる。
@@ -127,8 +144,14 @@ if [ "${#changed_files[@]}" -gt 0 ]; then
   if [ "${#roots[@]}" -eq 1 ]; then
     target_dir="${roots[0]}"
   elif [ "${#roots[@]}" -gt 1 ]; then
-    # 単一ペインの対象を推測せず終了する。
-    fail "$STATUS_TARGET_AMBIGUOUS"
+    # --changed-fileで最初に挙げられたファイルのリポジトリを優先して選ぶ。
+    for f in "${changed_files[@]}"; do
+      root="$(git_root_for_file "$f")"
+      [ -z "$root" ] && continue
+      target_dir="$(physical_path "$root")"
+      break
+    done
+    other_note="$(build_other_note "$target_dir" "${roots[@]}")"
   fi
   # 0件（変更ファイルパスが解決できない）の場合は下の自動解決にフォールバックする。
 fi
@@ -144,7 +167,10 @@ if [ -z "$target_dir" ] && [ -n "$explicit_worktree" ]; then
   case "${#cands[@]}" in
     1) target_dir="${cands[0]}" ;;
     0) fail "$STATUS_TARGET_NOT_FOUND" ;;
-    *) fail "$STATUS_TARGET_AMBIGUOUS" ;;
+    *)
+      target_dir="${cands[0]}"
+      other_note="$(build_other_note "$target_dir" "${cands[@]}")"
+      ;;
   esac
 fi
 
@@ -160,7 +186,8 @@ if [ -z "$target_dir" ]; then
   if [ "${#cands[@]}" -eq 1 ]; then
     target_dir="${cands[0]}"
   elif [ "${#cands[@]}" -gt 1 ]; then
-    fail "$STATUS_TARGET_AMBIGUOUS"
+    target_dir="${cands[0]}"
+    other_note="$(build_other_note "$target_dir" "${cands[@]}")"
   else
     all_cands=()
     while IFS= read -r wt; do
@@ -174,7 +201,10 @@ if [ -z "$target_dir" ]; then
     case "${#all_cands[@]}" in
       1) target_dir="${all_cands[0]}" ;;
       0) fail "$STATUS_TARGET_NOT_FOUND" ;;
-      *) fail "$STATUS_TARGET_AMBIGUOUS" ;;
+      *)
+        target_dir="${all_cands[0]}"
+        other_note="$(build_other_note "$target_dir" "${all_cands[@]}")"
+        ;;
     esac
   fi
 fi
@@ -221,6 +251,7 @@ fi
 if [ "$dry_run" -eq 1 ]; then
   echo "target_dir=$target_dir"
   echo "diff_base=$diff_base"
+  echo "other_note=$other_note"
   exit 0
 fi
 
@@ -271,7 +302,7 @@ if [ -z "$right_pane_id" ]; then
       <<< "$(herdr pane process-info --pane "$pane_id")"
   }
   if poll 3 check_launched; then
-    fail "hunk: opened $target_dir"
+    fail "hunk: opened $target_dir$other_note"
   else
     fail "$STATUS_LAUNCH_FAIL"
   fi
@@ -293,7 +324,7 @@ if ! jq -e '.result.process_info.foreground_processes[]? | select(.argv0 == "hun
       <<< "$(herdr pane process-info --pane "$pane_id")"
   }
   if poll 3 check_launched; then
-    fail "hunk: opened $target_dir"
+    fail "hunk: opened $target_dir$other_note"
   else
     fail "$STATUS_LAUNCH_FAIL"
   fi
@@ -321,7 +352,7 @@ if [ -n "$session_repo_root_norm" ] && [ "$session_repo_root_norm" = "$target_di
   if [ -z "$new_root_norm" ] || [ "$new_root_norm" != "$target_dir" ]; then
     fail "$STATUS_WORKTREE_MISMATCH"
   fi
-  fail "hunk: reloaded $target_dir"
+  fail "hunk: reloaded $target_dir$other_note"
 fi
 
 # worktreeが不一致: 同じ右側ペインで対象ディレクトリからHunkを再起動する。
@@ -364,4 +395,4 @@ new_root_norm="$(physical_path "$new_session_repo_root")"
 if [ -z "$new_root_norm" ] || [ "$new_root_norm" != "$target_dir" ]; then
   fail "$STATUS_WORKTREE_MISMATCH"
 fi
-fail "hunk: reopened $target_dir"
+fail "hunk: reopened $target_dir$other_note"

@@ -1,6 +1,6 @@
 ---
 name: tool-gh-image
-description: GitHubのPull Requestやissueの本文・コメントに画像やスクリーンショットをアップロードして貼り付ける。ユーザーが「PRに画像貼って」「PRに貼って」「PRに画像を添付して」「PRにスクショを載せて」「この画像をPR本文に追加して」「issueに画像を貼って」「コメントに画像を添付して」「Before / After画像を載せて」「gh imageでアップロードして」と依頼した場合は必ず使用する。
+description: GitHubのPull Requestやissueの本文・コメントに画像やスクリーンショットをアップロードして貼り付ける。ユーザーが「PRに画像貼って」「PRに貼って」「PRに画像を添付して」「PRにスクショを載せて」「この画像をPR本文に追加して」「issueに画像を貼って」「コメントに画像を添付して」「Before / After画像を載せて」「gh imageでアップロードして」と依頼した場合は必ず使用する。動画の場合もアップロード可能なので、同様に使用する。
 ---
 
 # tool-gh-image
