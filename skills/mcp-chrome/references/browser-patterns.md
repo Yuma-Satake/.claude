@@ -125,6 +125,12 @@ JavaScript の `alert` / `confirm` / `prompt` やブラウザネイティブの�
 
 CSSの`max-width`など、複数のクラスが同じプロパティを競合して宣言している場合、見た目上の差が数十〜数百px程度でもスクリーンショットの目視だけでは気づきにくいことがある。要素の実際の幅・余白を確認する際は、`javascript_tool`で対象要素に対し `getComputedStyle(el).maxWidth` や `el.offsetWidth` を取得し、数値で意図した値になっているかを検証する方が確実。
 
+## タブグループの不具合と復旧
+
+操作対象のタブで要素クリックやスクリーンショット取得が「Cannot access a chrome-extension:// URL of different extension」というエラーで失敗し、リトライしても解消しないことがある。この状態のまま操作を続けると、直後に `tabs_context_mcp` が「No tab group exists for this session」を返し、セッションのタブグループ自体が消失することがある（開いていた他のタブもまとめて失われる）。
+
+回避策: 同じタブへの操作をリトライし続けず、`tabs_context_mcp` を `createIfEmpty: true` で呼び出して新しいタブグループを作り直し、そこから対象ページへ `navigate` して操作を再開する。この不具合は特定の拡張機能同士の競合が疑われるが根本原因は未特定のため、まず新しいタブグループでの復旧を試す。
+
 ## その他のブラウザ操作テクニック
 
 - ページの読み込み完了はタブのタイトル変化で判断できる
