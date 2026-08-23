@@ -2,9 +2,14 @@
 input=$(cat)
 
 MODEL=$(echo "$input" | jq -r '.model.display_name // "Unknown"')
-PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
+USED_TOKENS=$(echo "$input" | jq -r '((.context_window.total_input_tokens // 0) + (.context_window.total_output_tokens // 0))')
+CONTEXT_WINDOW_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
+CONTEXT_LIMIT=$CONTEXT_WINDOW_SIZE
+[ -n "$CLAUDE_CODE_AUTO_COMPACT_WINDOW" ] && [ "$CLAUDE_CODE_AUTO_COMPACT_WINDOW" -gt "$CONTEXT_WINDOW_SIZE" ] && CONTEXT_LIMIT=$CLAUDE_CODE_AUTO_COMPACT_WINDOW
+PCT=$((USED_TOKENS * 100 / CONTEXT_LIMIT))
 BAR_WIDTH=21
 FILLED=$((PCT * BAR_WIDTH / 100))
+[ "$FILLED" -gt "$BAR_WIDTH" ] && FILLED=$BAR_WIDTH
 EMPTY=$((BAR_WIDTH - FILLED))
 
 BAR=""
