@@ -32,6 +32,7 @@ context: fork
 1. **本文・コメント**: `gh pr view $0 --comments`
 2. **差分**: `gh pr diff $0`
 3. **レビューコメント**: `gh pr view $0 --json reviews --jq '.reviews[] | select(.body != "") | "[\(.author.login)] \(.state): \(.body)"'`
+   - これはレビュー本文（サマリ）のみを返す。Copilot等のAIレビューはサマリに指摘の詳細を書かず、個別行へのインラインコメントにのみ実際の指摘内容を書くことがあるため、`gh api repos/{owner}/{repo}/pulls/$0/comments`（レビューコメントAPI）も必ず併用し、両方の内容を要約に含める
 4. **CIステータス**: `gh pr checks $0`
 5. **言及されている issue / PR**: 本文・コメント・レビューコメント中に `#xxx` 形式があれば `gh issue view` / `gh pr view` で内容を確認する（1段階のみ辿る）
 6. **外部リンク**: 外部URLがあれば `WebFetch` で内容を取得する
