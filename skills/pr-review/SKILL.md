@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: GitHub PRまたはローカルの変更差分をコーディング規約に従ってレビューする。ユーザーが「PRをレビューして」「#123をレビューして」「今の変更をレビューして」「このPRをチェックして」と依頼した場合に使用する。引数にPR番号を取り、指定があればそのPRの差分を、省略した場合はデフォルトブランチとのローカルの差分（未コミット含む）を対象にする。coding-standards/coding-architectureを常に含めたレビュー用skillをAskUserQuestionで確認し、skillごとにcode-reviewer agentを並列起動して指摘を収集・報告する。他人のPRの場合は報告のみで終える。自分のPR、またはローカル差分の場合は、指摘への修正・再レビューのサイクルを回すか報告のみで終えるかをAskUserQuestionで確認する。
+description: GitHub PRまたはローカルの変更差分をコーディング規約に従ってレビューする。ユーザーが「PRをレビューして」「#123をレビューして」「今の変更をレビューして」「このPRをチェックして」と依頼した場合に使用する。引数にPR番号を取り、指定があればそのPRの差分を、省略した場合はデフォルトブランチとのローカルの差分（未コミット含む）を対象にする。coding-standards/coding-architectureを常に含め、それ以外のレビュー用skillは変更内容に応じてAIが自動選定（選定結果はユーザに報告）し、skillごとにcode-reviewer agentを並列起動して指摘を収集・報告する。他人のPRの場合は報告のみで終える。自分のPR、またはローカル差分の場合は、指摘への修正・再レビューのサイクルを回すか報告のみで終えるかをAskUserQuestionで確認する。
 argument-hint: "[pr-number]"
 ---
 
@@ -47,11 +47,12 @@ argument-hint: "[pr-number]"
 
 ## 2. レビュー用skillの選定
 
-- レビュー用skillには **coding-standards を常に無条件で含める**。言語・フレームワーク・レイヤーを問わず適用される規約であるため、ユーザーに確認せず必ず含める
-- レビュー用skillには **coding-architecture も原則含める**。変更差分が特定の単一層にとどまるなど、関心の分離・DRY原則の観点からどう見ても不要と判断できる場合に限り、含めないことができる。その場合は判断根拠をユーザに明示する
-- 上記2つ以外の追加skillは、変更ファイルの言語・フレームワーク・レイヤーから候補を推論し、**AskUserQuestion** の multiSelect: true で変更内容に適したskillsを提示して確認する（推奨候補をデフォルト選択trueにする。`coding-standards`/`coding-architecture` は選択肢に含めない）
+- レビュー用skillには **coding-standards を常に無条件で含める**。言語・フレームワーク・レイヤーを問わず適用される規約であるため、必ず含める
+- レビュー用skillには **coding-architecture も原則含める**。変更差分が特定の単一層にとどまるなど、関心の分離・DRY原則の観点からどう見ても不要と判断できる場合に限り、含めないことができる
+- 上記2つ以外の追加skillは、ユーザに確認せず、変更ファイルの言語・フレームワーク・レイヤー・変更の性質（機能追加/バグ修正/リファクタ）からAIが推論して選定する
 - PR番号省略時（ローカルdiff）で `coding-regression` を選定skillに含める場合、対象のissue番号またはNotionページのURLを確認する。ローカルdiffでの変更は基本的に既存のissue・Notionタスクを元に実装しているため、この参照を必須情報として扱う（自由入力のため通常のテキストで確認し、AskUserQuestionは使わない）
-  - 参照が得られない場合、**AskUserQuestion** で「`coding-regression` を含めずに進めてよいか」を確認する。同意が得られた場合のみ `coding-regression` を選定skillから外し、除外した理由を完了時報告に記載する
+  - 参照が得られない場合、ユーザに確認せず `coding-regression` を選定skillから外す
+- 決定したレビュー用skillの一覧、`coding-architecture` を除外した場合はその判断根拠、`coding-regression` を除外した場合はその理由を、3.でcode-reviewer agentを起動する前に通常のテキスト出力でユーザに報告する
 
 ## 3. レビュー実行
 
