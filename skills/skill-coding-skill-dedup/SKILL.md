@@ -85,4 +85,6 @@ Step 3で編集したファイルのみをコミットする。コミットメ�
 
 新規PRの場合は`gh pr create --draft`でdraft PRとして作成し、baseはdefaultブランチとする。既存PRを更新する場合はStep 4の指示に従う。
 
+PR作成・更新後、`gh pr edit --add-assignee @me`で自分自身をアサインする。
+
 このskillはdraft PRを発行するところまでを責務とし、マージ・レビュー承認は行わない。mainへの直接コミットは行わない。
