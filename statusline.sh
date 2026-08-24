@@ -2,6 +2,17 @@
 input=$(cat)
 
 MODEL=$(echo "$input" | jq -r '.model.display_name // "Unknown"')
+case "$MODEL" in
+  arn:*)
+    if [ -n "$ANTHROPIC_DEFAULT_HAIKU_MODEL" ] && [ "$MODEL" = "$ANTHROPIC_DEFAULT_HAIKU_MODEL" ]; then
+      MODEL="Haiku"
+    elif [ -n "$ANTHROPIC_DEFAULT_SONNET_MODEL" ] && [ "$MODEL" = "$ANTHROPIC_DEFAULT_SONNET_MODEL" ]; then
+      MODEL="Sonnet"
+    elif [ -n "$ANTHROPIC_DEFAULT_OPUS_MODEL" ] && [ "$MODEL" = "$ANTHROPIC_DEFAULT_OPUS_MODEL" ]; then
+      MODEL="Opus"
+    fi
+    ;;
+esac
 USED_TOKENS=$(echo "$input" | jq -r '((.context_window.total_input_tokens // 0) + (.context_window.total_output_tokens // 0))')
 CONTEXT_WINDOW_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
 CONTEXT_LIMIT=$CONTEXT_WINDOW_SIZE
