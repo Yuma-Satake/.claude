@@ -13,8 +13,16 @@ Step 1からStep 4までメインセッションで実行する。サブエー�
 
 git commit後にknowledge-reviewの実行を促すリマインダーは、`~/.claude/hooks/set-knowledge-review-flag.sh`（PostToolUseフック、git commit成立時に発火）と`~/.claude/hooks/check-knowledge-review-pending.sh`（Stopフック）で実装されている。このskillを呼び出したら、対象リポジトリのフラグを明示的に解除する。
 
+worktree-isolatedなセッションでは、`$(...)`を含む複雑なgitコマンドがBashツールに拒否されることがあるため、コマンド置換をまとめず2段階に分ける。
+
 ```
-~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "${CLAUDE_SESSION_ID}"
+git rev-parse --show-toplevel
+```
+
+続けて、得られた絶対パスを直接埋め込んだ形で実行する。
+
+```
+~/.claude/hooks/knowledge-review-flag.sh clear "<上記コマンドの出力（絶対パス）>" "${CLAUDE_SESSION_ID}"
 ```
 
 gitリポジトリ外（`git rev-parse --show-toplevel`が失敗する場所）で呼び出された場合はこの手順をスキップし、そのままStep 1へ進む。
@@ -92,9 +100,9 @@ Step 3 でファイルを作成・更新した場合、コミットとpushはユ
    ```
    cd <リポジトリの絶対パス> && git add <files> && git commit -m "chore: <変更内容の要約>"
    ```
-2. 直前とは別のBashツール呼び出しで保留フラグを解除する（コミットと同じ呼び出し内では効果がないため、必ず呼び出しを分ける）
+2. 直前とは別のBashツール呼び出しで保留フラグを解除する（コミットと同じ呼び出し内では効果がないため、必ず呼び出しを分ける）。worktree-isolatedなセッションでは`$(...)`を含むコマンドが拒否されることがあるため、Step 0と同様に`git -C <リポジトリの絶対パス> rev-parse --show-toplevel`を単独実行してパスを取得し、その文字列を直接埋め込んだ形で次を実行する
    ```
-   cd <リポジトリの絶対パス> && ~/.claude/hooks/knowledge-review-flag.sh clear "$(git rev-parse --show-toplevel)" "${CLAUDE_SESSION_ID}"
+   ~/.claude/hooks/knowledge-review-flag.sh clear "<上記コマンドの出力（絶対パス）>" "${CLAUDE_SESSION_ID}"
    ```
 3. `git push` を実行する。pushに失敗する場合（リモート未設定・対象ブランチがリモートに存在しない等）はコミットのみ行い、その旨をユーザーに報告する
 4. 複数のリポジトリにまたがって反映した場合は、リポジトリごとに1〜3を繰り返す
