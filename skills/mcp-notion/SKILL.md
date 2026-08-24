@@ -42,3 +42,12 @@ Notion MCPツールを使用する際に参照するナレッジ集。運用し�
 ```
 
 - 既存ブロックの内容を修正する場合、`API-update-a-block` は `type` パラメータをオブジェクト・JSON文字列いずれの形式で渡しても `body.paragraph should be defined` 等のvalidation_errorになり使用できない。代わりに `API-delete-a-block` で対象ブロックを削除し、`API-patch-block-children` で修正後の内容を再追加する
+
+## ページ作成時の注意
+
+- ページ作成は `API-post-page`。`parent` と `properties` が必須
+- データソース配下にページを作る際の `parent` の形式は決め打ちしない。OpenAPIスキーマ上はデータソース向けの定義（`dataSourceIdParentRequest`）であってもキー名が `database_id` になっており、Notion-Versionによって参照キーが変わる。対象データソース内の既存ページを1件 `API-retrieve-a-page` で取得し、返ってきた `parent` と同じ形式で渡す。既存ページが1件も無い場合は `API-retrieve-a-data-source` のレスポンスから組み立て、`API-post-page` が `parent` の検証エラーを返した場合は推測で再試行せず失敗を報告する
+- 同じ親ページ配下の兄弟ページを列挙する場合、親子関係を表すrelation型プロパティの値（`API-retrieve-a-page` で取得できる）か、`API-query-data-source` を親ページへのrelationでフィルタして特定する。データソースのプロパティスキーマにrelationが無い場合は、親ページ自体のサブアイテム/子ページ一覧（`API-retrieve-a-page` や `API-retrieve-a-block`）から辿る
+- `properties` のキーは対象データソースに実在するプロパティ名（またはID）のみ使える。select/multi-selectの値もスキーマ上の選択肢に限られるため、事前に `API-retrieve-a-data-source` でプロパティ名・型・選択肢を取得してから組み立てる。推測した名前や値を渡すと検証エラーになる
+- 本文は `API-post-page` の `children` に載せず、ページ作成後に `API-patch-block-children` で追記する。`children` はOpenAPIスキーマ上 `items: {type: string}` と定義されているが実際に必要なのはブロックオブジェクトであり、`API-patch-block-children` 側と同じ型の食い違いを含んでいる
+- テンプレートは `API-list-data-source-templates` で取得できる。データソースにテンプレートが定義されている場合は本文の項目構成をそこに合わせる
