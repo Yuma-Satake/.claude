@@ -21,6 +21,8 @@ which rtk             # Verify correct binary
 
 ⚠️ **Name collision**: If `rtk gain` fails, you may have reachingforthejack/rtk (Rust Type Kit) installed instead.
 
+⚠️ **`find`との複合条件非対応**: rtkフックが自動リライトする`find`は、`-not`・`-exec`などの複合的な条件・アクションを受け付けず失敗する（例: `find . -iname "*.sh" -not -path "*/node_modules/*"`）。この場合は条件を分けて複数回の単純な`find`呼び出しに分割するか、`rtk proxy find <args>`でフィルタリングをバイパスして直接実行する。
+
 ## Hook-Based Usage
 
 All other commands are automatically rewritten by the Claude Code hook.
