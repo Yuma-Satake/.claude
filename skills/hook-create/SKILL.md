@@ -34,6 +34,10 @@ Stopイベントは、タスクが完了して応答が終わった場合だけ�
 
 同じcommitイベントを起点に複数の独立したflag+hook自動化（例: 複数のスキルがそれぞれ別のフラグファイルを使うケース）が併存する場合、各自動化のsetterは自分のフラグしか気にしないため、一方の自動化の自己コミットがもう一方のフラグを再武装しうる（相互発火・ping-pong）。この相互作用は各設計を独立に見ているだけでは気づけないため、hookを新設する前に、同じイベント（同じcommit等）に既に登録されている他のhookが存在しないか確認する。
 
+## WorktreeCreateフックが返すパスに関する制約
+
+`WorktreeCreate`フックの標準出力（worktreeパス）を、Claude Codeの標準配置（`.claude/worktrees/`配下）以外の独自パスにする設計にすると、`ExitWorktree`ツール側の状態検証ロジックが対象を認識できず、「Could not verify worktree state」で削除に失敗することがある。この場合`ExitWorktree`呼び出し時に`discard_changes: true`を付けることで削除できる。
+
 ## hookコマンドのパス指定
 
 `~/.claude/settings.json` のようなユーザーレベルの設定ファイルは、複数マシン間でgit等により同期・共有されることがある。hookのcommandでスクリプトパスを指定する際、`/Users/<username>/...` のような絶対パスをハードコードすると、ユーザー名やホームディレクトリ構成が異なる別マシンでフックが失敗する（`No such file or directory`）。同一ファイル内の他のhookコマンドが `~/.claude/hooks/...` の形式で統一されているなら、それに倣い `$HOME` 展開（`~/...` または `"$HOME/..."`）を使うこと。

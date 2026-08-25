@@ -29,6 +29,10 @@ miseで新しいツールを導入・更新するときは以下のフローで�
 4. `ubi:` は非推奨のため新規採用しない。詳細は `references/github-fallback.md` の ubi 節を参照する
 5. `asdf:` `vfox:` はレジストリへの新規登録が受け付けられないため新規採用しない
 
+## Bashツールからの実行時の注意
+
+- miseの`mise activate`によるPATH注入はシェル関数経由で行われるため、Claude CodeのBashツールのような非対話シェルでは効かず、グローバル導入したツールが`command not found`になることがある。この場合は`mise exec <tool> -- <command>`で実行する
+
 ## 禁止事項
 
 - `mise.toml` に `latest` や範囲指定（`^1.2.3` など）を書かない。具体的なバージョン番号を記載する
