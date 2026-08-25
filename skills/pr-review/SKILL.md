@@ -81,7 +81,7 @@ argument-hint: "[pr-number]"
 - **自分のPR**（PR番号指定時、authorが「現在の認証ユーザー」と一致する場合）、または **ローカル差分**（PR番号省略時）: 指摘一覧を報告した上で、**AskUserQuestion** で「指摘への修正・再レビューのサイクルを回すか、報告のみで終えるか」を確認する
   - 修正ループを回す場合:
     - PR番号指定時のみ: 修正はこの一時ref上ではなく実際のブランチに対して行う必要があるため、現在のブランチが対象PRの `headRefName` と一致するか確認する
-      - 一致しない場合、修正は行わない。次のいずれかをユーザに確認する: (a) `git switch <headRefName>`（ローカルにブランチが存在しない場合は先に `git fetch origin <headRefName>:<headRefName>`）をユーザ自身のターミナルで実行し、切り替え後に改めて `pr-review <PR番号>` を実行する、(b) 現在のブランチに手を加えず、`git worktree add <path> <headRefName>` で別のworktreeを作成しそこで修正ループを行う（既存チェックアウトを別ブランチに切り替えずに済む）。(b)を選んだ場合はworktree作成後、そのパスを基準に修正・再レビューを進める。この場合も一時refは6.に従って削除する
+      - 一致しない場合、修正は行わない。現在のブランチに手を加えず、`wt switch <headRefName>`（ローカルにブランチが存在しない場合は先に `git fetch origin <headRefName>:<headRefName>`）で別のworktreeを作成し、そのパスを基準に修正・再レビューを進める（既存チェックアウトを別ブランチに切り替えずに済む）。この場合も一時refは6.に従って削除する
       - 一致する場合、`git update-ref -d refs/pr-review/<PR番号>` で一時refを直ちに削除する。これ以降の再レビューは作業ツリーが正になるため、code-reviewerへの差分確認方法を `git diff $(git merge-base origin/<PRのbaseRefName> HEAD)` に切り替える（一時refは既に削除済みのため参照させない）
     - 指摘に対応する → 該当skillのcode-reviewer agentを再度並列起動して再レビューを依頼する → 指摘がなくなるまで繰り返す。指摘内容に疑問がある場合はユーザに判断を仰ぐ
   - 報告のみを選んだ場合: そのまま終了する

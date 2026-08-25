@@ -10,7 +10,7 @@
 - `git status --short` の2文字ステータスコードは、1文字目=index（ステージ済み）、2文字目=ワークツリー（未ステージ）で独立した意味を持つ。例えば `RM` は「rename+modified という1つの状態」ではなく「indexでは既にリネーム済みだが、ワークツリーにはさらに未ステージの変更が残っている」ことを示す。1文字ずつ分けて読むこと
 - GitHub REST API（`gh api`経由も含む）でissue・PR作成時に`labels`へ未作成のラベル名を指定した場合の挙動は公式ドキュメントに明記されていない（[Create an issue](https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue)は「Only users with push access can set labels for new issues. Labels are silently dropped otherwise.」とのみ記載）。ラベルを使う自動化を組む場合は、未作成ラベル名を渡して自動作成に賭けるのではなく、事前に`gh label create`で対象ラベルを作成しておくこと
 - ファイルの編集を伴う作業時に、すでにdiffのあるファイルが存在している場合、他のエージェントが実装を行なっている可能性があるため、stashしたりブランチを切り替えたりせず、ユーザにworktreeを作成するか確認してから作業すること
-- `git worktree add` で作成した新規worktreeには、gitignore対象のファイル（`.env`・`node_modules`等untrackedなもの）が含まれない。ビルド・テストコマンドをworktree内で実行する前に、必要な設定ファイルのコピーや依存関係の再インストールが必要か確認すること
+- worktreeの作成・切り替え・削除には`git worktree add`等を直接使わず、EnterWorktree/ExitWorktreeツールを使うこと。Bashで`git worktree add`等を直接実行しようとするとPreToolUseフック（`~/.claude/hooks/block-git-worktree.sh`）がブロックし、EnterWorktreeを使うよう促す。EnterWorktree・Agentツールの`isolation: "worktree"`はWorktreeCreate/WorktreeRemoveフック（`~/.claude/hooks/worktree-create-wt.sh`・`worktree-remove-wt.sh`）経由の処理に差し替えられており、gitignore対象のファイル（`.env`・`node_modules`等untrackedなもの）が自動コピーされるため、手動でのコピー確認は不要。依存関係のロックファイルに差分がある場合など、コピーだけでは不十分で再インストールが必要になるケースがあることには注意する
 
 ## GitHubへの画像添付
 
