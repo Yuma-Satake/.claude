@@ -23,6 +23,8 @@ which rtk             # Verify correct binary
 
 ⚠️ **`find`との複合条件非対応**: rtkフックが自動リライトする`find`は、`-not`・`-exec`などの複合的な条件・アクションを受け付けず失敗する（例: `find . -iname "*.sh" -not -path "*/node_modules/*"`）。この場合は条件を分けて複数回の単純な`find`呼び出しに分割するか、`rtk proxy find <args>`でフィルタリングをバイパスして直接実行する。
 
+⚠️ **単純な`-iname`条件でも結果が欠落することがある**: 複合条件を避けて`-iname`のみに単純化した`find`呼び出しでも、rtk経由では0件になり、対象のファイル・ディレクトリが実際には存在するのに「見つからない」と誤判定することがある。findの結果が想定と食い違う（存在するはずのものが0件になる）場合は、同条件を`rtk proxy find <args>`で直接実行して切り分けること。
+
 ## Hook-Based Usage
 
 All other commands are automatically rewritten by the Claude Code hook.
