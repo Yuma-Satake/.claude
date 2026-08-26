@@ -10,8 +10,11 @@ argument-hint: "[pr-number]"
 
 引数の解釈:
 
-- PR番号: 引数中の最初の数値トークン。以下 `<PR番号>` と表記する
+- PR番号: 引数がPRのURLならURL末尾の番号、そうでなければ引数中の最初の数値トークン。以下 `<PR番号>` と表記する
+- 対象リポジトリ: 引数がPRのURLならURL中の `owner/repo`。URLでない場合のみ「現在のGit状態」のリポジトリを使う。以下 `<owner>/<repo>` と表記する
 - 引数なし: ローカルの変更差分（現在のブランチとデフォルトブランチの差分、未コミット含む）を対象にする
+
+以降 `gh` は常に `-R <owner>/<repo>` で対象リポジトリを明示する。マルチリポ構成では、カレントディレクトリが対象PRとは別のリポジトリ（ワークスペースのルート等）であることがある。「対象PRの情報」が `PR番号指定なし` と表示されていても、引数にPR番号またはPR URLが含まれているなら指定ありとして扱い、`gh pr view <PR番号> -R <owner>/<repo>` で取得し直してから進める。
 
 ## 現在のGit状態
 
@@ -22,7 +25,7 @@ argument-hint: "[pr-number]"
 
 ## 対象PRの情報
 
-!`n=$(echo "$ARGUMENTS" | tr ' ' '\n' | grep -m1 -E '^[0-9]+$'); if [ -n "$n" ]; then gh pr view "$n" --json title,author,baseRefName,headRefName --jq '"title: " + .title + " / author: " + .author.login + " / base: " + .baseRefName + " / head: " + .headRefName' 2>/dev/null || echo "PR #$n が見つかりません"; else echo "PR番号指定なし（ローカルdiffを対象）"; fi`
+!`u=$(echo "$ARGUMENTS" | grep -oE 'github\.com/[^/]+/[^/]+/pull/[0-9]+' | head -1); if [ -n "$u" ]; then n=$(echo "$u" | grep -oE '[0-9]+$'); r=$(echo "$u" | sed -E 's#github\.com/([^/]+)/([^/]+)/pull/[0-9]+#\1/\2#'); else n=$(echo "$ARGUMENTS" | tr ' ' '\n' | grep -m1 -E '^[0-9]+$'); r=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null); fi; if [ -n "$n" ]; then echo "repo: $r"; gh pr view "$n" -R "$r" --json title,author,baseRefName,headRefName --jq '"title: " + .title + " / author: " + .author.login + " / base: " + .baseRefName + " / head: " + .headRefName' 2>/dev/null || echo "PR #$n が見つかりません"; else echo "PR番号指定なし（ローカルdiffを対象）"; fi`
 
 - PR番号を指定したがPRが見つからない場合、ユーザに番号の確認を求めて終了する
 
@@ -84,6 +87,8 @@ argument-hint: "[pr-number]"
       - 一致しない場合、修正は行わない。現在のブランチに手を加えず、`wt switch <headRefName>`（ローカルにブランチが存在しない場合は先に `git fetch origin <headRefName>:<headRefName>`）で別のworktreeを作成し、そのパスを基準に修正・再レビューを進める（既存チェックアウトを別ブランチに切り替えずに済む）。この場合も一時refは6.に従って削除する
       - 一致する場合、`git update-ref -d refs/pr-review/<PR番号>` で一時refを直ちに削除する。これ以降の再レビューは作業ツリーが正になるため、code-reviewerへの差分確認方法を `git diff $(git merge-base origin/<PRのbaseRefName> HEAD)` に切り替える（一時refは既に削除済みのため参照させない）
     - 指摘に対応する → 該当skillのcode-reviewer agentを再度並列起動して再レビューを依頼する → 指摘がなくなるまで繰り返す。指摘内容のうち判断・意思決定が必要な事項は、推奨の対応が判断できる場合はその推奨で対応し、判断できない場合はAskUserQuestionで確認する
+    - 2周目以降の再レビューでは、各code-reviewerのプロンプトに「ユーザーが却下した指摘・既に判断が確定した事項」を明示的なリストとして渡す。渡さないと、前の周で意図して採らなかった選択（文言・重複の許容・設計判断など）を毎周蒸し返され、収束しない
+    - 収束判定は「起動した全skillで必須修正0件」とする。推奨・確認事項が残っていても、必須修正が0件になったらループを終える
   - 報告のみを選んだ場合: そのまま終了する
 
 ## 6. 一時refの後始末（PR番号指定時のみ）
@@ -103,3 +108,5 @@ argument-hint: "[pr-number]"
 - 使用したレビュー用skill一覧
 - 指摘内容（必須修正/推奨/確認事項別）
 - 対応方針（報告のみ／修正ループ実施）とその結果
+
+修正ループを実施した場合は、報告の前にPR本文・タイトルが修正後の実装と食い違っていないか確認する。ループ中に識別子名・DOM構造・表示文言・定数値を変えた場合、PR本文の説明やスクリーンショットが古いまま残る。
