@@ -48,3 +48,13 @@ Claude Code の一次情報源を参照して、正確な仕様・設定方法�
 - `llms.txt` でキーワードを絞り込んでから関連ページだけ取得すると効率的
 - リポジトリ内の `examples/` や `.claude/` ディレクトリには実例が含まれていることがある
 - Agent SDK に関する質問は `https://code.claude.com/docs/en/agent-sdk/` 配下のページを参照する
+
+## セッション・トランスクリプトの調査
+
+セッションIDだけ分かっていて、そのセッションが既に終了して対話できない場合でも、何をしたかは`~/.claude/projects/<cwdをエンコードしたディレクトリ名>/<session-id>.jsonl`のトランスクリプトファイルから復元できる。
+
+- ファイルの特定: `find ~/.claude/projects -maxdepth 2 -iname "<session-id>*"`
+- 各行はJSON。まず`ls -la`/`wc -l`でサイズを確認してから絞り込む（大きいファイルが多い）
+- 作業ディレクトリの特定: `jq -r '.cwd // empty' <file> | sort -u`
+- ユーザー発言の確認: `jq -r 'select(.type=="user" and (.message.content|type)=="string") | .message.content' <file>`
+- Bashコマンド実行履歴の確認: `jq -r '.message.content[]? | select(.type=="tool_use" and .name=="Bash") | .input.command' <file>`
