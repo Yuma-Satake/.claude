@@ -16,7 +16,7 @@ esac
 USED_TOKENS=$(echo "$input" | jq -r '((.context_window.total_input_tokens // 0) + (.context_window.total_output_tokens // 0))')
 CONTEXT_WINDOW_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
 CONTEXT_LIMIT=$CONTEXT_WINDOW_SIZE
-[ -n "$CLAUDE_CODE_AUTO_COMPACT_WINDOW" ] && [ "$CLAUDE_CODE_AUTO_COMPACT_WINDOW" -gt "$CONTEXT_WINDOW_SIZE" ] && CONTEXT_LIMIT=$CLAUDE_CODE_AUTO_COMPACT_WINDOW
+[ -n "$CLAUDE_CODE_AUTO_COMPACT_WINDOW" ] && [ "$CLAUDE_CODE_AUTO_COMPACT_WINDOW" -lt "$CONTEXT_WINDOW_SIZE" ] && CONTEXT_LIMIT=$CLAUDE_CODE_AUTO_COMPACT_WINDOW
 PCT=$((USED_TOKENS * 100 / CONTEXT_LIMIT))
 BAR_WIDTH=21
 FILLED=$((PCT * BAR_WIDTH / 100))
