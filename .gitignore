@@ -45,4 +45,6 @@ gh-review-reactions.cache
 pr-reactions-seen.txt
 pr-review-seen.txt
 watch-review-requests.lock
+gh-pr-status-cache.json
 plugins/data/datadog-claude-plugins-official/domain
+feedback/drafts/
