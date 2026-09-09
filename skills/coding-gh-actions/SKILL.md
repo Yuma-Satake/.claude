@@ -19,6 +19,12 @@ user-invocable: false
 - `gh api graphql` のレスポンスをjqでパースする場合、対象データが存在しない・フィールドがnullになるケースを想定しないと、`set -euo pipefail` 環境下でjqがエラー終了しスクリプトが意図せず中断する
 - 詳細な対処パターン（`[]?` による配列のnull安全な反復、`// empty` によるスカラー値のnull安全な取得）は `references/jq-null-safety.md` を参照すること
 
+## ローカル静的検証（actionlint / shellcheck）
+
+- `.github/workflows/` 配下のYAMLファイルを変更した場合、`actionlint <file>` で静的検証すること。actionlintはPATH上に`shellcheck`があれば`run:`ステップのシェルスクリプトも自動でshellcheck解析する
+- `.github/actions/` 配下のcomposite action定義（`action.yml`）はワークフロー用スキーマ（`jobs`/`on`必須）と異なるため、actionlintの対象外。`runs.steps[].run` のシェルスクリプト部分を抜き出し、`shellcheck` 単体に渡して検証すること
+- actionlint・shellcheckはmiseでグローバル導入済み（`~/.config/mise/config.toml`）。Bashツール経由の実行では`mise activate`のPATH注入が効かないことがあるため、`command not found`になる場合は `mise exec actionlint shellcheck -- <command>` の形で実行すること
+
 ## 動作確認（CI実行によるチェック）
 
 - ワークフローファイルの変更はローカルで完全には検証できず、実際にCIを動かして初めて動作確認できる場合が多い
