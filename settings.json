@@ -24,6 +24,16 @@
   "model": "sonnet",
   "enableAllProjectMcpServers": true,
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/inject-ask-user-question-conditions.sh"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "*",
@@ -31,6 +41,16 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/herdr-agent-state.sh session",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/satake-yuma/.claude/hooks/herdr-agent-state.sh' session",
             "timeout": 10
           }
         ]
@@ -50,6 +70,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/detect-hallucinated-user-turn.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-unasked-confirmation.py"
           }
         ]
       }
@@ -72,7 +96,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome MCPツール使用時は必ずmcp-chromeスキル（~/.claude/skills/mcp-chrome/SKILL.md）を確認してから操作する\"}}'"
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome MCPツール使用時は、mcp-chromeスキル（~/.claude/skills/mcp-chrome/SKILL.md）の確認が必須である\"}}'"
           }
         ]
       },
@@ -81,7 +105,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Slack MCPツール使用時は必ずmcp-slackスキル（~/.claude/skills/mcp-slack/SKILL.md）を確認してから操作する\"}}'"
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Slack MCPツール使用時は、mcp-slackスキル（~/.claude/skills/mcp-slack/SKILL.md）の確認が必須である\"}}'"
           }
         ]
       },
@@ -90,7 +114,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Notion MCPツール使用時は必ずmcp-notionスキル（~/.claude/skills/mcp-notion/SKILL.md）を確認してから操作する\"}}'"
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Notion MCPツール使用時は、mcp-notionスキル（~/.claude/skills/mcp-notion/SKILL.md）の確認が必須である\"}}'"
           }
         ]
       },
