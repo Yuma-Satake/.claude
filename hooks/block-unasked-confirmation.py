@@ -57,28 +57,24 @@ def main():
         return
 
     transcript_path = data.get("transcript_path")
-    if not transcript_path:
-        return
-
-    try:
-        records = load_records(transcript_path)
-    except OSError:
-        return
-
-    assistant_texts = []
     ask_used = False
-    for rec in current_turn_records(records):
-        if rec.get("type") != "assistant":
-            continue
-        for block in rec.get("message", {}).get("content", []):
-            if block.get("type") == "text":
-                assistant_texts.append(block.get("text", ""))
-            elif block.get("type") == "tool_use" and block.get("name") == "AskUserQuestion":
-                ask_used = True
+    if transcript_path:
+        try:
+            records = load_records(transcript_path)
+        except OSError:
+            records = []
+        for rec in current_turn_records(records):
+            if rec.get("type") != "assistant":
+                continue
+            for block in rec.get("message", {}).get("content", []):
+                if block.get("type") == "tool_use" and block.get("name") == "AskUserQuestion":
+                    ask_used = True
 
     if ask_used:
         return
-    if not any(REQUEST_FORM.search(strip_quotes(txt)) for txt in assistant_texts):
+
+    last_message = data.get("last_assistant_message", "")
+    if not REQUEST_FORM.search(strip_quotes(last_message)):
         return
 
     reason = (
