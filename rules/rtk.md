@@ -25,6 +25,10 @@ which rtk             # Verify correct binary
 
 ⚠️ **単純な`-iname`条件でも結果が欠落することがある**: 複合条件を避けて`-iname`のみに単純化した`find`呼び出しでも、rtk経由では0件になり、対象のファイル・ディレクトリが実際には存在するのに「見つからない」と誤判定することがある。findの結果が想定と食い違う（存在するはずのものが0件になる）場合は、同条件を`rtk proxy find <args>`で直接実行して切り分けること。
 
+⚠️ **worktree-isolatedなセッションでgitコマンドが全件ブロックされる**: rtkフックは全ての`git ...`コマンドを透過的に`rtk git ...`へ書き換える。worktree-isolatedなセッション（`git worktree`で作られた作業ディレクトリで動くセッション）では、サンドボックス側が「worktree外に影響しないこと」を検証する際、この`rtk`でラップされた形の`git`コマンドを解析できず、`git status`のような単純な読み取りコマンドすら含めて**全てのgitコマンドが拒否される**。`rtk proxy git <args>`・`command git <args>`で迂回しようとしても同様に拒否される（試行済み）。`dangerouslyDisableSandbox: true`も効果がない（ブロックはサンドボックス層より前のhook/検証層で起きているため）。
+
+回避策は、そのセッションの間だけ`~/.claude/settings.json`の`hooks.PreToolUse`から`"matcher": "Bash"`・`"command": "rtk hook claude"`のブロックを一時的に削除し、git操作が終わったら復元することのみ（2026-09時点で確認済みの唯一の回避策）。この設定はグローバルなため、削除中は他のセッション・他のworktreeにも影響する。作業前にユーザーへ確認を取り、対応が終わったら忘れずに復元すること。
+
 ## Hook-Based Usage
 
 All other commands are automatically rewritten by the Claude Code hook.
