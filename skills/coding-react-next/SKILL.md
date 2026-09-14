@@ -57,3 +57,5 @@ feature内のディレクトリ構成:
 - clientコンポーネントでのparamsの取得には `use` ではなく、`useParams` を使用すること
 - サーバーとクライアントでレンダリング結果が異なる実装（window参照・Math.random()・Date.now()・localStorage へのSSR時アクセスなど）はハイドレーションエラーを引き起こすため避けること
 - App Router使用時のappディレクトリの中で共通化のためにファイルを置くときは、直接ファイルをおかずに `_xxx` というディレクトリを作成して、その中にファイルを置くこと
+- clientコンポーネント（`'use client'`）から到達するモジュールでは、ORM・コード生成器が出力する定数（Prismaのenumオブジェクト等）を値として参照せず `import type` に留めること。値参照にするとそのパッケージのランタイムがclient側の依存に入る。型位置での使用（`Record<Enum, T>`・`typeof Enum.member`）は `import type` のままでも書けるので、判定に使う比較だけをリテラルに倒せば型の絞り込みも保たれる。「`as const` オブジェクトの値はリテラルを直接書かずプロパティを参照する」という規約（coding-js-ts）はserver専用モジュールに適用し、client到達モジュールではこちらを優先する
+- どのモジュールがclientから到達するかは、`'use client'` を持つファイルからのimportを辿って判断すること。共通のlibモジュールは、server専用のつもりでもclientコンポーネントが1つの関数を使っているだけで境界を越える
