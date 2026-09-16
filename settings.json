@@ -21,6 +21,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
+  "model": "sonnet",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "UserPromptSubmit": [
