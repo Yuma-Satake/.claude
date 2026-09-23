@@ -14,63 +14,12 @@ def strip_quotes(text):
     return QUOTED_SPAN.sub("", text)
 
 
-def is_real_user_turn(rec):
-    if rec.get("type") != "user":
-        return False
-    content = rec.get("message", {}).get("content")
-    if isinstance(content, str):
-        return content.strip() != ""
-    if isinstance(content, list):
-        return any(block.get("type") != "tool_result" for block in content)
-    return False
-
-
-def load_records(transcript_path):
-    records = []
-    with open(transcript_path, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                records.append(json.loads(line))
-            except ValueError:
-                continue
-    return records
-
-
-def current_turn_records(records):
-    start_idx = 0
-    for i in range(len(records) - 1, -1, -1):
-        if is_real_user_turn(records[i]):
-            start_idx = i + 1
-            break
-    return records[start_idx:]
-
-
 def main():
     data = json.load(sys.stdin)
 
     if data.get("agent_id"):
         return
     if data.get("stop_hook_active"):
-        return
-
-    transcript_path = data.get("transcript_path")
-    ask_used = False
-    if transcript_path:
-        try:
-            records = load_records(transcript_path)
-        except OSError:
-            records = []
-        for rec in current_turn_records(records):
-            if rec.get("type") != "assistant":
-                continue
-            for block in rec.get("message", {}).get("content", []):
-                if block.get("type") == "tool_use" and block.get("name") == "AskUserQuestion":
-                    ask_used = True
-
-    if ask_used:
         return
 
     last_message = data.get("last_assistant_message", "")
