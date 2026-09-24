@@ -23,6 +23,7 @@ user-invocable: false
 | OAuth 認証（Google/X/Apple 等） | `references/oauth.md` | OAuth ボタン経由のログインが必要なとき |
 | Google Workspace 管理コンソール（admin.google.com） | `references/google-admin.md` | ユーザー・グループ管理などadmin.google.comを操作するとき |
 | Gmail（mail.google.com） | `references/gmail.md` | メッセージパーマリンクからスレッドを開く・返信するとき |
+| Google Analytics（analytics.google.com） | `references/google-analytics.md` | プロパティ・データストリームの作成、測定IDの取得を行うとき |
 | ブラウザ操作パターン（汎用） | `references/browser-patterns.md` | フォーム入力・値取得・DOM 操作・ダイアログ回避など具体的テクニックが必要なとき |
 
 新しいサイトのナレッジが溜まったら、`references/{site-name}.md` を追加して上表に追記すること。
@@ -35,6 +36,7 @@ user-invocable: false
 - **agent-browser / Playwright など独立ブラウザは使わない**: ユーザーが実際に使っている Chrome のログイン状態を共有できないため、Google・社内ツールなどで再認証が必要になり事故る
 - 単に Web ページのテキストを取得するだけなら `WebFetch` や `WebSearch` の方が軽い
 - ただし検索ボタン押下など JS での動的操作が必要なフォーム（例: 検索条件を入力してから結果を表示する公式サイトの検索フォーム）は `WebFetch` では結果まで到達できないことがある。単純な静的ページ取得ではなく操作を伴うと判断した時点で、最初から Claude in Chrome でのブラウザ操作を選ぶこと
+- 連続する複数の操作（クリック・入力・ナビゲーション・スクリーンショット等）は個別に呼び出さず、`browser_batch` でまとめて実行する。レイテンシ削減のため積極的に使うこと。制約（`read_page` が使えない、同一タブIDでの並列送信は不可等）は `references/browser-patterns.md` を参照
 
 ### セッション開始時
 
