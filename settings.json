@@ -31,6 +31,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/inject-ask-user-question-conditions.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/afk-clear-on-prompt.sh"
           }
         ]
       }
@@ -74,6 +78,10 @@
           },
           {
             "type": "command",
+            "command": "~/.claude/hooks/afk-stop-guard.py"
+          },
+          {
+            "type": "command",
             "command": "~/.claude/hooks/block-unasked-confirmation.py"
           }
         ]
@@ -91,6 +99,15 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/check-git-add-status.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/afk-activate-on-skill.sh"
           }
         ]
       }
@@ -129,6 +146,15 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/inject-agent-use.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/afk-block-ask.sh"
           }
         ]
       },
