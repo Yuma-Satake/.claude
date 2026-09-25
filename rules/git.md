@@ -1,21 +1,40 @@
 # Git操作規約
 
+## General Principles
+
 - ユーザの指示がないのにcommitやpushを絶対に行わないこと
+
+## Branching
+
+- 新規タスクに着手する前に、現在のブランチが今回のタスク専用かを確認する（`git branch --show-current` と `git log --oneline -5` で直近コミットの目的を見る）。作業ツリーがクリーンでも、既にマージ済みのPRに対応するブランチや別目的の既存ブランチをチェックアウトしたまま作業を始めると、無関係な変更が同じブランチに混在する。目的が異なる／不明な場合は、ベースブランチ（各リポの既定ブランチ）から新規ブランチを切ってから実装を始める
+- ファイルの編集を伴う作業時に、すでにdiffのあるファイルが存在している場合、他のエージェントが実装を行なっている可能性があるため、stashしたりブランチを切り替えたりせず、ユーザにworktreeを作成するか確認してから作業すること
+
+## Commit / Staging
+
 - git管理されたファイルのリネーム・移動には `git mv` を使用
 - 内容がほぼ同じファイルを別名で置き換える場合、旧ファイルの削除と新ファイルの作成を別々に行わず、`git mv` で旧ファイルをリネームしてから内容を編集し、差分を最小限にすること
-- GitHub issueやPRの編集（コメント追加・タイトル変更・説明更新等）を行う前に、必ず `gh` コマンドで最新の状態をfetchし、他者による更新がないか確認してから操作を行うこと
-- forkしたリポジトリで作業する場合、`git remote -v` でupstreamが設定されているか確認し、未設定であれば `gh repo view --json parent` でfork元を特定してupstreamの追加を提案すること
+- `git add` の実施後は、必ず `git status` でステージ結果を確認し、意図した内容が正しくステージされていることを確認すること
+
+## Merge / Rebase
+
 - マージ・リベースでコンフリクトを解消した後は、コンフリクトマーカーの消し忘れがないか確認するだけでなく、build・testを実行して解決内容に異常が無いかを検証してからコミットすること。構文的にマージできていても、両ブランチの変更が意味的に矛盾したまま残ることがある
-- `git add <path1> <path2> ...` で複数パスを同時指定した場合、いずれか1つでもパスが存在しない（例: 既に `git rm` 済み、`git mv` でパスが変わっている）と、コマンド全体が失敗し他の正当なパスも一切ステージされない。複数パスを1コマンドでaddした直後は必ず `git status` でステージ結果を確認すること
-- `git status --short` の2文字ステータスコードは、1文字目=index（ステージ済み）、2文字目=ワークツリー（未ステージ）で独立した意味を持つ。例えば `RM` は「rename+modified という1つの状態」ではなく「indexでは既にリネーム済みだが、ワークツリーにはさらに未ステージの変更が残っている」ことを示す。1文字ずつ分けて読むこと
-- GitHub REST API（`gh api`経由も含む）でissue・PR作成時に`labels`へ未作成のラベル名を指定した場合の挙動は公式ドキュメントに明記されていない（[Create an issue](https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue)は「Only users with push access can set labels for new issues. Labels are silently dropped otherwise.」とのみ記載）。ラベルを使う自動化を組む場合は、未作成ラベル名を渡して自動作成に賭けるのではなく、事前に`gh label create`で対象ラベルを作成しておくこと
-- ファイルの編集を伴う作業時に、すでにdiffのあるファイルが存在している場合、他のエージェントが実装を行なっている可能性があるため、stashしたりブランチを切り替えたりせず、ユーザにworktreeを作成するか確認してから作業すること
+
+## Stash
+
 - `git stash apply` で変更を復元した直後、その変更をコミットせずに別ブランチへ`switch`しないこと。未コミットの変更はブランチ切り替え時にそのまま持ち越されるため、意図しない別ブランチへ混入する。切り替え前にworking treeの内容を`git show HEAD:<path> > <path>`等で元に戻す操作を挟むと、working treeの内容が切り替え先のHEADと偶然一致し、復元した変更が跡形もなく消失することもある。apply後はそのブランチで用が済むまで、最低限コミットするまで他のブランチへ切り替えない
-- 新規タスクに着手する前に、現在のブランチが今回のタスク専用かを確認する（`git branch --show-current` と `git log --oneline -5` で直近コミットの目的を見る）。作業ツリーがクリーンでも、既にマージ済みのPRに対応するブランチや別目的の既存ブランチをチェックアウトしたまま作業を始めると、無関係な変更が同じブランチに混在する。目的が異なる／不明な場合は、ベースブランチ（各リポの既定ブランチ）から新規ブランチを切ってから実装を始める
+
+## Worktree
+
+- worktreeの作成・切り替え・削除には`git worktree add`等を直接使わず、EnterWorktree/ExitWorktreeツールを使うこと。Bashで`git worktree add`等を直接実行しようとするとPreToolUseフック（`~/.claude/hooks/block-git-worktree.sh`）がブロックし、EnterWorktreeを使うよう促す。EnterWorktree・Agentツールの`isolation: "worktree"`はWorktreeCreate/WorktreeRemoveフック（`~/.claude/hooks/worktree-create-wt.sh`・`worktree-remove-wt.sh`）経由の処理に差し替えられており、gitignore対象のファイル（`.env`・`node_modules`等untrackedなもの）が自動コピーされるため、手動でのコピー確認は不要。依存関係のロックファイルに差分がある場合など、コピーだけでは不十分で再インストールが必要になるケースがあることには注意する
 - `EnterWorktree`ツールは新規ブランチをベースブランチから作成する仕組みしかなく、既存ブランチへ直接チェックアウトするworktreeの作成には使えない。既存ブランチ（他人のPRのheadRefName等）をworktreeでチェックアウトしたい場合は別の手段を検討する
 - `EnterWorktree`は`path`引数で既存worktreeへの切り替えにも使えるが、現在セッションが「既にworktree内にいる状態」から呼ぶと、切り替え先が`.claude/worktrees/`配下のworktree（Claude Code自身が作成したもの）でない限り拒否される。`open-feature`等のスキルが`git worktree add`で作った`.claude/worktrees/`配下ではないworktree（プロジェクト独自の命名規則のディレクトリ等）へ切り替えたい場合は、まず`ExitWorktree`（`action: "keep"`）で元のディレクトリに戻り、そこから改めて`EnterWorktree(path: <対象>)`を呼ぶ。「launchディレクトリからの初回entry」であれば、対象リポの`git worktree list`に登録されている任意のworktreeへ切り替えられる
-- worktreeの作成・切り替え・削除には`git worktree add`等を直接使わず、EnterWorktree/ExitWorktreeツールを使うこと。Bashで`git worktree add`等を直接実行しようとするとPreToolUseフック（`~/.claude/hooks/block-git-worktree.sh`）がブロックし、EnterWorktreeを使うよう促す。EnterWorktree・Agentツールの`isolation: "worktree"`はWorktreeCreate/WorktreeRemoveフック（`~/.claude/hooks/worktree-create-wt.sh`・`worktree-remove-wt.sh`）経由の処理に差し替えられており、gitignore対象のファイル（`.env`・`node_modules`等untrackedなもの）が自動コピーされるため、手動でのコピー確認は不要。依存関係のロックファイルに差分がある場合など、コピーだけでは不十分で再インストールが必要になるケースがあることには注意する
 
-## GitHubへの画像添付
+## GitHub (issue / PR)
+
+- GitHub issueやPRの編集（コメント追加・タイトル変更・説明更新等）を行う前に、必ず `gh` コマンドで最新の状態をfetchし、更新がないか確認してから操作を行うこと
+- forkしたリポジトリで作業する場合、`git remote -v` でupstreamが設定されているか確認し、未設定であれば `gh repo view --json parent` でfork元を特定してupstreamの追加を提案すること
+- GitHub REST API（`gh api`経由も含む）でissue・PR作成時に`labels`へ未作成のラベル名を指定した場合の挙動は公式ドキュメントに明記されていない（[Create an issue](https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue)は「Only users with push access can set labels for new issues. Labels are silently dropped otherwise.」とのみ記載）。ラベルを使う自動化を組む場合は、未作成ラベル名を渡して自動作成に賭けるのではなく、事前に`gh label create`で対象ラベルを作成しておくこと
+
+## Image Attachments on GitHub
 
 issueやPRの本文・コメントに画像を貼り付ける場合は、`tool-gh-image` skillを必ず使用する。
