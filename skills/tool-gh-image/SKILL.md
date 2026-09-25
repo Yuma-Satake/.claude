@@ -5,20 +5,27 @@ description: GitHubのPull Requestやissueの本文・コメントに画像や�
 
 # tool-gh-image
 
-GitHubのPR・issueへ画像を添付する場合は、`gh image`拡張機能で画像をアップロードし、出力されたMarkdownを対象の本文またはコメントへ反映する。
+GitHubのPR・issueへ画像や動画を添付する場合は、`gh`公式の`--attach`フラグを使用する（`gh issue create`・`gh issue edit`・`gh issue comment`・`gh pr create`・`gh pr edit`・`gh pr comment`で対応）。
+
+## 前提
+
+- `gh` v2.99.0以上が必要
+- 対応形式: 画像はPNG・JPEG・GIF・WebP・SVG、動画はMP4・MOV・WebM
+- 添付にはリポジトリへのpush権限が必要
+- `--attach`は繰り返し指定することで複数ファイルを添付できるが、同じファイルを2回添付することはできない
+- 代替テキストを付ける場合は `--attach 'PATH/TO/IMAGE#代替テキスト'` の形式を使う
 
 ## 手順
 
-1. ユーザーの依頼から、対象のPRまたはissue、添付先が本文かコメントか、画像ファイルを特定する
-2. 対象または画像ファイルが特定できない場合は、AskUserQuestionToolで不足情報を確認する
-3. `gh`コマンドで対象の最新状態とリポジトリの`owner/repo`を取得する
-4. 各ファイルについて`gh image <ファイル> --repo owner/repo`を実行する。画像は`![...](URL)`形式のMarkdownを返すが、動画ファイル（`.mov`/`.mp4`等）は生のURLのみを返す（img markdown形式ではない）
-5. 取得したMarkdown、または動画の場合は生のURLを独立した行として、既存内容を保持したまま指定された本文またはコメントへ反映する（動画のURLはそのまま貼ればGitHub側が自動でプレーヤー表示する）
-6. `gh`コマンドで反映後の本文またはコメントを取得し、画像のMarkdownまたは動画のURLが含まれていることを確認する
+1. ユーザーの依頼から、対象のPRまたはissue、添付先が本文かコメントか、画像・動画ファイルを特定する
+2. 対象またはファイルが特定できない場合は、AskUserQuestionToolで不足情報を確認する
+3. `gh`コマンドで対象の最新状態を取得する
+4. 既存の本文・コメントに追記する場合は`gh issue edit`・`gh pr edit`・`gh issue comment`・`gh pr comment`に`--attach <ファイル>`を付けて実行する（既存本文は保持され、添付ファイルは本文末尾に追記される。新規作成時は`gh issue create`・`gh pr create`に同様に付ける）
+5. `gh`コマンドで反映後の本文またはコメントを取得し、画像・動画が添付されていることを確認する
 
 ## Before / After
 
-画面変更のBefore / Afterを掲載する場合は、`gh image`の出力から画像URLを取り出し、以下のHTMLテーブルで必ず横並びにする。
+画面変更のBefore / Afterを掲載する場合は、`--attach`で反映された画像URLを取り出し、以下のHTMLテーブルで必ず横並びにする。
 
 ```html
 <table>
@@ -39,4 +46,4 @@ GitHubのPR・issueへ画像を添付する場合は、`gh image`拡張機能で
 
 - 成功: `tool-gh-image: attached <target>`
 - 対象や画像が不足して実行できない: `tool-gh-image: blocked (<reason>)`
-- `gh image`またはGitHubへの反映に失敗した: `tool-gh-image: failed (<reason>)`
+- `gh --attach`またはGitHubへの反映に失敗した: `tool-gh-image: failed (<reason>)`
