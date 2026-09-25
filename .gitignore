@@ -48,3 +48,5 @@ watch-review-requests.lock
 gh-pr-status-cache.json
 plugins/data/datadog-claude-plugins-official/domain
 feedback/drafts/
+policy-limits.json.stamp.json
+skills/synced/.bucket-9324b1e7-51a6-483c-a4cb-db496aa0e154_71e9ee9a-d2af-4779-b57a-e8d4e1864b14
