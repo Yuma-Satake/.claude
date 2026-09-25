@@ -4,7 +4,14 @@
 set -euo pipefail
 
 input=$(cat)
+command=$(echo "$input" | jq -r '.tool_input.command // empty')
 cwd=$(echo "$input" | jq -r '.cwd // empty')
+
+pattern='(^|[;&|(`[:space:]])git([[:space:]]+-[A-Za-z-]+([[:space:]]+[^[:space:]]+)?)*[[:space:]]+add([[:space:]]|$)'
+
+if [[ ! "$command" =~ $pattern ]]; then
+  exit 0
+fi
 
 if [ -z "$cwd" ] || [ ! -d "$cwd" ]; then
   exit 0

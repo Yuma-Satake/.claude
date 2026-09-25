@@ -89,8 +89,7 @@
           },
           {
             "type": "command",
-            "command": "~/.claude/hooks/check-git-add-status.sh",
-            "if": "Bash(git add *)"
+            "command": "~/.claude/hooks/check-git-add-status.sh"
           }
         ]
       }
