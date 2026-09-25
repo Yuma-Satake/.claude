@@ -1,52 +1,69 @@
+# OS
 .DS_Store
+
+# ログ・履歴・セッション
 debug
 file-history
 shell-snapshots
-todos
+history.jsonl
+sessions
+session-env/
+telemetry/
 statsig
+daemon.log
+
+# キャッシュ・一時ファイル
+cache
+paste-cache
+image-cache
+stats-cache.json
+policy-limits.json
+policy-limits.json.stamp.json
+.last-cleanup
+.last-update-result.json
+
+# 状態・作業ディレクトリ
 projects/
 ide/
 plans/
-stats-cache.json
-cache
-paste-cache
-history.jsonl
+tasks/
+backups
+state/
+daemon/
+jobs/
+todos
+
+# plugins
 plugins/marketplaces/claude-plugins-official
 plugins/marketplaces/conference-organizing-knowledge-skill
 plugins/known_marketplaces.json
 plugins/blocklist.json
-tasks/
-backups
-chrome/chrome-native-host
-.credentials.json
-mcp-needs-auth-cache.json
-telemetry/
-session-env/
-sessions
-policy-limits.json
-image-cache
-chrome
 plugins/install-counts-cache.json
 plugins/installed_plugins.json
-.last-cleanup
 plugins/plugin-catalog-cache.json
-.last-update-result.json
 plugins/.last_inuse_sweep
-channels/discord/.env
-channels/discord/inbox
+plugins/data/datadog-claude-plugins-official/domain
+plugins/synced/
+
+# skills
+skills/synced/
+
+# chrome
+chrome
+
+# 認証・秘匿情報
+.credentials.json
+mcp-needs-auth-cache.json
 remote-settings.json
-state/
 settings.local.json
-daemon.log
-daemon/
-jobs/
+channels/discord/.env
+
+# その他
+channels/discord/inbox
 scheduled_tasks.lock
 gh-review-reactions.cache
 pr-reactions-seen.txt
 pr-review-seen.txt
 watch-review-requests.lock
 gh-pr-status-cache.json
-plugins/data/datadog-claude-plugins-official/domain
 feedback/drafts/
-policy-limits.json.stamp.json
-skills/synced/.bucket-9324b1e7-51a6-483c-a4cb-db496aa0e154_71e9ee9a-d2af-4779-b57a-e8d4e1864b14
