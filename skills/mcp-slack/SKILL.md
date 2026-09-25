@@ -1,6 +1,6 @@
 ---
 name: mcp-slack
-description: Slack MCPツールのベストプラクティスを提供します。Slack MCP（mcp__slack__*）ツールでメッセージ検索、チャンネル閲覧、スレッド調査を行う場合に使用します。
+description: mcp-slack
 user-invocable: false
 ---
 

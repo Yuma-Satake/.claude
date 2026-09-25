@@ -41,3 +41,14 @@ Stopイベントは、タスクが完了して応答が終わった場合だけ�
 ## hookコマンドのパス指定
 
 `~/.claude/settings.json` のようなユーザーレベルの設定ファイルは、複数マシン間でgit等により同期・共有されることがある。hookのcommandでスクリプトパスを指定する際、`/Users/<username>/...` のような絶対パスをハードコードすると、ユーザー名やホームディレクトリ構成が異なる別マシンでフックが失敗する（`No such file or directory`）。同一ファイル内の他のhookコマンドが `~/.claude/hooks/...` の形式で統一されているなら、それに倣い `$HOME` 展開（`~/...` または `"$HOME/..."`）を使うこと。
+
+## Bashコマンド文字列から部分文字列を抽出する場合
+
+macOSの`grep`はBSD版で`-P`（PCRE）に対応していないため、`grep -oP`でサブコマンドの捕捉グループを取り出す実装は使えない。`tool_input.command`から`git stash <subcommand>`のようなトークンを抽出する場合は、bashの`[[ "$command" =~ 拡張正規表現 ]]`と`BASH_REMATCH`配列を使う。`git`と対象サブコマンドの間に`-C <dir>`等のオプションが挟まるケースも考慮し、`git([[:space:]]+-[A-Za-z-]+([[:space:]]+[^[:space:]]+)?)*[[:space:]]+<対象サブコマンド>`の形で、オプション部分を`*`で0回以上許容するパターンを使う（`block-bare-git-stash.sh`・`block-dirty-git-switch.sh`参照）。
+
+## rulesの内容をhook化した場合のrules側の扱い
+
+あるrulesの記述をPreToolUse/PostToolUseフックで機械的に強制・自動化した場合、rules側は単純に削除するのではなく、以下の基準で判断する。
+
+- rulesの記述内容がhookの判定・強制で完全にカバーされる場合は、その記述をrulesから削除する（重複管理を避ける）
+- rulesの記述にhookでは検知・カバーできないニュアンス（例: hookの判定ロジックを回避してしまう操作パターンの注意）が含まれる場合は、その部分は削除せずに残し、対応するhookのスクリプト名を本文中に明記して参照させる（例: `~/.claude/hooks/block-dirty-git-switch.sh`のように、hookのファイルパスをそのまま書く）。これにより、モデルがブロックされた際にhookの存在自体を初見で疑わずに済み、かつhookが見ていない残存リスクも見失わない

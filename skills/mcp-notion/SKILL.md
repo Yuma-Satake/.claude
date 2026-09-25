@@ -1,6 +1,6 @@
 ---
 name: mcp-notion
-description: Notion MCPツール（mcp__notion__*）のベストプラクティスを提供する。Notionページの検索・取得・更新・コメント操作を行う場合に使用する。
+description: mcp-notion
 user-invocable: false
 ---
 

@@ -13,7 +13,6 @@
 
 - git管理されたファイルのリネーム・移動には `git mv` を使用
 - 内容がほぼ同じファイルを別名で置き換える場合、旧ファイルの削除と新ファイルの作成を別々に行わず、`git mv` で旧ファイルをリネームしてから内容を編集し、差分を最小限にすること
-- `git add` の実施後は、必ず `git status` でステージ結果を確認し、意図した内容が正しくステージされていることを確認すること
 
 ## Merge / Rebase
 
@@ -21,7 +20,8 @@
 
 ## Stash
 
-- `git stash apply` で変更を復元した直後、その変更をコミットせずに別ブランチへ`switch`しないこと。未コミットの変更はブランチ切り替え時にそのまま持ち越されるため、意図しない別ブランチへ混入する。切り替え前にworking treeの内容を`git show HEAD:<path> > <path>`等で元に戻す操作を挟むと、working treeの内容が切り替え先のHEADと偶然一致し、復元した変更が跡形もなく消失することもある。apply後はそのブランチで用が済むまで、最低限コミットするまで他のブランチへ切り替えない
+- 未コミットの変更を別ブランチ・別worktreeに一時退避する場合、仮コミットを作らずstashを使うこと。git stashのスタックはメインチェックアウトと全worktreeで共有され他セッションが同時にpush/popしうる（bareな`git stash`/`git stash pop`/`git stash save`はPreToolUseフック`~/.claude/hooks/block-bare-git-stash.sh`でブロックされる）ため、`git stash push -u -m "<一意なタグ>"`で退避し、直後にSHAを記録する。`git stash list --format='%H %gs'`はハッシュ列が空になり機能しないことがあるため、`git rev-parse stash@{0}`で直接SHAを取得する方を使う。`git stash apply <sha>`（popではない）で復元する。使用後はそのエントリを削除するが、`git stash drop`はコミットSHAを受け付けず`stash@{n}`形式の参照が必要なため、`git stash drop <sha>`は失敗する。`git stash list`で該当エントリの`stash@{n}`インデックスを特定し（記録したSHAやメッセージと突き合わせる）、`git stash drop stash@{n}`で削除する
+- 未コミットの変更が残っている状態での`git switch`はPreToolUseフック（`~/.claude/hooks/block-dirty-git-switch.sh`）でブロックされる。ただし、切り替え前にworking treeの内容を`git show HEAD:<path> > <path>`等で元に戻す操作を挟むと、working treeの内容が切り替え先のHEADと偶然一致し、フックのdirty検知をすり抜けて`git stash apply`で復元した変更が跡形もなく消失することもある。この操作は避けること
 
 ## Worktree
 

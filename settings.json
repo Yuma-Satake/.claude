@@ -86,6 +86,11 @@
             "type": "command",
             "command": "~/.claude/hooks/set-knowledge-review-flag.sh",
             "if": "Bash(git commit *)"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/check-git-add-status.sh",
+            "if": "Bash(git add *)"
           }
         ]
       }
@@ -142,6 +147,24 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/block-git-worktree.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-bare-git-stash.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-dirty-git-switch.sh"
           }
         ]
       }
