@@ -17,6 +17,7 @@ user-invocable: false
 | note.com | `references/note.md` | note のエディタで記事作成・編集を行うとき |
 | Google Sheets / スプレッドシート | `references/google-sheets.md` | Sheets でセル入力・値の取得を行うとき |
 | Google Docs / ドキュメント | `references/google-docs.md` | Docs で見出しスタイル適用・コンテンツ貼り付けを行うとき |
+| Google Forms / フォーム | `references/google-forms.md` | フォームの作成・編集・設定変更を行うとき（作成時のデフォルト設定を含む） |
 | fortee | `references/fortee.md` | fortee の organizer 画面を操作するとき |
 | Amazon（amazon.co.jp） | `references/amazon.md` | Amazon で商品検索・価格確認を行うとき |
 | Grok（x.com/i/grok） | `references/grok.md` | Grok でチャット送信・回答取得を行うとき |
