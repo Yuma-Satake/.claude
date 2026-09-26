@@ -35,6 +35,7 @@ user-invocable: false
 
 - **ブラウザ操作には Claude in Chrome（`mcp__claude-in-chrome__*`）を使う**
 - **agent-browser / Playwright など独立ブラウザは使わない**: ユーザーが実際に使っている Chrome のログイン状態を共有できないため、Google・社内ツールなどで再認証が必要になり事故る
+- パフォーマンストレース・ネットワーク/コンソールの詳細調査などDevToolsの調査機能が必要な場合のみ、Chrome DevTools MCP（`mcp__plugin_chrome-devtools-mcp_*`、`mcp-chrome-devtools` スキル参照）を使う。ログイン状態は共有されない
 - 単に Web ページのテキストを取得するだけなら `WebFetch` や `WebSearch` の方が軽い
 - ただし検索ボタン押下など JS での動的操作が必要なフォーム（例: 検索条件を入力してから結果を表示する公式サイトの検索フォーム）は `WebFetch` では結果まで到達できないことがある。単純な静的ページ取得ではなく操作を伴うと判断した時点で、最初から Claude in Chrome でのブラウザ操作を選ぶこと
 - 連続する複数の操作（クリック・入力・ナビゲーション・スクリーンショット等）は個別に呼び出さず、`browser_batch` でまとめて実行する。レイテンシ削減のため積極的に使うこと。制約（`read_page` が使えない、同一タブIDでの並列送信は不可等）は `references/browser-patterns.md` を参照

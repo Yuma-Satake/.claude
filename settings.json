@@ -123,6 +123,15 @@
         ]
       },
       {
+        "matcher": "mcp__plugin_chrome-devtools-mcp_.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Chrome DevTools MCPツール使用時は、mcp-chrome-devtoolsスキル（~/.claude/skills/mcp-chrome-devtools/SKILL.md）の確認が必須である\"}}'"
+          }
+        ]
+      },
+      {
         "matcher": "mcp__slack__.*",
         "hooks": [
           {
@@ -226,7 +235,8 @@
     "discord@claude-plugins-official": false,
     "conference-organizing-knowledge-skill@conference-organizing-knowledge-skill": false,
     "cloudflare@claude-plugins-official": false,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": true
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
