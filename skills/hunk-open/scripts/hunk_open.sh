@@ -139,7 +139,12 @@ if [ "${#changed_files[@]}" -gt 0 ]; then
     [ -n "$root" ] && roots+=("$(physical_path "$root")")
   done
   if [ "${#roots[@]}" -gt 0 ]; then
-    mapfile -t roots < <(printf '%s\n' "${roots[@]}" | sort -u)
+    # macOS標準のbash 3.2にmapfileはないため、while readで重複を除く
+    unique_roots=()
+    while IFS= read -r root; do
+      unique_roots+=("$root")
+    done < <(printf '%s\n' "${roots[@]}" | sort -u)
+    roots=("${unique_roots[@]}")
   fi
   if [ "${#roots[@]}" -eq 1 ]; then
     target_dir="${roots[0]}"
