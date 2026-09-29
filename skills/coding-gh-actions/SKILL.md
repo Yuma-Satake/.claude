@@ -25,6 +25,11 @@ user-invocable: false
 - `.github/actions/` 配下のcomposite action定義（`action.yml`）はワークフロー用スキーマ（`jobs`/`on`必須）と異なるため、actionlintの対象外。`runs.steps[].run` のシェルスクリプト部分を抜き出し、`shellcheck` 単体に渡して検証すること
 - actionlint・shellcheckはmiseでグローバル導入済み（`~/.config/mise/config.toml`）。Bashツール経由の実行では`mise activate`のPATH注入が効かないことがあるため、`command not found`になる場合は `mise exec actionlint shellcheck -- <command>` の形で実行すること
 
+## 再利用可能ワークフロー（workflow_call）内でのイベント判定
+
+- `workflow_call`経由で呼び出されたジョブの中でも、`github.event_name`は呼び出し元のトップレベルイベント名（`push`・`workflow_dispatch`等）を継承する。`workflow_call`という値を取ることは無いため、`github.event_name != 'workflow_call'`のような式で「直接実行か呼び出し経由か」を判定することはできない
+- 直接実行と呼び出し経由を区別する必要がある場合（例: `environment:`による承認ゲートを呼び出し経由だけ外す）は、`github.event_name == 'workflow_dispatch'`のように直接実行時のイベント名を正の条件として判定するか、呼び出し元が渡す専用のboolean inputを使うこと
+
 ## 動作確認（CI実行によるチェック）
 
 - ワークフローファイルの変更はローカルで完全には検証できず、実際にCIを動かして初めて動作確認できる場合が多い
