@@ -6,9 +6,9 @@ user-invocable: false
 
 # コーディング規約
 
-## coding.mdの確認
+## coding-comment.mdの確認
 
-`.claude/rules/coding.md`に記載されたコーディング規約は全ての原則の基本となるので、必ず確認すること
+`~/.claude/rules/coding-comment.md`に記載されたコメント規約は全ての原則の基本となるので、必ず確認すること
 
 ## プロジェクト固有の規約の確認
 

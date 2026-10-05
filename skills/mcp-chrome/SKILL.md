@@ -21,6 +21,7 @@ user-invocable: false
 | fortee | `references/fortee.md` | fortee の organizer 画面を操作するとき |
 | Amazon（amazon.co.jp） | `references/amazon.md` | Amazon で商品検索・価格確認を行うとき |
 | Grok（x.com/i/grok） | `references/grok.md` | Grok でチャット送信・回答取得を行うとき |
+| X（x.com） | `references/x.md` | フォロー・アンフォローなど X の UI 操作を行うとき |
 | OAuth 認証（Google/X/Apple 等） | `references/oauth.md` | OAuth ボタン経由のログインが必要なとき |
 | Google Workspace 管理コンソール（admin.google.com） | `references/google-admin.md` | ユーザー・グループ管理などadmin.google.comを操作するとき |
 | Gmail（mail.google.com） | `references/gmail.md` | メッセージパーマリンクからスレッドを開く・返信するとき |

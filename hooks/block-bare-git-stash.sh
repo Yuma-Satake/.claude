@@ -1,7 +1,7 @@
 #!/bin/bash
 # PreToolUseフック: bareなgit stash/git stash pop/git stash saveを直接実行しようとした場合にブロックする
 # stashスタックはメインチェックアウトと全worktreeで共有され他セッションと衝突しうるため、
-# tool.md/git.mdの規約に従いgit stash push -u -m "<タグ>" + git stash apply <sha>の手順に統一する
+# git.mdの規約に従いgit stash push -u -m "<タグ>" + git stash apply <sha>の手順に統一する
 set -euo pipefail
 
 input=$(cat)

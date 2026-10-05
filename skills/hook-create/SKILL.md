@@ -46,9 +46,11 @@ Stopイベントは、タスクが完了して応答が終わった場合だけ�
 
 macOSの`grep`はBSD版で`-P`（PCRE）に対応していないため、`grep -oP`でサブコマンドの捕捉グループを取り出す実装は使えない。`tool_input.command`から`git stash <subcommand>`のようなトークンを抽出する場合は、bashの`[[ "$command" =~ 拡張正規表現 ]]`と`BASH_REMATCH`配列を使う。`git`と対象サブコマンドの間に`-C <dir>`等のオプションが挟まるケースも考慮し、`git([[:space:]]+-[A-Za-z-]+([[:space:]]+[^[:space:]]+)?)*[[:space:]]+<対象サブコマンド>`の形で、オプション部分を`*`で0回以上許容するパターンを使う（`block-bare-git-stash.sh`・`block-dirty-git-switch.sh`参照）。
 
-## `if`フィルタの先頭一致の落とし穴
+## `if`フィルタの前方一致の落とし穴
 
-settings.jsonの`if`フィールド（例: `"if": "Bash(git add *)"`）は`tool_input.command`文字列全体に対する先頭一致であり、`git -C <dir> add ...`のようにgitの前にオプションが挟まる形や、`echo x && git add ...`のように対象コマンドが先頭ではない複合コマンドを検知できない。コマンドの出現位置やオプションの有無を問わず判定したい場合は`if`に頼らず、スクリプト側で境界を考慮した正規表現（`block-bare-git-stash.sh`等と同様のパターン）による自己判定に統一する。
+settings.jsonの`if`フィールド（例: `"if": "Bash(git add *)"`）は、`&&`等で連結された各サブコマンドに対する前方一致で判定される。そのため`git -C <dir> add ...`のようにgitとサブコマンドの間にオプションが挟まる形は検知できない。また`if`の判定はbest-effortである。オプションの有無を問わず判定したい場合は`if`に頼らず、スクリプト側で境界を考慮した正規表現（`block-bare-git-stash.sh`等と同様のパターン）による自己判定に統一する。
+
+判定仕様の一次情報: https://code.claude.com/docs/en/hooks#bash-if-matching
 
 ## 作成後の動作チェックは必須
 

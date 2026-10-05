@@ -1,6 +1,6 @@
 #!/bin/bash
 # PostToolUseフック: git add成功後にgit statusをadditionalContextとして注入する
-# ステージ結果の確認漏れ（git.md: "git addの実施後は、必ずgit statusでステージ結果を確認する"）を防ぐ
+# ステージ結果の確認漏れを防ぐ
 set -euo pipefail
 
 input=$(cat)

@@ -12,7 +12,7 @@ user-invocable: false
 
 ## ツールセットアップ（mise）
 
-- 対象プロジェクトで mise（``mise.toml`など）が使用されている場合、`actions/setup-node` や `actions/setup-go`のような言語別セットアップActionを個別に使わず、`jdx/mise-action` を使ってツールのセットアップを行うこと
+- 対象プロジェクトで mise（`mise.toml`など）が使用されている場合、`actions/setup-node` や `actions/setup-go`のような言語別セットアップActionを個別に使わず、`jdx/mise-action` を使ってツールのセットアップを行うこと
 
 ## GraphQL APIレスポンスのjq処理
 

@@ -1,6 +1,6 @@
 """
 x_search.py - hermes-agent の x_search_tool を呼び出すスクリプト
-Usage: uvx --from hermes-agent python ~/.claude/x_search.py "クエリ文字列"
+Usage: uvx --from hermes-agent python ~/.claude/skills/tool-x-search/scripts/x_search.py "クエリ文字列"
 """
 import json
 import sys
