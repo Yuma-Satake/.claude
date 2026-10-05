@@ -4,6 +4,17 @@ fortee（https://fortee.jp）の organizer 画面を Chrome MCP で操作する�
 
 イベント固有の情報（イベントスラッグ・テンプレート件名ルール・署名など）は各プロジェクトの `knowledge/` に置き、本ファイルには fortee 全般のブラウザ操作ノウハウのみを載せる。
 
+## 目次
+
+- URL 構造
+- テンプレート操作
+- デプロイ操作
+- 確認ダイアログ（`confirm()`）の罠
+- タイムアウト対策（シリアル fetch）
+- 参加者のチケット購入状況確認
+- フォーム入力のコツ
+- よくあるミス
+
 ## URL 構造
 
 - テンプレート一覧: `/{event-slug}/organizer/email-templates`

@@ -42,13 +42,17 @@ Stopイベントは、タスクが完了して応答が終わった場合だけ�
 
 `~/.claude/settings.json` のようなユーザーレベルの設定ファイルは、複数マシン間でgit等により同期・共有されることがある。hookのcommandでスクリプトパスを指定する際、`/Users/<username>/...` のような絶対パスをハードコードすると、ユーザー名やホームディレクトリ構成が異なる別マシンでフックが失敗する（`No such file or directory`）。同一ファイル内の他のhookコマンドが `~/.claude/hooks/...` の形式で統一されているなら、それに倣い `$HOME` 展開（`~/...` または `"$HOME/..."`）を使うこと。
 
+この方針はhookのcommandに限らず、同期される設定ファイル・スクリプト内のユーザ名やホームディレクトリを含む固定表現全般（`statusLine`のcommand、スクリプト中のパス、`bash '/Users/<username>/...'` のようにクォートで包んだ絶対パスなど）に適用する。ユーザ名が入った表現を見つけたら、`~`・`$HOME`・`$(dirname "$0")`など環境に依存しない表現に置き換える。別の形式で同じhookを重複登録して回避せず、1つの汎用的な登録にまとめる。
+
 ## Bashコマンド文字列から部分文字列を抽出する場合
 
 macOSの`grep`はBSD版で`-P`（PCRE）に対応していないため、`grep -oP`でサブコマンドの捕捉グループを取り出す実装は使えない。`tool_input.command`から`git stash <subcommand>`のようなトークンを抽出する場合は、bashの`[[ "$command" =~ 拡張正規表現 ]]`と`BASH_REMATCH`配列を使う。`git`と対象サブコマンドの間に`-C <dir>`等のオプションが挟まるケースも考慮し、`git([[:space:]]+-[A-Za-z-]+([[:space:]]+[^[:space:]]+)?)*[[:space:]]+<対象サブコマンド>`の形で、オプション部分を`*`で0回以上許容するパターンを使う（`block-bare-git-stash.sh`・`block-dirty-git-switch.sh`参照）。
 
-## `if`フィルタの先頭一致の落とし穴
+## `if`フィルタの前方一致の落とし穴
 
-settings.jsonの`if`フィールド（例: `"if": "Bash(git add *)"`）は`tool_input.command`文字列全体に対する先頭一致であり、`git -C <dir> add ...`のようにgitの前にオプションが挟まる形や、`echo x && git add ...`のように対象コマンドが先頭ではない複合コマンドを検知できない。コマンドの出現位置やオプションの有無を問わず判定したい場合は`if`に頼らず、スクリプト側で境界を考慮した正規表現（`block-bare-git-stash.sh`等と同様のパターン）による自己判定に統一する。
+settings.jsonの`if`フィールド（例: `"if": "Bash(git add *)"`）は、`&&`等で連結された各サブコマンドに対する前方一致で判定される。そのため`git -C <dir> add ...`のようにgitとサブコマンドの間にオプションが挟まる形は検知できない。また`if`の判定はbest-effortである。オプションの有無を問わず判定したい場合は`if`に頼らず、スクリプト側で境界を考慮した正規表現（`block-bare-git-stash.sh`等と同様のパターン）による自己判定に統一する。
+
+判定仕様の一次情報: https://code.claude.com/docs/en/hooks#bash-if-matching
 
 ## 作成後の動作チェックは必須
 

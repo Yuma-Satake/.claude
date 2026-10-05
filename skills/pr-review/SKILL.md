@@ -53,7 +53,7 @@ argument-hint: "[pr-number]"
 - レビュー用skillには **coding-standards を常に無条件で含める**。言語・フレームワーク・レイヤーを問わず適用される規約であるため、必ず含める
 - レビュー用skillには **coding-architecture も原則含める**。変更差分が特定の単一層にとどまるなど、関心の分離・DRY原則の観点からどう見ても不要と判断できる場合に限り、含めないことができる
 - 上記2つ以外の追加skillは、ユーザに確認せず、変更ファイルの言語・フレームワーク・レイヤー・変更の性質（機能追加/バグ修正/リファクタ）からAIが推論して選定する
-- PR番号省略時（ローカルdiff）で `coding-regression` を選定skillに含める場合、対象のissue番号またはNotionページのURLを確認する。ローカルdiffでの変更は基本的に既存のissue・Notionタスクを元に実装しているため、この参照を必須情報として扱う（自由入力のため通常のテキストで確認し、AskUserQuestionは使わない）
+- PR番号省略時（ローカルdiff）で `coding-regression` を選定skillに含める場合、対象のissue番号またはNotionページのURLを確認する。ローカルdiffでの変更は基本的に既存のissue・Notionタスクを元に実装しているため、この参照を必須情報として扱う（AskUserQuestionで聞く。自由入力のため候補を2つ以上並べ、実際の番号やURLはOtherに任せる）
   - 参照が得られない場合、ユーザに確認せず `coding-regression` を選定skillから外す
 - 決定したレビュー用skillの一覧、`coding-architecture` を除外した場合はその判断根拠、`coding-regression` を除外した場合はその理由を、3.でcode-reviewer agentを起動する前に通常のテキスト出力でユーザに報告する
 

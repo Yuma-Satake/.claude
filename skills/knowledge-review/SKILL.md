@@ -79,7 +79,7 @@ gitリポジトリ外（`git rev-parse --show-toplevel`が失敗する場所）�
 1. Step 2で残った候補をもとに `AskUserQuestion` ツールで確認を取る。採用候補ごとに「反映先ファイル・変更内容の概要・汎用/プロジェクト固有の判定理由」を提示する。選択肢のラベルは「ファイルパスだけ」や「採用する」のような反映先が分からない書き方にせず、反映先の種別が一目でわかる言い回しを使う
    - agent定義への反映: 「`<agent名>` Agentに反映する」（例:「`code-reviewer` Agentに反映する」）
    - skill本体（SKILL.md）への反映: 「`<skill名>` skillに反映する」（例:「`commit` skillに反映する」）
-   - skill内の特定reference・resourceファイルへの反映: 「`<skill名>` skillの`<ファイル名>`に反映する」（例:「`coding-git-workflow` skillの`reference.md`に反映する」）
+   - skill内の特定reference・resourceファイルへの反映: 「`<skill名>` skillの`<ファイル名>`に反映する」（例:「`commit` skillの`reference.md`に反映する」）
    - rulesへの反映（無条件ロード）: 「`<ファイル名>` ruleに反映する」（例:「`research.md` ruleに反映する」）
    - rulesへの反映（パス限定）: 「`<ファイル名>` ruleに`paths: <パターン>`指定で反映する」（例:「`coding-go.md` ruleに`paths: **/*.go`指定で反映する」）
    - hookとしての反映: 「`hook-create` スキルでhookを作成して反映する」

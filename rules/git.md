@@ -33,7 +33,6 @@
 
 - GitHub issueやPRの編集（コメント追加・タイトル変更・説明更新等）を行う前に、必ず `gh` コマンドで最新の状態をfetchし、更新がないか確認してから操作を行うこと
 - forkしたリポジトリで作業する場合、`git remote -v` でupstreamが設定されているか確認し、未設定であれば `gh repo view --json parent` でfork元を特定してupstreamの追加を提案すること
-- GitHub REST API（`gh api`経由も含む）でissue・PR作成時に`labels`へ未作成のラベル名を指定した場合の挙動は公式ドキュメントに明記されていない（[Create an issue](https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue)は「Only users with push access can set labels for new issues. Labels are silently dropped otherwise.」とのみ記載）。ラベルを使う自動化を組む場合は、未作成ラベル名を渡して自動作成に賭けるのではなく、事前に`gh label create`で対象ラベルを作成しておくこと
 
 ## Image Attachments on GitHub
 

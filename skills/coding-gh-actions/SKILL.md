@@ -12,7 +12,7 @@ user-invocable: false
 
 ## ツールセットアップ（mise）
 
-- 対象プロジェクトで mise（``mise.toml`など）が使用されている場合、`actions/setup-node` や `actions/setup-go`のような言語別セットアップActionを個別に使わず、`jdx/mise-action` を使ってツールのセットアップを行うこと
+- 対象プロジェクトで mise（`mise.toml`など）が使用されている場合、`actions/setup-node` や `actions/setup-go`のような言語別セットアップActionを個別に使わず、`jdx/mise-action` を使ってツールのセットアップを行うこと
 
 ## GraphQL APIレスポンスのjq処理
 
@@ -29,6 +29,11 @@ user-invocable: false
 
 - `workflow_call`経由で呼び出されたジョブの中でも、`github.event_name`は呼び出し元のトップレベルイベント名（`push`・`workflow_dispatch`等）を継承する。`workflow_call`という値を取ることは無いため、`github.event_name != 'workflow_call'`のような式で「直接実行か呼び出し経由か」を判定することはできない
 - 直接実行と呼び出し経由を区別する必要がある場合（例: `environment:`による承認ゲートを呼び出し経由だけ外す）は、`github.event_name == 'workflow_dispatch'`のように直接実行時のイベント名を正の条件として判定するか、呼び出し元が渡す専用のboolean inputを使うこと
+
+## ラベルを使う自動化
+
+- GitHub REST API（`gh api`経由も含む）でissue・PR作成時に`labels`へ未作成のラベル名を指定した場合の挙動は公式ドキュメントに明記されていない（[Create an issue](https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue)は「Only users with push access can set labels for new issues. Labels are silently dropped otherwise.」とのみ記載）
+- ラベルを使う自動化を組む場合は、未作成ラベル名を渡して自動作成に賭けるのではなく、事前に`gh label create`で対象ラベルを作成しておくこと
 
 ## 動作確認（CI実行によるチェック）
 

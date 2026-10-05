@@ -18,9 +18,11 @@ Step 3 で分割した単位をそれぞれ別ブランチにコミットして�
 代わりに以下の手順を使う。
 
 1. 元のブランチ（全単位の変更が未コミットで存在する状態）で、1つ目の単位のファイルのみ `git add` してコミットする
-2. 分岐元のベースブランチに `git switch` で戻る（他単位の未コミット変更はそのまま working tree に残る。1つ目の単位のファイルはコミット時点のHEAD内容に戻る）
-3. `git switch -c <branch2>` で2つ目のブランチを作成する
-4. 2つ目の単位のファイルを `git add` してコミットする
+2. `~/.claude/rules/git.md` のStashセクションの手順（`git stash push -u -m "<一意なタグ>"` で退避し、`git rev-parse stash@{0}` でSHAを記録する）で、残りの未コミット変更を退避する（未コミット変更を残したままの `git switch` は `~/.claude/hooks/block-dirty-git-switch.sh` でブロックされる）
+3. 分岐元のベースブランチに `git switch` で戻り、`git switch -c <branch2>` で2つ目のブランチを作成する
+4. `git stash apply <sha>` で退避した変更を復元し、`git status --short` で2つ目の単位の変更だけが残っていることを確認する
+5. 2つ目の単位のファイルを `git add` してコミットする
+6. 退避に使ったstashエントリを、`git stash list` で `stash@{n}` を特定して `git stash drop stash@{n}` で削除する
 
 ## 1つ目の単位を既にコミット・push済みの状態から、残りをさらに別ブランチに分割する場合
 

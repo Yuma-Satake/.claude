@@ -21,6 +21,7 @@ user-invocable: false
 | fortee | `references/fortee.md` | fortee の organizer 画面を操作するとき |
 | Amazon（amazon.co.jp） | `references/amazon.md` | Amazon で商品検索・価格確認を行うとき |
 | Grok（x.com/i/grok） | `references/grok.md` | Grok でチャット送信・回答取得を行うとき |
+| X（x.com） | `references/x.md` | フォロー・アンフォローなど X の UI 操作を行うとき |
 | OAuth 認証（Google/X/Apple 等） | `references/oauth.md` | OAuth ボタン経由のログインが必要なとき |
 | Google Workspace 管理コンソール（admin.google.com） | `references/google-admin.md` | ユーザー・グループ管理などadmin.google.comを操作するとき |
 | Gmail（mail.google.com） | `references/gmail.md` | メッセージパーマリンクからスレッドを開く・返信するとき |
@@ -103,6 +104,6 @@ user-invocable: false
 反映手順:
 
 1. 既存の `SKILL.md` 本体と `references/` 配下に同等の記述があるか確認する
-2. ない場合は、ユーザーに **「今回の操作で得た『〜』というナレッジをスキルに反映しますか？」と具体的に提案する**
+2. ない場合は、今回の操作で得たナレッジの内容を具体的に示したうえで、スキルに反映するかをAskUserQuestionで確認する（候補は「反映する」「反映しない」など）
 3. ユーザーが承認した場合のみ、対応する `references/{site}.md` または `SKILL.md` に追記する
 4. 新しいサイトのナレッジが一定量溜まったら `references/{site}.md` を新規作成し、`SKILL.md` のインデックス表にも追加する
