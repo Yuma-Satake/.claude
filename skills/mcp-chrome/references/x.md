@@ -50,4 +50,3 @@ btn ? btn.innerText : 'not found';
 ## 前提条件
 
 - XにChromeでログイン済みであること
-- X操作の検索・調査（アカウント発掘など）にはGrokスキルを使うこと（`~/.claude/skills/mcp-chrome/references/x.md` はUI操作専用）

@@ -42,6 +42,8 @@ Stopイベントは、タスクが完了して応答が終わった場合だけ�
 
 `~/.claude/settings.json` のようなユーザーレベルの設定ファイルは、複数マシン間でgit等により同期・共有されることがある。hookのcommandでスクリプトパスを指定する際、`/Users/<username>/...` のような絶対パスをハードコードすると、ユーザー名やホームディレクトリ構成が異なる別マシンでフックが失敗する（`No such file or directory`）。同一ファイル内の他のhookコマンドが `~/.claude/hooks/...` の形式で統一されているなら、それに倣い `$HOME` 展開（`~/...` または `"$HOME/..."`）を使うこと。
 
+この方針はhookのcommandに限らず、同期される設定ファイル・スクリプト内のユーザ名やホームディレクトリを含む固定表現全般（`statusLine`のcommand、スクリプト中のパス、`bash '/Users/<username>/...'` のようにクォートで包んだ絶対パスなど）に適用する。ユーザ名が入った表現を見つけたら、`~`・`$HOME`・`$(dirname "$0")`など環境に依存しない表現に置き換える。別の形式で同じhookを重複登録して回避せず、1つの汎用的な登録にまとめる。
+
 ## Bashコマンド文字列から部分文字列を抽出する場合
 
 macOSの`grep`はBSD版で`-P`（PCRE）に対応していないため、`grep -oP`でサブコマンドの捕捉グループを取り出す実装は使えない。`tool_input.command`から`git stash <subcommand>`のようなトークンを抽出する場合は、bashの`[[ "$command" =~ 拡張正規表現 ]]`と`BASH_REMATCH`配列を使う。`git`と対象サブコマンドの間に`-C <dir>`等のオプションが挟まるケースも考慮し、`git([[:space:]]+-[A-Za-z-]+([[:space:]]+[^[:space:]]+)?)*[[:space:]]+<対象サブコマンド>`の形で、オプション部分を`*`で0回以上許容するパターンを使う（`block-bare-git-stash.sh`・`block-dirty-git-switch.sh`参照）。
