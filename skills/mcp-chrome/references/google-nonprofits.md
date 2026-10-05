@@ -6,13 +6,13 @@ Google for Nonprofits（www.google.com/nonprofits）のダッシュボードと�
 
 - `https://www.google.com/nonprofits/account/?authuser=<u/Nの番号>` で開くと、「Confirm your Google account」の画面（「For new requests, this account will be added as an administrator...」）が出る。表示されたアカウントが団体の管理者アカウントであることを確認して「Continue」を押す
 - 「Continue」は1回目のクリックで反応せず同じ画面のままのことがある。`tabs_context_mcp` で状態を確認し、同じボタンをもう一度押す
-- 個人アカウントが選ばれている場合は「Use a different account」で管理者アカウントに切り替える。`authuser` の番号は Gmail の `u/N` と同じ並びで、ログイン中のアカウントを順に試して確認する
+- 複数のGoogleアカウントがログインしているブラウザでは、個人アカウントがデフォルトで選ばれていることがある。その場合は「Use a different account」で管理者アカウントに切り替える。「Use a different account」も1回のクリックでは同じ確認画面に留まることがあり、もう一度押すと「Choose an account」のアカウント選択画面に遷移する。`authuser` の番号は Gmail の `u/N` と同じ並びで、ログイン中のアカウントを順に試して確認する
 
 ## Google Workspace for Nonprofits のアクティベーション
 
 1. ダッシュボードの「Google Workspace for Nonprofits」カードの「Learn more」を開く
 2. 「Does your nonprofit currently use Google Workspace?」で「Yes, we currently use Google Workspace」を選んで「Next」を押す
-3. 「What is your nonprofit's domain name?」でドメイン名を入力して「Next」を押す（2026-09-06の操作にはなかった画面）
+3. 「What is your nonprofit's domain name?」でドメイン名を入力して「Next」を押す（表示されないこともある）
 4. 「Your domain is eligible ... offered at no charge」の画面で「Activate」を押す。送信すると、ステータスが「Activation request received」になる
 
 「Activate」は取り消せない送信なので、押す前に内容をユーザーに見せて承認を得る。却下されたときのステータスは「Your activation request needs work」で、手順2の質問が再び表示される。
