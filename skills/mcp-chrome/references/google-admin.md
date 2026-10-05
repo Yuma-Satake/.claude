@@ -39,8 +39,18 @@
 
 グループ詳細ページに遷移しなくても、グループ一覧（`ac/groups`）で対象行にカーソルを合わせると行末に「メンバーを追加」等のアクションが表示され、そこから直接メンバー追加ダイアログを開ける。ダイアログはクリック直後は青いプレースホルダー表示のまま読み込み中のことがあるため、`wait` を1秒程度挟んでから入力を始めること。
 
+## ユーザーへの管理者ロール付与（`ac/users/<userId>/roles`）
+
+- ユーザー詳細ページの「Admin roles and privileges」→「ASSIGN ROLES」でロール一覧画面に遷移する
+- ロール一覧はデフォルト10件ずつのページネーションがあり、**Super Admin（特権管理者）は1ページ目には表示されず2ページ目にある**（1ページ目はServices Admin・Directory Sync Admin等のアルファベット順、Super AdminはStorage AdminとUser Management Adminの間）。`find` で「Super Admin」を検索してもヒットしないことがあるため、見つからない場合は「次のページ」ボタンで2ページ目を確認すること
+- ロール行の「Assigned state」トグルをクリックすると「1 unsaved change」の表示とともに画面下部にSAVE/CANCELバーが出る。トグルだけでは確定しないため、必ずSAVEをクリックする。保存後「Assigned」表示と「〈氏名〉's role has been updated」のトーストで完了を確認する
+
 ## 複数アカウントログイン時のmyaccount.google.comのコンテキスト不一致
 
 複数のGoogleアカウントが同時にログインしているブラウザで `myaccount.google.com` に `navigate` すると、目的のアカウントではなく最後にアクティブだった別アカウント（個人のGmailアカウント等）の個人情報ページが開かれることがある。住所・電話番号・誕生日など機微情報が画面に表示されるため注意が必要。
 
 ページ右上のアカウントアイコンをクリックし、アカウント切り替えメニューから目的のアカウントを明示的に選択してから作業を続けること。表示されているメールアドレス（ページ上部やプロフィール情報）が目的のアカウントと一致しているか、作業前に必ず確認する。
+
+## google.com/nonprofits でも同様のアカウント誤選択が起きる
+
+`admin.google.com` に限らず `google.com/nonprofits`（Google for Nonprofits管理画面）でも、複数のGoogleアカウントがログインしているブラウザでは個人アカウントがデフォルトで選択されることがある。「For new requests, this account will be added as an administrator for your organization」という確認文言が出たら、必ず「Use a different account」で組織の管理者アカウントに切り替えてから進めること。「Use a different account」は1回クリックしただけでは同じ確認画面に留まることがあり、その場合は同じボタンをもう一度クリックすると「Choose an account」のアカウント選択画面に遷移する。

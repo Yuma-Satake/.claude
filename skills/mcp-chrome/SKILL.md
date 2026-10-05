@@ -26,6 +26,8 @@ user-invocable: false
 | Google Workspace 管理コンソール（admin.google.com） | `references/google-admin.md` | ユーザー・グループ管理などadmin.google.comを操作するとき |
 | Gmail（mail.google.com） | `references/gmail.md` | メッセージパーマリンクからスレッドを開く・返信するとき |
 | Google Analytics（analytics.google.com） | `references/google-analytics.md` | プロパティ・データストリームの作成、測定IDの取得を行うとき |
+| Google for Nonprofits（google.com/nonprofits、support.google.com/nonprofits） | `references/google-nonprofits.md` | ダッシュボードのアクティベーション申請、サポートフォームの入力・送信を行うとき |
+| ラクスル（raksul.com） | `references/raksul.md` | はがき・ポストカードの料金確認、データ入稿、データチェックを行うとき |
 | ブラウザ操作パターン（汎用） | `references/browser-patterns.md` | フォーム入力・値取得・DOM 操作・ダイアログ回避など具体的テクニックが必要なとき |
 
 新しいサイトのナレッジが溜まったら、`references/{site-name}.md` を追加して上表に追記すること。
