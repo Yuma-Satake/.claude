@@ -26,7 +26,7 @@
 ## Worktree
 
 - worktreeの作成・切り替え・削除には`git worktree add`等を直接使わず、EnterWorktree/ExitWorktreeツールを使うこと。Bashで`git worktree add`等を直接実行しようとするとPreToolUseフック（`~/.claude/hooks/block-git-worktree.sh`）がブロックし、EnterWorktreeを使うよう促す。EnterWorktree・Agentツールの`isolation: "worktree"`はWorktreeCreate/WorktreeRemoveフック（`~/.claude/hooks/worktree-create-wt.sh`・`worktree-remove-wt.sh`）経由の処理に差し替えられており、gitignore対象のファイル（`.env`・`node_modules`等untrackedなもの）が自動コピーされるため、手動でのコピー確認は不要。依存関係のロックファイルに差分がある場合など、コピーだけでは不十分で再インストールが必要になるケースがあることには注意する
-- `EnterWorktree`ツールは新規ブランチをベースブランチから作成する仕組みしかなく、既存ブランチへ直接チェックアウトするworktreeの作成には使えない。既存ブランチ（他人のPRのheadRefName等）をworktreeでチェックアウトしたい場合は別の手段を検討する
+- 既存ブランチ（他人のPRのheadRefName等）をworktreeでチェックアウトしたい場合は、`EnterWorktree`の`name`にそのブランチ名をそのまま渡す。`worktree-create-wt.sh`が、ローカルブランチまたはリモート追跡ブランチと名前が一致すればそのブランチをチェックアウトし、一致しなければ新規ブランチを作る。リモートにしかないブランチは、先に`git fetch origin <ブランチ名>`で追跡ブランチを取得しておく。そのブランチが既に別のworktreeでチェックアウト済みの場合はエラーになるため、`path`引数で切り替える
 - `EnterWorktree`は`path`引数で既存worktreeへの切り替えにも使えるが、現在セッションが「既にworktree内にいる状態」から呼ぶと、切り替え先が`.claude/worktrees/`配下のworktree（Claude Code自身が作成したもの）でない限り拒否される。`open-feature`等のスキルが`git worktree add`で作った`.claude/worktrees/`配下ではないworktree（プロジェクト独自の命名規則のディレクトリ等）へ切り替えたい場合は、まず`ExitWorktree`（`action: "keep"`）で元のディレクトリに戻り、そこから改めて`EnterWorktree(path: <対象>)`を呼ぶ。「launchディレクトリからの初回entry」であれば、対象リポの`git worktree list`に登録されている任意のworktreeへ切り替えられる
 
 ## GitHub (issue / PR)
