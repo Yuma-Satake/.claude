@@ -93,3 +93,10 @@ PR説明文に画像（スクリーンショットやBefore / After画像等）�
 PR作成・更新後、自分自身をアサインする。
 
 `gh pr edit --add-assignee @me`
+
+### Step 7: CIの確認（ユーザがCIの通過確認を求めた場合）
+
+- push直後は checks が未登録で、`gh pr checks --watch` が即座に失敗終了する。PR番号ではなく run を指定して監視する
+- `gh run list --commit <pushしたコミットSHA> --json databaseId,name,status` で run を特定する（run が未登録なら、登録されるまで再取得する）
+- 特定した run を `gh run watch <databaseId> --exit-status` で `run_in_background` 実行し、完了通知を待つ
+- 完了後に `gh pr checks <PR番号>` で結果を確認する
