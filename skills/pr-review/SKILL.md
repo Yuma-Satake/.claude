@@ -71,7 +71,7 @@ argument-hint: "[pr-number]"
 - 今回並列起動する全code-reviewerへの割り当てskill名の一覧
 - `coding-regression` を割り当てる場合、PR番号省略時（ローカルdiff）は2.で確認したissue番号またはNotionページのURL
 - 「このタスクの調査・実行にあたって追加のエージェントを起動しないこと」
-- 「ReportFindingsツールで指摘を報告すること。ReportFindingsが見つからない場合はToolSearchで探さず、直接プレーンテキストで報告してよい」
+- 「指摘はプレーンテキストで報告すること」
 
 ## 4. 指摘の集約
 
