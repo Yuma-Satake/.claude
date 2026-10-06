@@ -1,6 +1,6 @@
 ---
 name: pr-create
-description: 現在のブランチをpushしてPull Requestを作成・更新する。ユーザーが「PRを作って」「プルリクエストを出して」「レビューに出して」「プルリク作って」「PR出して」と依頼した場合、またはレビュー用にコード変更を共有する場合に使用する。コミット済みでない変更がある場合はコミット・pushも行ってからPRを作成する。-dオプションでドラフトPRとして作成する。
+description: 現在のブランチをpushしてPull Requestを作成・更新する。ユーザーが「PRを作って」「プルリクエストを出して」「レビューに出して」「プルリク作って」「PR出して」と依頼した場合、またはレビュー用にコード変更を共有する場合に使用する。コミット済みでない変更がある場合はコミット・pushも行ってからPRを作成する。PR作成後はCIの完了と、Copilotがレビュワーの場合はそのレビューまで確認する。-dオプションでドラフトPRとして作成する。
 argument-hint: "[-d]"
 model: sonnet
 ---
@@ -94,9 +94,19 @@ PR作成・更新後、自分自身をアサインする。
 
 `gh pr edit --add-assignee @me`
 
-### Step 7: CIの確認（ユーザがCIの通過確認を求めた場合）
+### Step 7: CIの確認
+
+ユーザの依頼がなくても、PRの作成・更新後は必ずCIの完了まで確認する。
 
 - push直後は checks が未登録で、`gh pr checks --watch` が即座に失敗終了する。PR番号ではなく run を指定して監視する
 - `gh run list --commit <pushしたコミットSHA> --json databaseId,name,status` で run を特定する（run が未登録なら、登録されるまで再取得する）
 - 特定した run を `gh run watch <databaseId> --exit-status` で `run_in_background` 実行し、完了通知を待つ
-- 完了後に `gh pr checks <PR番号>` で結果を確認する
+- 完了後に `gh pr checks <PR番号>` で結果を確認する。失敗した場合は原因を調べて報告する
+
+### Step 8: Copilotレビューの確認
+
+`gh pr view <PR番号> --json reviewRequests` のレビュワーに Copilot が含まれる場合のみ実施する。
+
+- Step 7 と同様に `gh run list --commit <SHA>` から Copilot のレビューを実行する run（名前に `Copilot Code Review` を含むもの）を特定し、`gh run watch <databaseId> --exit-status` を `run_in_background` で実行して完了を待つ
+- 完了後、`gh pr view <PR番号> --json reviews` でレビュー本文を、`gh api repos/<owner>/<repo>/pulls/<PR番号>/comments` でインラインコメントを取得する
+- 指摘は鵜呑みにせず、コードやlockfileなどの実態と照合して妥当性を判定してから報告する（誤った指摘が含まれうる）
