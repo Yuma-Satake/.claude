@@ -196,6 +196,15 @@
             "command": "~/.claude/hooks/block-dirty-git-switch.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-edit-outside-worktree.sh"
+          }
+        ]
       }
     ],
     "WorktreeCreate": [
