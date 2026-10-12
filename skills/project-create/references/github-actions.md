@@ -5,24 +5,17 @@
 - シークレットはGitHub Secretsで管理し、ワークフロー内にハードコードしない
 - CIワークフローにはプロジェクトで使用しているツールに応じたチェック（lint, test, build等）を含める
 
-## pnpmのセットアップ
+## ツールのセットアップ
 
-GitHub Actionsでpnpmを使う場合は `pnpm/action-setup` を使用する。バージョンはpackage.jsonの `packageManager` フィールドから自動検出させる構成が望ましい。
+Node.js・pnpmなどのツールは`mise.toml`で管理しているため、`actions/setup-node`や`pnpm/action-setup`のような言語別セットアップActionを個別に使わず、`jdx/mise-action`で`mise.toml`に記載したツールをまとめて導入する（`coding-gh-actions` skillの方針と同じ）。
 
 ```yaml
-- uses: pnpm/action-setup@v4
-- uses: actions/setup-node@v4
-  with:
-    node-version-file: "mise.toml"
-    cache: "pnpm"
+- uses: jdx/mise-action@v4
 - run: pnpm install --frozen-lockfile
 ```
 
-`--frozen-lockfile` でlockファイルの更新を防ぎ、CI上での再現性を担保する。
-
-## miseとの連携
-
-Node.jsのバージョンをmise.tomlで管理している場合、`setup-node` の `node-version-file` に `mise.toml` を指定できる。ただし、mise.tomlのフォーマットによっては読み取れない場合があるため、その場合は `.node-version` ファイルを併用するか、バージョンを直接指定する。
+- pnpmも`mise.toml`の`[tools]`に記載し、ローカルとCIで同じバージョンを使う
+- `--frozen-lockfile` でlockファイルの更新を防ぎ、CI上での再現性を担保する
 
 ## ワークフローのデバッグ
 
