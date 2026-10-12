@@ -1,6 +1,6 @@
 #!/bin/bash
 # PreToolUseフック: 未コミットの変更が残っている状態でのgit switchをブロックする
-# git.mdの規約（stash apply後に別ブランチへswitchすると変更が意図せず持ち越される）の一般化
+# 未コミットの変更はブランチ切り替え時にそのまま持ち越され、意図しないブランチへ混入するため
 set -euo pipefail
 
 input=$(cat)

@@ -22,11 +22,11 @@ LTS（Long Term Support）の概念を持つツール・ランタイム（Node.j
 | 用途 | 採用ツール | 不採用の代替 |
 | --- | --- | --- |
 | リンター | oxlint | Biome, ESLint |
-| フォーマッター | oxfmt（2026年時点でv0.x・実験的。安定版が出るまで挙動変更に注意し、定期的に見直す） | Biome, Prettier |
+| フォーマッター | oxfmt（安定版が出るまでは挙動の変更に注意し、定期的に見直す） | Biome, Prettier |
 | Gitフック | Lefthook | husky + lint-staged |
 | テスト | Vitest | Jest |
 
-oxfmtは.astroファイルのフォーマットに未対応（2026年時点）。oxlintは.astroファイル内のスクリプト部分もlint対象になる。
+oxfmtは.astroファイルのフォーマットに未対応である。oxlintは.astroファイル内のスクリプト部分もlint対象になる。対応状況は変わりうるため、Astroを使うプロジェクトでは導入前に公式の互換性表（https://oxc.rs/compatibility）を確認する。
 
 ## pnpm利用時の注意事項
 

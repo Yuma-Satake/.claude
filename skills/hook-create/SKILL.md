@@ -70,3 +70,7 @@ settings.jsonの`if`フィールド（例: `"if": "Bash(git add *)"`）は、`&&
 
 - rulesの記述内容がhookの判定・強制で完全にカバーされる場合は、その記述をrulesから削除する（重複管理を避ける）
 - rulesの記述にhookでは検知・カバーできないニュアンス（例: hookの判定ロジックを回避してしまう操作パターンの注意）が含まれる場合は、その部分は削除せずに残し、対応するhookのスクリプト名を本文中に明記して参照させる（例: `~/.claude/hooks/block-dirty-git-switch.sh`のように、hookのファイルパスをそのまま書く）。これにより、モデルがブロックされた際にhookの存在自体を初見で疑わずに済み、かつhookが見ていない残存リスクも見失わない
+
+## rtk-hook.shに起因する失敗の調査
+
+`~/.claude/hooks/rtk-hook.sh`のworktree判定漏れによるgitコマンドの拒否や、lint系スクリプトの出力の誤判定を調べる・直す場合は、`references/rtk-hook.md`を読む。
