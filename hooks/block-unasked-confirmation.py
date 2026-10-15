@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 REQUEST_FORM = re.compile(
-    r"させてください|ですか|ますか|確認したい|してみる？|教えてください|決めてください"
+    r"させてください|ですか|ますか|確認したい|してみる？|教えてください|決めてください|指示をください"
 )
 QUOTED_SPAN = re.compile(r"「[^」]*」|`[^`]*`")
 
