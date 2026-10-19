@@ -25,8 +25,8 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Claude Codeのメモリ・rules
 
 - ソースURL: https://code.claude.com/docs/en/memory.md
-- 取得日: 2026-10-12
-- sha256: 52c9ce2203d522ab02f6f5d9e6bede9998a9a71c9b2bf58fd237ca689e013161
+- 取得日: 2026-10-19
+- sha256: 768be47946cafc36d6fbe3988a04229521f5433bc038736739204e2ed258f6a7
 
 要点
 
@@ -40,19 +40,22 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - `paths`付きのruleは、一致するファイルをRead・Write・Editで扱ったときに加え、Bashの`cat`・`head`のように単一ファイルを読むコマンドで扱ったときにも読み込まれる
 - 特定の作業でしか使わない指示は、常時コンテキストに載るruleではなく、呼び出し時や関連時にだけ読み込まれるskillに置く
 - `~/.claude/rules/`のユーザーレベルruleはプロジェクトruleより先に読み込まれる。どちらも他方を上書きしないため、矛盾しないよう保つ
+- `.claude/rules/`内のシンボリックリンクがworking directory外を指す場合は外部インポートと同じ扱いになり、プロジェクトごとの承認後に`paths`の無いものだけが読み込まれる。承認なしで共有したいruleは`~/.claude/rules/`に置く
 
 ## Claude Codeのskills
 
 - ソースURL: https://code.claude.com/docs/en/skills.md
-- 取得日: 2026-10-12
-- sha256: 35fd2c11f870fbe1497a53796de31b2a6b760645e724bda58894525356d4602a
+- 取得日: 2026-10-19
+- sha256: 428fdf2654fa01dcbbece1f6d010e350f646ecbdbec229e7df097f452f06c2b7
 
 要点
 
 - frontmatterのフィールドは全て任意で、`description`のみ推奨。未知のフィールドはエラーなく無視される
 - 利用できる主なフィールドは`name`・`description`・`when_to_use`・`argument-hint`・`arguments`・`disable-model-invocation`・`user-invocable`・`allowed-tools`・`disallowed-tools`・`model`・`effort`・`context`・`agent`・`background`・`hooks`・`paths`・`shell`。Agent Skills仕様由来の`metadata`・`license`・`compatibility`も受け付けるが、Claude Codeは内容に基づく動作をしない
+- `allowed-tools`による許可と`disallowed-tools`による除外は、呼び出したターンに限られ、次のメッセージを送ると解除される
+- `disable-model-invocation: true`のskillは、自動読み込みに加えてサブエージェントへのプリロードとscheduled taskのプロンプトとしての実行も行われない
 - `model`はskillが有効な間のモデルを指定する。上書きは呼び出したターンの残りにだけ適用され、次のプロンプトでセッションのモデルに戻る。`context: fork`と併用した場合はフォークされるサブエージェントのモデルを指定する
-- `description`と`when_to_use`は合計1,536文字で切り詰められる。主要な用途を先頭に書く
+- `description`と`when_to_use`は合計1,536文字で切り詰められる（`skillListingMaxDescChars`で変更可）。主要な用途を先頭に書く
 - 補助ファイルはSKILL.mdから参照し、各ファイルの内容といつ読むかをSKILL.mdに書く
 - 呼び出されたSKILL.mdの内容は1つのメッセージとして会話に残り、後のターンでファイルは読み直されない。タスク全体に適用したい指示は、一度きりの手順ではなく常に有効な指示として書く
 - 自動コンパクション後は各skillの直近の呼び出しが先頭5,000トークンまで再添付される（全skill合計25,000トークン）。重要な指示はSKILL.mdの先頭近くに置く
@@ -62,8 +65,8 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Claude Codeのhooks
 
 - ソースURL: https://code.claude.com/docs/en/hooks.md
-- 取得日: 2026-10-12
-- sha256: 31754d5adce5052af35acf85dc2ed207bb082b7dbf87f25218047b10a024a073
+- 取得日: 2026-10-19
+- sha256: 5599b94537beb359bfe35dfa7538503194ea78b8d824fcaccba068915d6a77d7
 
 要点
 
@@ -72,6 +75,6 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - PreToolUseは`hookSpecificOutput.permissionDecision`（`allow`・`deny`・`ask`など）と`permissionDecisionReason`でツール呼び出しを制御できる
 - `additionalContext`でClaudeにコンテキストを追加できる
 - `if`フィールドはpermission rule構文で1つだけ指定でき、ツールイベントでのみ評価される。Bashの場合は先頭の`VAR=value`を除いたうえでサブコマンドごとに判定され、`&&`で連結された後続コマンドや`$()`・バッククォート内のコマンドも判定対象になる。コマンドを解析できない場合はパターンに関わらずhookを実行する。`if`はbest-effortであり、確実な許可・拒否にはpermissionsを使う
-- `timeout`の既定値はcommandで600秒。`UserPromptSubmit`では30秒に下がる。`SessionEnd`・`PreModelSwitch`・`MessageDisplay`などもイベント固有の既定値を持つため、該当イベントのセクションで確認する
+- `timeout`の既定値は`command`・`http`・`mcp_tool`で600秒、`prompt`で30秒、`agent`で60秒。`UserPromptSubmit`・`PreModelSwitch`・`PostModelSwitch`では30秒、`MessageDisplay`では10秒に下がる。`SessionEnd`のhookは全体で1.5秒の予算を共有し、個別の`timeout`を長く設定すると最大60秒まで予算が引き上げられる
 - `once`はskill frontmatterで宣言したhookでのみ有効。最初に成功した実行の後に削除され、失敗・exit code 2によるブロック・タイムアウトの場合は残る
 - hookはskillやagentのfrontmatterでも定義できる
