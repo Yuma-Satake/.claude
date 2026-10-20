@@ -49,6 +49,7 @@ plugins/synced/
 
 # skills
 skills/synced/
+skills/.trash/
 
 # chrome
 chrome
