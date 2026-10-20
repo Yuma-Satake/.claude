@@ -44,15 +44,14 @@ gitリポジトリ外（`git rev-parse --show-toplevel`が失敗する場所）�
 
 ## Step 1.5: 過去のセッションの記録との照合
 
-過去のセッションで挙がった知見候補の発生と、それに対するユーザーの判断は、git管理外の`~/.claude/state/knowledge-review/observations/`に1候補1ファイルで記録している。操作は`~/.claude/skills/knowledge-review/scripts/observations.sh`経由で行い、ファイルを直接編集しない。
+過去のセッションで挙がった知見候補の発生と、それに対するユーザーの判断は、git管理外のディレクトリに1候補1ファイルで記録している。操作は`~/.claude/skills/knowledge-review/scripts/observations.sh`経由で行い、ファイルを直接編集しない。
 
-1. 候補の一覧と、過去のユーザーの判断を取得する。`list`の発生セッション数は今回のセッションを除いた数になる
+1. 候補の一覧を取得する。各行にstatus・過去の発生セッション数・直近の判断理由・再発性の扱い(verdict)が含まれ、今回のセッションの分を除いた集計になる
    ```
    ~/.claude/skills/knowledge-review/scripts/observations.sh list "${CLAUDE_SESSION_ID}"
-   ~/.claude/skills/knowledge-review/scripts/observations.sh decisions
    ```
 2. Step 1の各候補について、一覧のsummaryと教訓が同種のものを探す。表現や発生した作業が違っても、教訓が同じなら一致とみなす。判断に迷う候補だけ`observations.sh show <slug>`で記録を読んで確認する
-3. 一致した候補は、Step 1の一覧に一致したslug・status・過去の発生セッション数を併記する
+3. 一致した候補は、Step 1の一覧に一致したslug・status・過去の発生セッション数・verdict・直近の判断理由を併記する。verdictが`none`の候補は、過去の記録による特別な扱いはなく、通常どおり判定する
 
 ## Step 2: 汎用性の判定と反映先の振り分け
 
@@ -61,12 +60,12 @@ gitリポジトリ外（`git rev-parse --show-toplevel`が失敗する場所）�
 1. 再発性の判定: 次のいずれかに該当する場合のみ次の判定に進めてよい
    - 既存の rules・skills の記述どおりに従ったにもかかわらず失敗した（instruction failure。既存の記述自体に不備があるため、再発を待たず初回から対象とする）
    - 会話や記憶にある限り、同種の状況が複数回発生している（同じ間違いを2回目以降犯した、前回のセッションでも同じ訂正・確認を今回と同様に行った等）
-   - Step 1.5で一致した候補のstatusが`pending`で、過去の発生セッション数が1以上ある
+   - Step 1.5で一致した候補のverdictが`promote`である
 
    一度きりの指摘・訂正（既存の記述に問題がなく、他のセッションや過去の記録でも再発が確認できないもの）や、今回のセッション固有の外部要因（他セッション・他worktreeとの偶発的な並行作業、その日固有の環境の一時的な不調など）に既存記述に反することなく即興で対応できた事象は反映しない。そのうえで次の2点を適用する
-   - 過去にユーザーが判断した候補の扱い: Step 1.5で一致した候補のstatusが`pending`以外の場合は、上記の条件より過去の判断を優先する
-     - `adopted`: 反映済みの記述が守られなかった可能性があるため、instruction failureとして判定3で既存記述を確認する
-     - `rejected`・`dismissed`: 再発していても反映対象にせず、過去の判断理由を添えてStep 3で見送りとして報告する
+   - 過去にユーザーが判断した候補の扱い: Step 1.5で一致した候補のverdictが`recheck`または`skip`の場合は、上記の条件より過去の判断を優先する
+     - `recheck`: 反映済みの記述が守られなかった可能性があるため、instruction failureとして判定3で既存記述を確認する
+     - `skip`: 再発していても反映対象にせず、一覧の直近の判断理由を添えてStep 3で見送りとして報告する
    - 見送る候補の蓄積: 再発性だけを理由に見送る候補のうち、判定2〜5を満たすものは「蓄積対象」とし、Step 3で記録する。プロジェクト固有の候補は、判定5で汎用の教訓に抽象化できた場合だけ、その教訓を蓄積対象にする
 2. 反映価値の判定: 「次回以降の作業でこの記述を読んだとき、行動が変わるか」で判断する。既に解決済みの個別事象の詳細（修正したバグの原因、そのとき限りの調査結果など）は、記録しても次回の行動を変えないため反映しない。同じ手戻りが再発しうる知見のみ次の判定に進める
 3. 既知の判定: 反映先の候補（ユーザーレベルの rules・skills、対象プロジェクトの CLAUDE.md や `.claude/rules/` 配下）に同じ内容が既に正しく書かれているなら反映しない。既に書かれているが記述が不正確・不足している場合は「既存記述の修正候補」として次の判定に進む
@@ -106,13 +105,13 @@ gitリポジトリ外（`git rev-parse --show-toplevel`が失敗する場所）�
    Step 2で見送った候補も同じタイミングで理由付きで報告し、ユーザーが判定を覆せるようにする。蓄積対象の候補は「次回以降の照合用に蓄積する」と明記し、ユーザーが蓄積は不要と判断できるようにする。過去の記録から昇格した候補は、`observations.sh show <slug>`で読んだ過去の発生記録（日付と何が起きたか）を併記する。候補が多く1回の質問に収まらない場合は複数回に分けて確認する
 2. 承諾された候補のみ、Step 2で整理した変更内容案をもとにファイルを作成・更新する。既存記述の削除・書き換えも、承諾がない限り行わない。hookとしての反映が承諾された場合は、その場で`hook-create`スキルをSkillツールで呼び出す
 3. 次回以降の判定に使うため、候補の発生とユーザーの判断を記録する
-   - 反映を提案した候補、蓄積対象の候補、Step 1.5で一致した候補の発生を記録する。slugは教訓を表す英小文字のケバブケース、summaryは固有名詞を避けた教訓の1行、noteは今回何が起きたかの1行とする。既存の候補と一致した場合はそのslugを使う
+   - 反映を提案した候補、蓄積対象の候補、Step 1.5で一致した候補、見送りの報告をユーザーが覆した候補を、標準入力に1候補1行で渡してまとめて記録する。行はタブ区切りで「slug・summary・note・decision・reason」の順とする
+   - slugは教訓を表す英小文字のケバブケース、summaryは固有名詞を避けた教訓の1行、noteは今回何が起きたかの1行とする。既存の候補と一致した場合はそのslugを使う
+   - ユーザーが判断した候補のdecisionは、反映した場合は`adopted`、反映を却下した場合は`rejected`、蓄積は不要とした場合は`dismissed`とし、reasonにはユーザーの回答から読み取れる判断基準を1行で書く。判断がない候補は、decisionとreasonの両方を`-`とする
      ```
-     ~/.claude/skills/knowledge-review/scripts/observations.sh record <slug> "${CLAUDE_SESSION_ID}" "<summary>" "<note>"
-     ```
-   - ユーザーが判断した候補は、その判断と理由を記録する。理由はユーザーの回答から読み取れる判断基準を1行で書く。判断は、反映した場合は`adopted`、反映を却下した場合は`rejected`、蓄積は不要とした場合は`dismissed`とする
-     ```
-     ~/.claude/skills/knowledge-review/scripts/observations.sh decide <slug> "${CLAUDE_SESSION_ID}" <判断> "<理由>"
+     ~/.claude/skills/knowledge-review/scripts/observations.sh apply "${CLAUDE_SESSION_ID}" <<'EOF'
+     <slug><TAB><summary><TAB><note><TAB><decision><TAB><reason>
+     EOF
      ```
 
 ## Step 4: 反映内容のコミットとpush（メインセッションで実行）
