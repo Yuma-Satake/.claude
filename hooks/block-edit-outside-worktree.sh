@@ -1,6 +1,6 @@
 #!/bin/bash
 # PreToolUseフック: Yuma-Satake以外のgitリポジトリで、worktree外のファイルをEdit/Writeしようとした場合にブロックする
-# git管理外のパス、origin未設定のリポジトリ、originがYuma-Satakeのリポジトリは対象外とする
+# git管理外のパス（gitignore対象を含む）、origin未設定のリポジトリ、originがYuma-Satakeのリポジトリは対象外とする
 set -uo pipefail
 
 input=$(cat)
@@ -21,6 +21,9 @@ origin_url=$(git -C "$dir" remote get-url origin 2>/dev/null) || exit 0
 if echo "$origin_url" | grep -qiE '[:/]Yuma-Satake/'; then
   exit 0
 fi
+
+# gitignore対象のパスはgit管理外として対象外とする
+git -C "$dir" check-ignore -q "$file_path" 2>/dev/null && exit 0
 
 # worktreeのgit-dirは`.git/worktrees/`配下になる（submoduleのworktreeも同様）
 case "$git_dir" in
