@@ -28,6 +28,15 @@ bash ~/.claude/skills/hunk-check/scripts/hunk_check_context.sh
    - 説明を求めるコメント: 説明注記を追加する
 8. 全コメントについて、対応内容と結果を最終報告する
 
+## コメントが0件に見える場合
+
+ユーザーが `/hunk-check` を呼ぶのは、Hunk上でコメントを付けた後である。「コメントは必ずある」前提で、0件と結論づける前に次を確認する。
+
+- コメントの取得は必ず `hunk session comment list <session-id> --type user --json` を使う（`--type` を省くとライブコメントのみが対象で、ユーザーが付けたレビューコメントが空に見える）
+- `hunk session list --json` の `snapshot.state.reviewNotes` にユーザーコメントが入っている。`--type user` で空の場合もここを確認する
+- セッションのrepoRootがworktree直下ではなく配下のsubmodule（`sources/<repo>`等）の場合がある。前処理は配下のsubmoduleのセッションも一致扱いにするが、matchingSessionCountが0のときは `otherSession*` の候補すべてに対して `--type user` でコメントを取得し、現在のworktree配下のセッションを必ず確認する
+- ユーザーが「コメントした」と言っているのに0件の場合は、取得方法の見落としを先に疑い、`hunk session list --json` の `reviewNotes` まで確認してから報告する
+
 ## セッションが見つからない場合
 
 matchingSessionCountが0の場合、すぐに「セッションなし」と結論づけない。前処理の出力に含まれる `otherSessionCount` と各 `otherSession*`（他worktree・他リポジトリの候補セッションのsessionId・repoRoot・title・sourceLabel・fileCount）を確認する。スタックPR（`gh stack`等）の子ブランチ用に軽量worktreeを追加して作業している場合、親ブランチのworktreeに紐づく既存セッションのdiff表示先が `hunk session reload -- diff <base>...<head>` で子ブランチとの差分へリダイレクトされて使われていることがある。候補のtitle・sourceLabelから、現在のブランチの差分を表示しているセッションだと判断できればそれを使う（`hunk session list --json` にdiffのsource/targetを示す構造化フィールドは無いため、この判断は自動化せずここで行う）。

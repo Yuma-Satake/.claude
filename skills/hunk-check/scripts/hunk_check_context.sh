@@ -36,7 +36,9 @@ if ! session_list="$(hunk session list --json 2>&1)"; then
   exit 0
 fi
 
-if ! matching_sessions="$(printf '%s' "$session_list" | jq -c --arg root "$repo_root" '[.sessions[] | select(.repoRoot == $root) | {sessionId, title}]' 2>&1)"; then
+# repoRootがworktree直下のセッションに加え、配下のsubmodule（sources/<repo>等）を開いているセッションも対象にする。
+# マルチリポ構成ではdiffがsubmodule単位で開かれ、repoRootがworktree直下と一致しないため、完全一致だと取りこぼす。
+if ! matching_sessions="$(printf '%s' "$session_list" | jq -c --arg root "$repo_root" '[.sessions[] | select(.repoRoot == $root or (.repoRoot | startswith($root + "/"))) | {sessionId, title}]' 2>&1)"; then
   printf 'repoRoot: %s\nerror: invalid-hunk-session-list\ndetail: %s\n' "$repo_root" "$matching_sessions"
   exit 0
 fi
@@ -63,7 +65,7 @@ done
 # 誤判定時に無関係なworktreeのコメントを黙って回収し、それに基づいてコードを書き換えてしまう
 # リスクがあるため、自動選択はせず候補列挙のみ行い判断はLLMに委ねる。
 if [ "$matching_count" -eq 0 ]; then
-  other_sessions="$(printf '%s' "$session_list" | jq -c --arg root "$repo_root" '[.sessions[] | select(.repoRoot != $root)]')"
+  other_sessions="$(printf '%s' "$session_list" | jq -c --arg root "$repo_root" '[.sessions[] | select((.repoRoot == $root or (.repoRoot | startswith($root + "/"))) | not)]')"
   other_count="$(printf '%s' "$other_sessions" | jq 'length')"
   printf 'otherSessionCount: %s\n' "$other_count"
   printf '%s' "$other_sessions" | jq -r '.[] | [.sessionId, .repoRoot, .title, (.sourceLabel // ""), (.fileCount // 0)] | @tsv' |
