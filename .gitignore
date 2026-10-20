@@ -31,6 +31,7 @@ backups
 state/
 daemon/
 jobs/
+.claude/worktrees/
 todos
 
 # plugins
@@ -58,6 +59,7 @@ chrome
 .credentials.json
 mcp-needs-auth-cache.json
 remote-settings.json
+remote-settings.json.synced-at
 settings.local.json
 channels/discord/.env
 
