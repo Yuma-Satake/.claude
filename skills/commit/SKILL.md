@@ -39,7 +39,7 @@ fetch後、`git status` でローカルがリモートより遅れている（be
 
 1. 会話の文脈に issue 等のブランチ名情報がある場合はそのブランチ名を使用する
 2. 不明な場合は差分の内容に基づいて適切なブランチ名を生成する
-3. `git switch -c <branch-name>` でブランチを作成する
+3. `git branch <branch-name>` でブランチを作成し、`git symbolic-ref HEAD refs/heads/<branch-name>` で作業ツリーの変更を保ったままそのブランチに切り替える（未コミットの変更がある状態の`git switch -c`は`hooks/block-dirty-git-switch.sh`で拒否される）
 
 ### Step 3: コミットの分割判断
 

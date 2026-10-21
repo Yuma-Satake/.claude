@@ -86,9 +86,9 @@ EnterWorktreeツールにより独立したworktreeを作成し、以降の全�
 ### 1. ブランチ作成
 
 - EnterWorktreeツールに `name: "issue-<issue番号>"` を指定して実行する
-  - 同名のworktreeが既に存在する場合、EnterWorktreeが自動的にそのworktreeを再開する。未コミットの変更がなく、かつ未コミット状態またはPRマージ済み・リモートブランチ削除済みであればベースブランチの最新状態に巻き戻り、それ以外（コミット済みで作業継続中など）はそのままの状態で再開する
+  - 同名のブランチのworktreeが既に存在する場合、WorktreeCreateフック（`hooks/worktree-create-wt.sh`）が失敗させる。`git worktree list`で既存worktreeのパスを確認し、`EnterWorktree`の`path`でそのworktreeに切り替える。リネーム済みのブランチ（`feature/issue-<issue番号>`）のworktreeも同じ手順で切り替える
   - 現在のセッションが既に別のworktree内にある場合、新規worktreeの作成はできない。ExitWorktreeで現在のworktreeを終了するかどうかをユーザに確認する（自律モードでも例外として確認する）
-- 作成されるブランチ名は `worktree-issue-<issue番号>` のようにツールが自動採番したものになるため、`git branch -m feature/issue-<issue番号>` でブランチ命名規約に沿った名前にリネームする（worktreeを再開した場合、既に `feature/issue-<issue番号>` にリネーム済みであればスキップする）
+- 新規作成されるブランチ名は`name`と同じ `issue-<issue番号>` になるため、`git branch -m feature/issue-<issue番号>` でブランチ命名規約に沿った名前にリネームする（既存worktreeに`path`で切り替えた場合、既に `feature/issue-<issue番号>` にリネーム済みであればスキップする）
 - worktreeは現在の作業ディレクトリと独立しているため、未コミットの変更の確認は不要
 
 ### 2. issueについての情報収集
