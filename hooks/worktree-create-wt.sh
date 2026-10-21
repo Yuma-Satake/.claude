@@ -22,6 +22,13 @@ branch_exists() {
 create_flag=(--create)
 if branch_exists "$name"; then
   create_flag=()
+else
+  # wtの既定ベースはローカルの既定ブランチで、origin より古いまま切られうるため、fetch した origin 側を基点にする
+  default_ref=$(git -C "$cwd" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)
+  if [ -n "$default_ref" ]; then
+    git -C "$cwd" fetch --quiet origin "${default_ref#origin/}" >&2 || true
+    create_flag+=(--base "$default_ref")
+  fi
 fi
 
 result=$(mise exec worktrunk -- wt switch -C "$cwd" "$name" ${create_flag[@]+"${create_flag[@]}"} --no-cd --format json)
