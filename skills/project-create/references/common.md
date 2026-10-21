@@ -26,7 +26,9 @@ LTS（Long Term Support）の概念を持つツール・ランタイム（Node.j
 | Gitフック | Lefthook | husky + lint-staged |
 | テスト | Vitest | Jest |
 
-oxfmtは.astroファイルのフォーマットに未対応である。oxlintは.astroファイル内のスクリプト部分もlint対象になる。対応状況は変わりうるため、Astroを使うプロジェクトでは導入前に公式の互換性表（https://oxc.rs/compatibility）を確認する。
+oxfmtは.astroファイルのフォーマットに未対応である。oxlintは.astroファイル内のスクリプト部分もlint対象になる。対応状況は変わりうるため、Astroを使うプロジェクトでは導入前に次の公式の互換性表を確認する。
+
+https://oxc.rs/compatibility
 
 ## pnpm利用時の注意事項
 

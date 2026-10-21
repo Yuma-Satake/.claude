@@ -24,7 +24,7 @@ if echo "$command" | grep -qE '^[[:space:]]*git([[:space:]]|$)' && [ -n "$cwd" ]
     fi
   fi
   # submodule のリンク worktree は、そのリポジトリ専用の worktree 領域 (.git/worktrees/<name>/modules/...)
-  # 内に git_dir 自体が作られるため git_dir と common_dir が同一パスになり、上の比較では判定できない。
+  # 内に git_dir 自体が作られるため git_dir と common_dir が同じパスになり、上の比較では判定できない。
   # このパス形状自体が worktree 内であることの証拠になる
   if [ "$is_worktree" = false ] && [ -n "$git_dir" ] && [[ "$git_dir" == *"/.git/worktrees/"* ]]; then
     is_worktree=true

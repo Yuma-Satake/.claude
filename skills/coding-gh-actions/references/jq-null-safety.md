@@ -4,7 +4,7 @@
 
 ## 配列の反復: `.foo[]` ではなく `.foo[]?` を使う
 
-`.foo` がnullの場合、`.foo[]` は `jq: error (at <stdin>:1): Cannot iterate over null (null)` でexit 5となり、後続の空値チェック（`if [ -z "$var" ]`）に到達する前にスクリプトが落ちる。
+`.foo` がnullの場合、`.foo[]` は `jq: error (at <stdin>:1): Cannot iterate over null (null)` でexit 5となり、後続の空値チェック（`if [ -z "$var" ]`）に到達する前にスクリプトが失敗する。
 
 ```bash
 # NG: repository.issue が null（issue不存在等）だとクラッシュする

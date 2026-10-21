@@ -26,7 +26,7 @@ miseで新しいツールを導入・更新するときは以下のフローで�
 1. コアバックエンド（`core:`）で提供されるランタイム（node, python, go, ruby など）は素の名前で指定する
 2. aquaレジストリで提供されるツールは `aqua:owner/name` を優先する（レジストリエントリに `github_artifact_attestations` / `cosign` / `slsa_provenance` の設定があるものは署名検証も走る）
 3. aquaに無くGitHubリリースにバイナリがある場合は `github:owner/name` を使う
-4. `ubi:` は非推奨のため新規採用しない。詳細は `references/github-fallback.md` の ubi 節を参照する
+4. `ubi:` は非推奨のため新規採用しない。詳細は `references/github-fallback.md` の ubi セクションを参照する
 5. `asdf:` `vfox:` はレジストリへの新規登録が受け付けられないため新規採用しない
 
 ## Bashツールからの実行時の注意

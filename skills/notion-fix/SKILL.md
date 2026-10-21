@@ -116,7 +116,7 @@ TaskCreateで以下のタスクを作成し、各工程の開始時にin_progres
 - EnterWorktreeの実行前に同名worktreeが存在しないことを確認する。存在する場合は実行IDを再生成し、必ず未使用の名前にする
 - 同じNotionタスクまたは対応する既存PRのworktreeが別名で存在しても再開しない
 - 現在のセッションが別のworktree内にある場合は、AskUserQuestionで終了可否を確認し、承認された場合だけExitWorktreeを実行する
-- EnterWorktreeが既存worktreeを再開した場合は、その中で一切作業せず、直ちにExitWorktreeで離脱する。未コミットの変更などにより離脱できない場合はユーザへ報告して停止する。離脱後に新しい実行IDを生成し、別のworktreeを新規作成する
+- EnterWorktreeが既存のブランチ・worktreeに当たって失敗した場合（WorktreeCreateフックが拒否する）は、そのworktreeに切り替えず、新しい実行IDを生成して別のworktreeを新規作成する
 - 新規対応では、作成されたブランチをリネームせずworktree名のままにする。手順5の`open-feature`がベースブランチから`feature/<worktree名>`を新規作成するため、ここで`refs/heads/feature/<worktree名>`を作ってしまうと`open-feature`が停止する
 - 既存PRを継続する場合は、PRのheadリポジトリ、headリモート、headブランチを記録し、最新headをfetchする。ローカルにheadブランチが存在する場合は、新しいworktree内で `git switch --ignore-other-worktrees <headブランチ>` を実行する。存在しない場合は `git switch --track -c <headブランチ> <headリモート>/<headブランチ>` を実行する。その後、`git merge --ff-only <headリモート>/<headブランチ>` で最新headまでfast-forwardする
 - 既存PRのブランチが古いworktreeに紐づいていても、そのworktreeを再利用せず、`gh pr checkout` も使用しない。共有するのはPRのブランチだけであり、作業するworktreeは必ず今回新規作成したものにする

@@ -59,7 +59,7 @@ argument-hint: "[pr-number]"
 
 ## 3. レビュー実行
 
-決定したskillごとに **code-reviewer agentを1体ずつ並列起動** する（同一メッセージ内で複数Agent呼び出し）。code-reviewer agentは1体につき最大1 skillしかロードできないため、skillの数だけcode-reviewerを起動する。
+決定したskillごとに **code-reviewer agentを1体ずつ並列起動** する（同じメッセージ内で複数Agent呼び出し）。code-reviewer agentは1体につき最大1 skillしかロードできないため、skillの数だけcode-reviewerを起動する。
 
 各code-reviewerへの指示には以下を含める：
 

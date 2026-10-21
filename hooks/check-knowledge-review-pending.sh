@@ -1,5 +1,5 @@
 #!/bin/bash
-# Stopフック: commitスキルが立てたknowledge-review保留フラグを検知し、
+# Stopフック: git commit後に立てられたknowledge-review保留フラグを検知し、
 # 対象リポジトリでの作業終了時にリマインダーをコンテキストへ注入する
 set -euo pipefail
 
@@ -21,7 +21,7 @@ fi
 repo_path=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null) || exit 0
 
 flag_script="$HOME/.claude/hooks/knowledge-review-flag.sh"
-# 自セッションが立てたフラグのみを対象にする。同一リポジトリの他セッションのフラグには反応しない
+# 自セッションが立てたフラグのみを対象にする。同じリポジトリの他セッションのフラグには反応しない
 status=$("$flag_script" check "$repo_path" "$session_id")
 
 if [ "$status" != "remind" ]; then

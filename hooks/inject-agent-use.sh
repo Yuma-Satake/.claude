@@ -1,6 +1,6 @@
 #!/bin/bash
 # PreToolUse(Agent)フック: agent-useスキルの本文をコンテキストに直接注入する
-# 同一セッションでは1回だけ注入する（Agent呼び出しごとに同文が重複するのを防ぐ）
+# 同じセッションでは1回だけ注入する（Agent呼び出しごとに同文が重複するのを防ぐ）
 set -euo pipefail
 
 input=$(cat)
