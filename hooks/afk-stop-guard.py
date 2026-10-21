@@ -2,32 +2,9 @@
 # Stopフック: afkモード中に確認・承認待ちの言い回しで応答が終わった場合、
 # ユーザーは離席中で応答が返らないことを伝え、自律的な作業継続を促す
 import json
-import os
-import re
-import subprocess
 import sys
 
-REQUEST_FORM = re.compile(
-    r"させてください|ですか|ますか|確認したい|してみる？|教えてください"
-)
-QUOTED_SPAN = re.compile(r"「[^」]*」|`[^`]*`")
-
-AFK_FLAG_SCRIPT = os.path.expanduser("~/.claude/hooks/afk-flag.sh")
-
-
-def strip_quotes(text):
-    return QUOTED_SPAN.sub("", text)
-
-
-def is_afk_active(session_id):
-    if not session_id:
-        return False
-    result = subprocess.run(
-        [AFK_FLAG_SCRIPT, "status", session_id],
-        capture_output=True,
-        text=True,
-    )
-    return result.stdout.strip() == "active"
+from confirmation_phrases import REQUEST_FORM, is_afk_active, strip_quotes
 
 
 def main():
