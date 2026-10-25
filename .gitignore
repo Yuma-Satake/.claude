@@ -35,8 +35,8 @@ jobs/
 todos
 
 # plugins
-plugins/marketplaces/claude-plugins-official
-plugins/marketplaces/conference-organizing-knowledge-skill
+plugins/marketplaces/
+plugins/.trash/
 plugins/known_marketplaces.json
 plugins/blocklist.json
 plugins/install-counts-cache.json
@@ -72,3 +72,6 @@ pr-review-seen.txt
 watch-review-requests.lock
 gh-pr-status-cache.json
 feedback/drafts/
+
+# アップロードされたファイル
+uploads/
