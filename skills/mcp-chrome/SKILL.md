@@ -19,6 +19,7 @@ user-invocable: false
 | Google Docs / ドキュメント | `references/google-docs.md` | Docs で見出しスタイル適用・コンテンツ貼り付けを行うとき |
 | Google Forms / フォーム | `references/google-forms.md` | フォームの作成・編集・設定変更を行うとき（作成時のデフォルト設定を含む） |
 | fortee | `references/fortee.md` | fortee の organizer 画面を操作するとき |
+| freee（会計・請求書） | `references/freee.md` | 取引先のCSVインポート、請求書の作成を行うとき |
 | Amazon（amazon.co.jp） | `references/amazon.md` | Amazon で商品検索・価格確認を行うとき |
 | Grok（x.com/i/grok） | `references/grok.md` | Grok でチャット送信・回答取得を行うとき |
 | X（x.com） | `references/x.md` | フォロー・アンフォローなど X の UI 操作を行うとき |
