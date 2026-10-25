@@ -1,6 +1,6 @@
 ---
 name: issue-load
-description: GitHub issueの情報を読み込んでコンテキストとして保持する。ユーザーが「#123を読み込んで」「issue #45を取得して」と依頼した場合に使用します。読み込みのみを行い、後続の指示は実行しません。
+description: "GitHub issueの情報を読み込んでコンテキストとして保持する。ユーザーが「#123を読み込んで」「issue #45を取得して」と依頼した場合に使用します。読み込みのみを行い、後続の指示は実行しません。"
 argument-hint: "[number]"
 context: fork
 ---
