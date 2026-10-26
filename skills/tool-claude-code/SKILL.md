@@ -27,13 +27,13 @@ Claude Code の一次情報源を参照して、正確な仕様・設定方法�
   - `https://code.claude.com/docs/en/hooks.md` - フック
   - `https://code.claude.com/docs/en/settings.md` - 設定
   - `https://code.claude.com/docs/en/mcp.md` - MCPサーバー
-  - `https://code.claude.com/docs/en/agents.md` - エージェント
+  - `https://code.claude.com/docs/en/agents.md` - 複数タスクの並列実行の方式の比較（サブエージェント・agent teams・dynamic workflows等）
   - `https://code.claude.com/docs/en/memory.md` - CLAUDE.md / メモリ
   - `https://code.claude.com/docs/en/commands.md` - コマンド
   - `https://code.claude.com/docs/en/permissions.md` - 権限
   - `https://code.claude.com/docs/en/plugins.md` - プラグイン
-  - `https://code.claude.com/docs/en/workflows.md` - ワークフロー
-  - `https://code.claude.com/docs/en/sub-agents.md` - サブエージェント
+  - `https://code.claude.com/docs/en/workflows.md` - dynamic workflows（サブエージェントの大規模なオーケストレーション）
+  - `https://code.claude.com/docs/en/sub-agents.md` - サブエージェント（カスタムagentの定義）
   - `https://code.claude.com/docs/en/hooks-guide.md` - フックガイド（実践例）
 
 ## 調査手順

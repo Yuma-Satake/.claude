@@ -127,7 +127,7 @@ Step 3 でファイルを作成・更新した場合、コミットとpushはユ
    ```
    cd <リポジトリの絶対パス> && git add <files> && git commit -m "chore: <変更内容の要約>"
    ```
-2. 直前とは別のBashツール呼び出しで保留フラグを解除する（コミットと同じ呼び出し内では効果がないため、必ず呼び出しを分ける）。worktree-isolatedなセッションでは`$(...)`を含むコマンドが拒否されることがあるため、Step 0と同様に`git -C <リポジトリの絶対パス> rev-parse --show-toplevel`を単独実行してパスを取得し、その文字列を直接埋め込んだ形で次を実行する
+2. 直前とは別のBashツール呼び出しで保留フラグを解除する。Step 0と同様に`git -C <リポジトリの絶対パス> rev-parse --show-toplevel`を単独実行してパスを取得し、その文字列を直接埋め込んだ形で次を実行する
    ```
    ~/.claude/hooks/knowledge-review-flag.sh clear "<上記コマンドの出力（絶対パス）>" "${CLAUDE_SESSION_ID}"
    ```
