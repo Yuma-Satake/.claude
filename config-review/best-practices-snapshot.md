@@ -5,8 +5,8 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Agent Skillsのベストプラクティス
 
 - ソースURL: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices.md
-- 取得日: 2026-10-12
-- sha256: 727f3fa1168eb1c33ce6a3cbfc94a02ef1dfd647388f6ca9daf7cb6294762f42
+- 取得日: 2026-10-26
+- sha256: a1145a06cdf3dbd0c152165d759290ae69f5c72a4cfa47de161cc2bd94de1259
 - 備考: docs.claude.com のURLは platform.claude.com へリダイレクトされる
 
 要点
@@ -25,8 +25,8 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Claude Codeのメモリ・rules
 
 - ソースURL: https://code.claude.com/docs/en/memory.md
-- 取得日: 2026-10-19
-- sha256: 768be47946cafc36d6fbe3988a04229521f5433bc038736739204e2ed258f6a7
+- 取得日: 2026-10-26
+- sha256: 02632438e022b5fc70b470b02d59819d9739756c2666b5632734b4564a08a801
 
 要点
 
@@ -41,12 +41,14 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - 特定の作業でしか使わない指示は、常時コンテキストに載るruleではなく、呼び出し時や関連時にだけ読み込まれるskillに置く
 - `~/.claude/rules/`のユーザーレベルruleはプロジェクトruleより先に読み込まれる。どちらも他方を上書きしないため、矛盾しないよう保つ
 - `.claude/rules/`内のシンボリックリンクがworking directory外を指す場合は外部インポートと同じ扱いになり、プロジェクトごとの承認後に`paths`の無いものだけが読み込まれる。承認なしで共有したいruleは`~/.claude/rules/`に置く
+- `paths`付きのruleやサブディレクトリのCLAUDE.mdのように必要時に読み込まれるファイルは、1ファイルあたりの文字数上限（コンテキストウィンドウの大きさとモデルで変わる）を超えると先頭部分だけが読み込まれ、残りはClaudeがReadで読むまでコンテキストに入らない。超える場合はファイルを削るか、一部を別のruleに分ける
+- `/compact`後、プロジェクトルートのCLAUDE.mdはディスクから読み直されて再注入される。サブディレクトリのCLAUDE.mdと`paths`付きのruleは、必要になった時点で読み込み直される
 
 ## Claude Codeのskills
 
 - ソースURL: https://code.claude.com/docs/en/skills.md
-- 取得日: 2026-10-19
-- sha256: 428fdf2654fa01dcbbece1f6d010e350f646ecbdbec229e7df097f452f06c2b7
+- 取得日: 2026-10-26
+- sha256: acb1f1388ee96a516f707c42bac1e834b22df90081e5c2eccb90a2f76a5430f6
 
 要点
 
@@ -60,13 +62,14 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - 呼び出されたSKILL.mdの内容は1つのメッセージとして会話に残り、後のターンでファイルは読み直されない。タスク全体に適用したい指示は、一度きりの手順ではなく常に有効な指示として書く
 - 自動コンパクション後は各skillの直近の呼び出しが先頭5,000トークンまで再添付される（全skill合計25,000トークン）。重要な指示はSKILL.mdの先頭近くに置く
 - 毎回必ず守らせたいルールはhookへ移す。skillに紐づけたい場合はskillの`hooks` frontmatterで定義できる
+- Cowork・クラウドセッション（クラウドのscheduled taskを含む）は、手元のマシンの`~/.claude/skills/`を読まない。これらのセッションではclaude.aiアカウントで有効にしたskillが読み込まれる
 - `` !`command` ``とコードブロック` ```! `は、skill内容がClaudeへ渡される前にコマンドを実行して出力で置き換える
 
 ## Claude Codeのhooks
 
 - ソースURL: https://code.claude.com/docs/en/hooks.md
-- 取得日: 2026-10-19
-- sha256: 5599b94537beb359bfe35dfa7538503194ea78b8d824fcaccba068915d6a77d7
+- 取得日: 2026-10-26
+- sha256: 511ca59bb8bd2f6c9131dd6c621cdf0933f956050180c57839eb1c6afe76abca
 
 要点
 
@@ -78,3 +81,5 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - `timeout`の既定値は`command`・`http`・`mcp_tool`で600秒、`prompt`で30秒、`agent`で60秒。`UserPromptSubmit`・`PreModelSwitch`・`PostModelSwitch`では30秒、`MessageDisplay`では10秒に下がる。`SessionEnd`のhookは全体で1.5秒の予算を共有し、個別の`timeout`を長く設定すると最大60秒まで予算が引き上げられる
 - `once`はskill frontmatterで宣言したhookでのみ有効。最初に成功した実行の後に削除され、失敗・exit code 2によるブロック・タイムアウトの場合は残る
 - hookはskillやagentのfrontmatterでも定義できる
+- `PreToolUse`の`command`・`http`・`mcp_tool` hookがタイムアウトや失敗で終わってもツール呼び出しはブロックされず、通常の権限フローに進む。失敗時にブロックさせるには`command`・`http` hookに`"onFailure": "block"`を指定する（async hookには効かない。Git Bashの無いWindowsでは未指定でもブロックされることがある）
+- hookがバックグラウンドプロセスを起動する場合は、判定結果を先に出力し、バックグラウンドプロセスの標準出力・標準エラーをリダイレクトする。allowを出力した後にリダイレクトせず起動するとツール呼び出しがブロックされ、バックグラウンドで後から出したdenyは無視される
