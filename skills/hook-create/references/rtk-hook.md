@@ -2,7 +2,7 @@
 
 `~/.claude/hooks/rtk-hook.sh`（PreToolUseフックの`rtk hook claude`ラッパー）に起因する失敗の仕組みと対処をまとめる。
 
-worktree内でgitコマンドが「gitと確実に判定できない」として拒否されることがある: `~/.claude/hooks/rtk-hook.sh`（PreToolUseフックの`rtk hook claude`ラッパー）は、コマンドが`git`で始まり、かつcwdがworktree内であればrtkへの書き換え（`git ... ` → `rtk git ...`）をスキップし、素のgitコマンドをそのまま許可する。worktree判定は「`git rev-parse --absolute-git-dir`と`--git-common-dir`が異なるか」「`git worktree list`の件数が2以上か」のいずれかで行っている。
+worktree内でgitコマンドが「gitと確実に判定できない」として拒否されることがある: `rtk-hook.sh`は、コマンドが`git`で始まり、かつcwdがworktree内であればrtkへの書き換え（`git ... ` → `rtk git ...`）をスキップし、素のgitコマンドをそのまま許可する。worktree判定は「`git rev-parse --absolute-git-dir`と`--git-common-dir`が異なるか」「`git worktree list`の件数が2以上か」のいずれかで行っている。
 
 rootのworktreeに連動して作られるsubmoduleのリンクworktreeでは、この2つの判定方法がどちらも機能しない（submodule専用のworktree領域内ではgit-dirとcommon-dirが同一パスになり、`worktree list`も1件しか返らない）。この場合、書き換えをスキップする分岐に入れず`rtk hook claude`へフォールスルーし、`rtk git status`のような書き換え後のコマンドがサンドボックスの「worktree内であることを確実に検証できない」チェックに引っかかって拒否される。git-dirのパス自体に`.git/worktrees/`という文字列が含まれるかを追加の判定条件にすれば、submodule worktreeも正しく検出できる（`rtk-hook.sh`はこの条件でも判定している）。
 
