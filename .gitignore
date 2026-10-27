@@ -21,6 +21,7 @@ policy-limits.json
 policy-limits.json.stamp.json
 .last-cleanup
 .last-update-result.json
+__pycache__/
 
 # 状態・作業ディレクトリ
 projects/
