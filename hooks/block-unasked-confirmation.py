@@ -22,9 +22,9 @@ def main():
 
     reason = (
         "確認・質問を求める言い回し（「〜してよいですか」「教えてください」等）を使っているが、"
-        "AskUserQuestionが呼ばれていない。ユーザへの質問は、複数項目でも地の文にせず項目ごとにAskUserQuestionで聞く"
+        "AskUserQuestionが呼ばれていない。ユーザへの質問は、複数項目でも通常のメッセージにせず項目ごとにAskUserQuestionで聞く"
         "（自由入力の項目も候補を2つ以上並べ、Otherに任せる。1回最大4問）。"
-        "質問ではなく決定事項で、選択肢が実質1つの場合に限り、地の文で述べ直して進める。"
+        "質問ではなく決定事項で、選択肢が実質1つの場合に限り、通常のメッセージで述べ直して進める。"
     )
     print(json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False))
 
