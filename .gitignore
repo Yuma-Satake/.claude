@@ -19,6 +19,8 @@ image-cache
 stats-cache.json
 policy-limits.json
 policy-limits.json.stamp.json
+*.json.signature.json
+*.json.signature-iat.json
 .last-cleanup
 .last-update-result.json
 __pycache__/
