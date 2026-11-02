@@ -230,7 +230,7 @@ Planに沿って実装する。
 
 ### 7. レビュー
 
-プランニングで決定したskillごとに**code-reviewer agentを1体ずつ並列起動**する（同一メッセージ内で複数Agent呼び出し）。code-reviewer agentは1体につき最大1 skillしかロードできないため、skillの数だけcode-reviewerを起動する。
+プランニングで決定したskillごとに**code-reviewer agentを1体ずつ並列起動**する（同じメッセージ内で複数Agent呼び出し）。code-reviewer agentは1体につき最大1 skillしかロードできないため、skillの数だけcode-reviewerを起動する。
 
 各code-reviewerへの指示には以下を含める：
 - レビューしてほしい変更ファイルと変更の概要
@@ -245,7 +245,7 @@ Planに沿って実装する。
 
 指摘への対応:
 
-- すべてのcode-reviewerの結果を回収し、必須修正をマージする（同一指摘は重複排除）
+- すべてのcode-reviewerの結果を回収し、必須修正をマージする（同じ指摘は重複排除）
 - 修正が必要な指摘に対応する
 - 再レビュー前に、`package.json` / `CLAUDE.md` / `Makefile` 等に既存定義されたフォーマッタ・リンタの自動修正コマンド（例: `npm run format`, `npm run lint:fix`）があれば実行し、機械的に除去できる指摘を解消する。新しいツールは導入しない。対象は変更ファイルに絞る。コマンドがリポジトリ全体にしか適用できない場合は、実行後に `git diff --name-only` でPlanの変更ファイル一覧と照合し、対象外のファイルが変更されていないか確認する
 - skill ごとに code-reviewer agent を並列起動して再レビューを依頼する

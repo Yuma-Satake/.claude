@@ -5,8 +5,8 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Agent Skillsのベストプラクティス
 
 - ソースURL: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices.md
-- 取得日: 2026-10-26
-- sha256: a1145a06cdf3dbd0c152165d759290ae69f5c72a4cfa47de161cc2bd94de1259
+- 取得日: 2026-11-02
+- sha256: cb3f49125d6716342b369145655ec8a129a2baeaff3dd56b3087758f9674bd54
 - 備考: docs.claude.com のURLは platform.claude.com へリダイレクトされる
 
 要点
@@ -25,8 +25,8 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Claude Codeのメモリ・rules
 
 - ソースURL: https://code.claude.com/docs/en/memory.md
-- 取得日: 2026-10-26
-- sha256: 02632438e022b5fc70b470b02d59819d9739756c2666b5632734b4564a08a801
+- 取得日: 2026-11-02
+- sha256: f19bb5aa909fe5588d523cf302a0e15ed5950ca689fbb73bd932c315ec764a49
 
 要点
 
@@ -43,19 +43,21 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - `.claude/rules/`内のシンボリックリンクがworking directory外を指す場合は外部インポートと同じ扱いになり、プロジェクトごとの承認後に`paths`の無いものだけが読み込まれる。承認なしで共有したいruleは`~/.claude/rules/`に置く
 - `paths`付きのruleやサブディレクトリのCLAUDE.mdのように必要時に読み込まれるファイルは、1ファイルあたりの文字数上限（コンテキストウィンドウの大きさとモデルで変わる）を超えると先頭部分だけが読み込まれ、残りはClaudeがReadで読むまでコンテキストに入らない。超える場合はファイルを削るか、一部を別のruleに分ける
 - `/compact`後、プロジェクトルートのCLAUDE.mdはディスクから読み直されて再注入される。サブディレクトリのCLAUDE.mdと`paths`付きのruleは、必要になった時点で読み込み直される
+- 作業ディレクトリとその上位に`CLAUDE.md`・`.claude/CLAUDE.md`・`CLAUDE.local.md`が無いリポジトリでは、代わりに`AGENTS.md`をプロジェクトの指示として読む。`~/.claude/CLAUDE.md`・組織のmanaged `CLAUDE.md`・`.claude/rules/`はこの判定に数えられず、`AGENTS.md`と併せて読み込まれる。読み込む組み合わせは`/config`の「Project instructions」で変えられる
 
 ## Claude Codeのskills
 
 - ソースURL: https://code.claude.com/docs/en/skills.md
-- 取得日: 2026-10-26
-- sha256: acb1f1388ee96a516f707c42bac1e834b22df90081e5c2eccb90a2f76a5430f6
+- 取得日: 2026-11-02
+- sha256: d2a5d07c0d1cef1d1edcf30f38f6b2712ff70ac050e3d50601cd3dadb42f9097
 
 要点
 
 - frontmatterのフィールドは全て任意で、`description`のみ推奨。未知のフィールドはエラーなく無視される
 - 利用できる主なフィールドは`name`・`description`・`when_to_use`・`argument-hint`・`arguments`・`disable-model-invocation`・`user-invocable`・`allowed-tools`・`disallowed-tools`・`model`・`effort`・`context`・`agent`・`background`・`hooks`・`paths`・`shell`。Agent Skills仕様由来の`metadata`・`license`・`compatibility`も受け付けるが、Claude Codeは内容に基づく動作をしない
-- `allowed-tools`による許可と`disallowed-tools`による除外は、呼び出したターンに限られ、次のメッセージを送ると解除される
-- `disable-model-invocation: true`のskillは、自動読み込みに加えてサブエージェントへのプリロードとscheduled taskのプロンプトとしての実行も行われない
+- `allowed-tools`による許可と`disallowed-tools`による除外は、呼び出したターンに限られ、次のメッセージを送ると解除される。`allowed-tools`は許可するだけで、列挙していないツールの使用を制限しない
+- `disable-model-invocation: true`のskillは、descriptionがコンテキストに載らず、自動読み込みに加えてサブエージェントへのプリロードとセッションスコープのscheduled taskのプロンプトとしての実行も行われない
+- SKILL.mdを編集せずにskillの表示を変えるには、settingsの`skillOverrides`を使う。値は`on`・`name-only`・`user-invocable-only`・`off`で、未指定のskillは`on`として扱われる。プラグインのskillには効かない
 - `model`はskillが有効な間のモデルを指定する。上書きは呼び出したターンの残りにだけ適用され、次のプロンプトでセッションのモデルに戻る。`context: fork`と併用した場合はフォークされるサブエージェントのモデルを指定する
 - `description`と`when_to_use`は合計1,536文字で切り詰められる（`skillListingMaxDescChars`で変更可）。主要な用途を先頭に書く
 - 補助ファイルはSKILL.mdから参照し、各ファイルの内容といつ読むかをSKILL.mdに書く
@@ -68,16 +70,18 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Claude Codeのhooks
 
 - ソースURL: https://code.claude.com/docs/en/hooks.md
-- 取得日: 2026-10-26
-- sha256: 511ca59bb8bd2f6c9131dd6c621cdf0933f956050180c57839eb1c6afe76abca
+- 取得日: 2026-11-02
+- sha256: 8e4d5d8c03b5a4cd0e6fe15cc8d71d782a5acc29cf738c584337d024ff1e4ca1
 
 要点
 
 - 主なイベントは`SessionStart`・`UserPromptSubmit`・`PreToolUse`・`PostToolUse`・`Stop`・`WorktreeCreate`・`WorktreeRemove`など。`PreModelSwitch`・`PostModelSwitch`・`MessageDisplay`のようにモデル切り替えや表示に関わるイベントもある
-- exit code 2はブロックを意味し、JSONのブロック理由が無ければstderrがブロック理由として使われる。JSONで`permissionDecision: "allow"`を返してもexit code 2のブロックは覆らない。構造化した制御を行う場合はexit code 0でJSONを出力する
-- PreToolUseは`hookSpecificOutput.permissionDecision`（`allow`・`deny`・`ask`など）と`permissionDecisionReason`でツール呼び出しを制御できる
-- `additionalContext`でClaudeにコンテキストを追加できる
-- `if`フィールドはpermission rule構文で1つだけ指定でき、ツールイベントでのみ評価される。Bashの場合は先頭の`VAR=value`を除いたうえでサブコマンドごとに判定され、`&&`で連結された後続コマンドや`$()`・バッククォート内のコマンドも判定対象になる。コマンドを解析できない場合はパターンに関わらずhookを実行する。`if`はbest-effortであり、確実な許可・拒否にはpermissionsを使う
+- exit code 2はブロックを意味し、JSONのブロック理由が無ければstderrがブロック理由として使われる。JSONで`permissionDecision: "allow"`を返してもexit code 2のブロックは覆らない。構造化した制御を行う場合はexit code 0でJSONを出力する。exit code 1は有効なJSONが無ければブロックしないエラーとして扱われる（`onFailure: "block"`のhookを除く）ため、ポリシーを強制するhookはexit code 2を使う
+- PreToolUseは`hookSpecificOutput.permissionDecision`（`allow`・`deny`・`ask`・`defer`。`defer`は`-p`の非対話モードでのみ有効）と`permissionDecisionReason`でツール呼び出しを制御できる
+- `additionalContext`でClaudeにコンテキストを追加できる。`additionalContext`・`systemMessage`・プレーンなstdoutは10,000文字が上限で、超えるとファイルに保存され、先頭2,000文字のプレビューとファイルパスが渡される
+- 同じhandlerを複数のsettingsファイルに定義した場合は1回だけ実行される。プラグインやskillが持つ同じhandlerは別扱いになる
+- プラグインに同梱されたMCPサーバーのツール名は`mcp__plugin_<plugin名>_<サーバー名>__<ツール名>`になり、サーバー名だけのmatcherは一致しない
+- `if`フィールドはpermission rule構文で1つだけ指定でき、ツールイベント（`PreToolUse`・`PostToolUse`・`PostToolUseFailure`・`PermissionRequest`・`PermissionDenied`）でのみ評価され、それ以外のイベントで`if`を指定したhookは実行されない。Bashの場合は先頭の`VAR=value`を除いたうえでサブコマンドごとに判定され、`&&`で連結された後続コマンドや`$()`・バッククォート内のコマンドも判定対象になる。コマンドを解析できない場合はパターンに関わらずhookを実行する。`if`はbest-effortであり、確実な許可・拒否にはpermissionsを使う
 - `timeout`の既定値は`command`・`http`・`mcp_tool`で600秒、`prompt`で30秒、`agent`で60秒。`UserPromptSubmit`・`PreModelSwitch`・`PostModelSwitch`では30秒、`MessageDisplay`では10秒に下がる。`SessionEnd`のhookは全体で1.5秒の予算を共有し、個別の`timeout`を長く設定すると最大60秒まで予算が引き上げられる
 - `once`はskill frontmatterで宣言したhookでのみ有効。最初に成功した実行の後に削除され、失敗・exit code 2によるブロック・タイムアウトの場合は残る
 - hookはskillやagentのfrontmatterでも定義できる

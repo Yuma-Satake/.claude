@@ -128,7 +128,7 @@ Step 3 でファイルを作成・更新した場合、コミットとpushはユ
 
 保留フラグは、コミットを実行したBashコマンドの作業ディレクトリ（cwd）を基準にリポジトリを判定する。`git -C <path>`で別リポジトリを指定してもcwd自体は変わらないため、add・commitは対象リポジトリに`cd`した上で実行する（`cd <絶対パス> && <コマンド>`。手順ごとに呼び出しを分けると、次のコマンドで元のcwdに戻っている場合がある）。
 
-保留フラグを立てる`set-knowledge-review-flag.sh`はPostToolUseフックであり、Bashツール呼び出しが完了した後に`tool_response`内の`gitOperation.commit.kind`を見て発火する。そのため`git commit`とフラグ解除を同一のBashコマンド呼び出し内で連結しても、コミットが成立した時点でそのツール呼び出し自体の完了後にフックが発火し、フラグを再セットしてしまう（呼び出し内でclearを後置しても打ち消される）。commitとフラグ解除は必ず別のBashツール呼び出しに分ける。
+保留フラグを立てる`set-knowledge-review-flag.sh`はPostToolUseフックであり、Bashツール呼び出しが完了した後に`tool_response`内の`gitOperation.commit.kind`を見て発火する。そのため`git commit`とフラグ解除を同じBashコマンド呼び出し内で連結しても、コミットが成立した時点でそのツール呼び出し自体の完了後にフックが発火し、フラグを再セットしてしまう（呼び出し内でclearを後置しても打ち消される）。commitとフラグ解除は必ず別のBashツール呼び出しに分ける。
 
 1. 変更が行われたリポジトリ（`~/.claude` や対象プロジェクト）ごとに、`git add`・`git commit`を1回のBashコマンド呼び出しで実行する
    ```
