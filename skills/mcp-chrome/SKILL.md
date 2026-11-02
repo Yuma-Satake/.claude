@@ -28,6 +28,7 @@ user-invocable: false
 | Gmail（mail.google.com） | `references/gmail.md` | メッセージパーマリンクからスレッドを開く・返信するとき |
 | Google Analytics（analytics.google.com） | `references/google-analytics.md` | プロパティ・データストリームの作成、測定IDの取得を行うとき |
 | Google for Nonprofits（google.com/nonprofits、support.google.com/nonprofits） | `references/google-nonprofits.md` | ダッシュボードのアクティベーション申請、サポートフォームの入力・送信を行うとき |
+| iCloud 写真（icloud.com/photos） | `references/icloud-photos.md` | 共有アルバムの中身（ファイル名）の取得・ダウンロードを行うとき |
 | ラクスル（raksul.com） | `references/raksul.md` | はがき・ポストカードの料金確認、データ入稿、データチェックを行うとき |
 | ブラウザ操作パターン（汎用） | `references/browser-patterns.md` | フォーム入力・値取得・DOM 操作・ダイアログ回避など具体的テクニックが必要なとき |
 
