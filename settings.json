@@ -175,7 +175,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/block-git-worktree.sh"
+            "command": "~/.claude/hooks/block-git-worktree.sh",
+            "onFailure": "block"
           }
         ]
       },
@@ -184,7 +185,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/block-bare-git-stash.sh"
+            "command": "~/.claude/hooks/block-bare-git-stash.sh",
+            "onFailure": "block"
           }
         ]
       },
@@ -193,7 +195,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/block-dirty-git-switch.sh"
+            "command": "~/.claude/hooks/block-dirty-git-switch.sh",
+            "onFailure": "block"
           }
         ]
       },
@@ -202,7 +205,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/block-edit-outside-worktree.sh"
+            "command": "~/.claude/hooks/block-edit-outside-worktree.sh",
+            "onFailure": "block"
           }
         ]
       }
