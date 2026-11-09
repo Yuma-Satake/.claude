@@ -5,7 +5,7 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Agent Skillsのベストプラクティス
 
 - ソースURL: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices.md
-- 取得日: 2026-11-02
+- 取得日: 2026-11-09
 - sha256: cb3f49125d6716342b369145655ec8a129a2baeaff3dd56b3087758f9674bd54
 - 備考: docs.claude.com のURLは platform.claude.com へリダイレクトされる
 
@@ -25,8 +25,8 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 ## Claude Codeのメモリ・rules
 
 - ソースURL: https://code.claude.com/docs/en/memory.md
-- 取得日: 2026-11-02
-- sha256: f19bb5aa909fe5588d523cf302a0e15ed5950ca689fbb73bd932c315ec764a49
+- 取得日: 2026-11-09
+- sha256: 275fe39e8501741ad308ab8ecd4552327cf34e53654841d7a121de80fbe6b595
 
 要点
 
@@ -45,11 +45,15 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - `/compact`後、プロジェクトルートのCLAUDE.mdはディスクから読み直されて再注入される。サブディレクトリのCLAUDE.mdと`paths`付きのruleは、必要になった時点で読み込み直される
 - 作業ディレクトリとその上位に`CLAUDE.md`・`.claude/CLAUDE.md`・`CLAUDE.local.md`が無いリポジトリでは、代わりに`AGENTS.md`をプロジェクトの指示として読む。`~/.claude/CLAUDE.md`・組織のmanaged `CLAUDE.md`・`.claude/rules/`はこの判定に数えられず、`AGENTS.md`と併せて読み込まれる。読み込む組み合わせは`/config`の「Project instructions」で変えられる
 
+- ユーザーレベルruleの`paths`は、セッションのprimary working directoryを基準に解決される。兄弟worktree内のファイルにパス限定のruleを効かせるには、そのworktreeでClaude Codeを起動するか`/cd`で移動する
+- ruleのfrontmatterのYAMLが解析できない場合、frontmatterは無視され、`paths`が無いruleとして常時読み込まれる
+- 1ファイルが推奨の長さを超えた場合に加え、各ファイルは推奨内でも合計が上限を超えた場合に起動時の警告が出る。CLAUDE.md・ruleファイル・`@path`インポートはそれぞれ別ファイルとして数えられる
+
 ## Claude Codeのskills
 
 - ソースURL: https://code.claude.com/docs/en/skills.md
-- 取得日: 2026-11-02
-- sha256: d2a5d07c0d1cef1d1edcf30f38f6b2712ff70ac050e3d50601cd3dadb42f9097
+- 取得日: 2026-11-09
+- sha256: 977bb9f8d6a004c37e6731afd94bc3ad7bba1e64a2b2d7e7f22df910d4b06287
 
 要点
 
@@ -67,11 +71,14 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - Cowork・クラウドセッション（クラウドのscheduled taskを含む）は、手元のマシンの`~/.claude/skills/`を読まない。これらのセッションではclaude.aiアカウントで有効にしたskillが読み込まれる
 - `` !`command` ``とコードブロック` ```! `は、skill内容がClaudeへ渡される前にコマンドを実行して出力で置き換える
 
+- skill本文は読み込み後ターンをまたいでコンテキストに残り、各行が繰り返しのトークンコストになる。経緯や理由を語るより、何をするかを書く
+- `` !`command` ``の注入でコマンドが失敗すると、そのプレースホルダーだけでなくskillの呼び出し全体が中止される。既定のbashでは0以外の終了コードが失敗になる（検索・比較コマンドの終了コード1は除く）
+
 ## Claude Codeのhooks
 
 - ソースURL: https://code.claude.com/docs/en/hooks.md
-- 取得日: 2026-11-02
-- sha256: 8e4d5d8c03b5a4cd0e6fe15cc8d71d782a5acc29cf738c584337d024ff1e4ca1
+- 取得日: 2026-11-09
+- sha256: 302eb7b421958a10745425535de466903450dc2f4ee601ab182d54e1f747fa56
 
 要点
 
@@ -87,3 +94,8 @@ rules・skillsの定期レビューで判断基準に使う公式ドキュメン
 - hookはskillやagentのfrontmatterでも定義できる
 - `PreToolUse`の`command`・`http`・`mcp_tool` hookがタイムアウトや失敗で終わってもツール呼び出しはブロックされず、通常の権限フローに進む。失敗時にブロックさせるには`command`・`http` hookに`"onFailure": "block"`を指定する（async hookには効かない。Git Bashの無いWindowsでは未指定でもブロックされることがある）
 - hookがバックグラウンドプロセスを起動する場合は、判定結果を先に出力し、バックグラウンドプロセスの標準出力・標準エラーをリダイレクトする。allowを出力した後にリダイレクトせず起動するとツール呼び出しがブロックされ、バックグラウンドで後から出したdenyは無視される
+- `Bash` matcherの`PreToolUse`・`PermissionRequest` hookは、Monitorツールが起動するシェルコマンドにも実行されるが、`allow`と`updatedInput`はそれらに効かない（v2.1.314以降）。Monitorの呼び出しを許可・書き換えるには、Monitorを含むmatcherを使う
+- Stop hookがターンを8回連続で継続させると、次のブロックは無視されてターンが終わる。回数はツール呼び出しのたびにリセットされる。`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`で上限を変えられる
+- `onFailure: "block"`は`Stop`・`SubagentStop`・`TaskCompleted`・`TeammateIdle`のhookとasync hookには効かない
+- `UserPromptSubmit` hookは、ユーザーが入力したプロンプトに加え、セッションスコープのscheduled task（`/loop`を含む）の発火、バックグラウンドのサブエージェントからの報告、他のセッションから届いたメッセージでも実行される。入力のフィールドとして発生元は記載されていない
+- `additionalContext`は事実を述べる文で書く。システムからの命令のような書き方は、プロンプトインジェクション対策の判定を招くことがある
