@@ -30,6 +30,8 @@
 - 既存ブランチ（他人のPRのheadRefName等）をworktreeでチェックアウトしたい場合は、`EnterWorktree`の`name`にそのブランチ名をそのまま渡す。`worktree-create-wt.sh`が、ローカルブランチまたはリモート追跡ブランチと名前が一致すればそのブランチをチェックアウトし、一致しなければ新規ブランチを作る。リモートにしかないブランチは、先に`git fetch origin <ブランチ名>`で追跡ブランチを取得しておく。同名のローカルブランチが古い状態で残っているとそのままチェックアウトされるため、`git fetch`後に`git rev-parse <ブランチ名> origin/<ブランチ名>`でローカルとリモートの先端が一致するか確認し、遅れていれば`git merge --ff-only`で追従させてから作業する。そのブランチが既に別のworktreeでチェックアウト済みの場合や、期待パスのworktreeが別名のブランチ上にある場合はエラーになるため、`path`引数で切り替える
 - `EnterWorktree`は`path`引数で既存worktreeへの切り替えにも使えるが、現在セッションが「既にworktree内にいる状態」から呼ぶと、切り替え先が`.claude/worktrees/`配下のworktree（Claude Code自身が作成したもの）でない限り拒否される。`.claude/worktrees/`配下ではないworktree（プロジェクト独自の命名規則のディレクトリ等）へ切り替えたい場合は、まず`ExitWorktree`（`action: "keep"`）で元のディレクトリに戻り、そこから改めて`EnterWorktree(path: <対象>)`を呼ぶ。「launchディレクトリからの初回entry」であれば、対象リポの`git worktree list`に登録されている任意のworktreeへ切り替えられる
 - セッションのlaunchディレクトリ自体がgitリポジトリではない（複数リポジトリを子ディレクトリに並べたワークスペース等）場合、`EnterWorktree`は`name`・`path`のどちらでも「not a git repository」で失敗する。この場合もユーザへ確認せず、先にBashで`cd <対象リポジトリの絶対パス>`してから`EnterWorktree`を呼ぶこと（`cd`した状態が`EnterWorktree`の基準になる）。作業対象を別リポジトリに切り替える際は、`ExitWorktree`（`action: "keep"`）で抜け、対象リポジトリに`cd`してから改めて`EnterWorktree`を呼ぶ
+- gitignore対象のファイル（プロジェクトの`.claude/skills/`配下など）は、worktree作成時にコピーされるだけで本体とは別の実体になる。worktree内のセッションからは本体側のパスをEditで直接編集できず（「worktreeのコピーを編集せよ」と拒否される）、worktree内のコピーだけを編集しても本体には反映されない。worktree内のコピーを編集したあと、Bashの`cp`で本体側の同じパスへ上書きして反映し、`grep`で反映を確かめる。これらのファイルはgit管理外なので、コミットはできない
+- 子リポジトリ（submodule）を持つワークスペースで、worktree内から子リポジトリを探すスクリプトを実行すると、worktree側のsubmoduleは未チェックアウトの空ディレクトリになっており、リポジトリが見つからない。子リポジトリを探す処理は、worktreeではなく本体のチェックアウトを基準にする
 
 ## GitHub (issue / PR)
 

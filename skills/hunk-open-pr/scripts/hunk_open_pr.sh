@@ -125,6 +125,20 @@ if [ -z "$workspace_root" ]; then
   fail "$STATUS_REPO_NOT_FOUND"
 fi
 
+# 連結worktree内で実行された場合、submoduleが未チェックアウト（空ディレクトリ）で候補に入らない。
+# その場合はメインのworktree（`git worktree list`の先頭）をワークスペースrootとして使う。
+uninitialized_submodule=0
+while IFS= read -r sp; do
+  [ -z "$sp" ] && continue
+  [ -e "$workspace_root/$sp/.git" ] || uninitialized_submodule=1
+done < <(submodule_paths "$workspace_root")
+if [ "$uninitialized_submodule" -eq 1 ]; then
+  main_root="$(git -C "$workspace_root" worktree list --porcelain 2>/dev/null | awk '/^worktree /{print substr($0,10); exit}')"
+  if [ -n "$main_root" ] && [ "$main_root" != "$workspace_root" ]; then
+    workspace_root="$(physical_path "$main_root")"
+  fi
+fi
+
 candidates=()
 while IFS= read -r c; do [ -n "$c" ] && candidates+=("$c"); done < <(collect_repo_dirs "$workspace_root")
 
