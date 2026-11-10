@@ -32,6 +32,7 @@
 - セッションのlaunchディレクトリ自体がgitリポジトリではない（複数リポジトリを子ディレクトリに並べたワークスペース等）場合、`EnterWorktree`は`name`・`path`のどちらでも「not a git repository」で失敗する。この場合もユーザへ確認せず、先にBashで`cd <対象リポジトリの絶対パス>`してから`EnterWorktree`を呼ぶこと（`cd`した状態が`EnterWorktree`の基準になる）。作業対象を別リポジトリに切り替える際は、`ExitWorktree`（`action: "keep"`）で抜け、対象リポジトリに`cd`してから改めて`EnterWorktree`を呼ぶ
 - gitignore対象のファイル（プロジェクトの`.claude/skills/`配下など）は、worktree作成時にコピーされるだけで本体とは別の実体になる。worktree内のセッションからは本体側のパスをEditで直接編集できず（「worktreeのコピーを編集せよ」と拒否される）、worktree内のコピーだけを編集しても本体には反映されない。worktree内のコピーを編集したあと、Bashの`cp`で本体側の同じパスへ上書きして反映し、`grep`で反映を確かめる。これらのファイルはgit管理外なので、コミットはできない
 - 子リポジトリ（submodule）を持つワークスペースで、worktree内から子リポジトリを探すスクリプトを実行すると、worktree側のsubmoduleは未チェックアウトの空ディレクトリになっており、リポジトリが見つからない。子リポジトリを探す処理は、worktreeではなく本体のチェックアウトを基準にする
+  - ただしworktree-isolatedなセッションでは、Bashの`git -C <本体のsubmoduleパス>`のように本体のチェックアウトへgitを向けるコマンドはフックに拒否される。worktreeでsubmoduleのポインタが競合した場合は、`git ls-files -u`で3者のSHAを得て、`gh api repos/<owner>/<repo>/compare/<SHA1>...<SHA2>`で祖先関係（`status`・`ahead_by`・`behind_by`）を確認し、`git update-index --cacheinfo 160000,<採用するSHA>,<submoduleパス>`で解消する。片方が他方の祖先なら新しい側、分岐していれば変更内容（`gh api repos/<owner>/<repo>/commits/<SHA>`）が相手側に既に入っているかを確認してから採用側を決める
 
 ## GitHub (issue / PR)
 
