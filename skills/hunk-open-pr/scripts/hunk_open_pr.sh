@@ -189,7 +189,7 @@ else
   other_note="$(build_other_note "$target_dir" "${matches[@]}")"
 fi
 
-if ! git -C "$target_dir" fetch origin "pull/${pr_number}/head" >/dev/null 2>&1; then
+if ! git -C "$target_dir" fetch --no-recurse-submodules origin "pull/${pr_number}/head" >/dev/null 2>&1; then
   fail "$STATUS_FETCH_FAILED"
 fi
 head_sha="$(git -C "$target_dir" rev-parse FETCH_HEAD 2>/dev/null)"
@@ -206,7 +206,7 @@ if [ -z "$base_ref_name" ]; then
   fail "$STATUS_GH_FAILED"
 fi
 
-if ! git -C "$target_dir" fetch origin "$base_ref_name" >/dev/null 2>&1; then
+if ! git -C "$target_dir" fetch --no-recurse-submodules origin "$base_ref_name" >/dev/null 2>&1; then
   fail "$STATUS_FETCH_FAILED"
 fi
 base_sha="$(git -C "$target_dir" rev-parse "origin/${base_ref_name}" 2>/dev/null)"
