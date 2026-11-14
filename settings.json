@@ -252,7 +252,16 @@
     "conference-organizing-knowledge-skill@conference-organizing-knowledge-skill": false,
     "cloudflare@claude-plugins-official": false,
     "frontend-design@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "i-have-adhd@i-have-adhd": true
+  },
+  "extraKnownMarketplaces": {
+    "i-have-adhd": {
+      "source": {
+        "source": "github",
+        "repo": "ayghri/i-have-adhd"
+      }
+    }
   },
   "language": "japanese",
   "alwaysThinkingEnabled": true,
